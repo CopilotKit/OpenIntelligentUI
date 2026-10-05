@@ -86,27 +86,48 @@ export function ExplainerCardsPortal() {
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
+    const chat = document.querySelector<HTMLElement>('[data-testid="copilot-chat"]');
+    if (!chat) return;
+
     const WELCOME_SELECTOR = '[data-testid="copilot-welcome-screen"]';
     const PORTAL_ID = "explainer-cards-portal";
+    let observedContent: HTMLElement | null = null;
+    let contentObserver: MutationObserver | null = null;
 
     const tryAttach = () => {
-      const welcomeScreen = document.querySelector<HTMLElement>(WELCOME_SELECTOR);
+      const welcomeScreen = chat.querySelector<HTMLElement>(WELCOME_SELECTOR);
       if (!welcomeScreen) {
+        contentObserver?.disconnect();
+        contentObserver = null;
+        observedContent = null;
         setPortalTarget(null);
-        return;
-      }
-
-      // Reuse existing portal container if present
-      let portal = document.getElementById(PORTAL_ID);
-      if (portal) {
-        setPortalTarget(portal);
         return;
       }
 
       // Insert portal container inside the welcome screen's main content div,
       // before the suggestions row
       const mainContent = welcomeScreen.children[0] as HTMLElement | undefined;
-      if (!mainContent) return;
+      if (!mainContent) {
+        contentObserver?.disconnect();
+        contentObserver = null;
+        observedContent = null;
+        setPortalTarget(null);
+        return;
+      }
+
+      if (mainContent !== observedContent) {
+        contentObserver?.disconnect();
+        observedContent = mainContent;
+        contentObserver = new MutationObserver(tryAttach);
+        contentObserver.observe(mainContent, { childList: true });
+      }
+
+      // Reuse the container if CopilotKit kept it during a welcome update.
+      let portal = mainContent.querySelector<HTMLElement>(`#${PORTAL_ID}`);
+      if (portal) {
+        setPortalTarget(portal);
+        return;
+      }
 
       portal = document.createElement("div");
       portal.id = PORTAL_ID;
@@ -125,21 +146,14 @@ export function ExplainerCardsPortal() {
 
     tryAttach();
 
-    const observer = new MutationObserver(() => {
-      const welcomeScreen = document.querySelector<HTMLElement>(WELCOME_SELECTOR);
-      if (!welcomeScreen) {
-        // Welcome screen removed (chat started) — clean up
-        const stale = document.getElementById(PORTAL_ID);
-        if (stale) stale.remove();
-        setPortalTarget(null);
-      } else if (!document.getElementById(PORTAL_ID)) {
-        // Welcome screen appeared but no portal yet
-        tryAttach();
-      }
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
-    return () => observer.disconnect();
+    // The welcome screen is a direct child of the chat. Streaming updates
+    // happen deeper in the message tree and do not need to wake this observer.
+    const chatObserver = new MutationObserver(tryAttach);
+    chatObserver.observe(chat, { childList: true });
+    return () => {
+      chatObserver.disconnect();
+      contentObserver?.disconnect();
+    };
   }, []);
 
   if (!portalTarget) return null;
