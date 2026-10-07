@@ -48,6 +48,9 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "22"
+      # Public origin used for social-preview metadata; existing hostname retained.
+      - key: APP_URL
+        value: https://opengenerativeui.copilotkit.ai
       - key: SKIP_INSTALL_DEPS
         value: "true"
       - key: LANGGRAPH_DEPLOYMENT_URL

@@ -60,6 +60,7 @@ def manage_todos(todos: list[Todo], runtime: ToolRuntime) -> Command:
 ```
 
 Key points:
+
 - `Command(update={...})` merges the update into agent state
 - Include a `ToolMessage` in the `messages` list to acknowledge the tool call
 - Use `runtime.tool_call_id` for the message's `tool_call_id`
@@ -82,9 +83,18 @@ with open(Path(__file__).parent / "db.csv") as f:
 
 @tool
 def query_data(query: str):
-    """Query the financial transactions database. Call this before creating charts."""
-    return _data
+    """Return bundled sample rows. The query is context only and is not applied."""
+    return {
+        "source": "Bundled db.csv sample dataset",
+        "is_sample": True,
+        "query_applied": False,
+        "rows": [dict(row) for row in _data],
+    }
 ```
+
+This tool does not retrieve live business metrics or filter its rows. Use it for
+sample-data requests, and label sample values inside any resulting UI. Charts
+based on user-provided data or other sources do not need to call this tool.
 
 ## Registering Tools with the Agent
 
@@ -108,7 +118,8 @@ You can pass individual tools or spread a list of tools.
 
 ## Example: Adding a New Tool
 
-Say you want to add a tool that fetches weather data:
+This example adds a sample weather tool for demonstrating a renderer. Its values
+are illustrative; it does not fetch current weather.
 
 **1. Create the tool** (`apps/agent/src/weather.py`):
 
@@ -116,24 +127,34 @@ Say you want to add a tool that fetches weather data:
 from langchain.tools import tool
 
 @tool
-def get_weather(city: str):
-    """Get the current weather for a city."""
-    # Your implementation here
-    return {"city": city, "temp": 72, "condition": "sunny"}
+def get_sample_weather(city: str):
+    """Return illustrative weather values for a sample UI, not current conditions."""
+    return {
+        "city": city,
+        "temp": 72,
+        "temperature_unit": "F",
+        "condition": "sunny",
+        "is_sample": True,
+        "source": "Illustrative values from this example",
+    }
 ```
 
 **2. Register it** in `apps/agent/main.py`:
 
 ```python
-from src.weather import get_weather
+from src.weather import get_sample_weather
 
 agent = create_deep_agent(
-    tools=[query_data, plan_visualization, *todo_tools, get_weather],
+    tools=[query_data, plan_visualization, *todo_tools, get_sample_weather],
     ...
 )
 ```
 
-The agent can now call `get_weather` when a user asks about weather. If you want a custom UI for the result, register a `useRenderTool` on the frontend (see [Generative UI](generative-ui.md)).
+The agent can call `get_sample_weather` when a user requests a sample weather UI.
+Label the displayed values as sample data. A real current-weather tool needs an
+actual data-provider integration, source attribution, and error handling. If you
+want a custom UI for the result, register a `useRenderTool` on the frontend (see
+[Generative UI](generative-ui.md)).
 
 ## Next Steps
 

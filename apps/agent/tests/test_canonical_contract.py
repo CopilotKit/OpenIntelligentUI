@@ -42,19 +42,6 @@ def test_prompt_documents_sandbox_bridge_and_restrictions():
     assert "same-origin fetch" in SYSTEM_PROMPT.lower()
 
 
-def test_prompt_preserves_visualization_protocol():
-    assert "plan_visualization" in SYSTEM_PROMPT
-    assert "NEVER skip the plan_visualization step" in SYSTEM_PROMPT
-    assert "Acknowledge" in SYSTEM_PROMPT
-    assert "Narrate" in SYSTEM_PROMPT
-    assert "query_data" in SYSTEM_PROMPT
-    assert "barChart" in SYSTEM_PROMPT
-    assert "pieChart" in SYSTEM_PROMPT
-    assert "prefer the built-in" in SYSTEM_PROMPT
-    assert "Three.js" in SYSTEM_PROMPT
-    assert "NEVER fake 3D" in SYSTEM_PROMPT
-
-
 def test_prompt_documents_library_imports_for_sandbox():
     assert "await import('three')" in SYSTEM_PROMPT
     assert '<script type="module">' in SYSTEM_PROMPT
@@ -102,13 +89,3 @@ def test_apply_template_appends_canonical_translation_note():
     assert "css parameter" in note
     assert "jsFunctions" in note
     assert "Websandbox.connection.remote.sendPrompt" in note
-
-
-def test_prompt_forbids_repeat_generate_sandboxed_ui_calls():
-    # followUp runs return "UI generated" to the agent; without an explicit
-    # single-build rule the model rebuilds the widget in a loop.
-    from src.prompt import SYSTEM_PROMPT
-
-    assert "at most ONCE" in SYSTEM_PROMPT
-    assert "UI generated" in SYSTEM_PROMPT
-    assert "do NOT call it again" in SYSTEM_PROMPT

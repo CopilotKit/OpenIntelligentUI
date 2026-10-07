@@ -5,12 +5,17 @@ import {
   isAllowedLinkUrl,
   SANDBOX_FUNCTIONS,
   SEND_PROMPT_EVENT,
+  type SendPromptRequest,
 } from "@/lib/sandbox/sandbox-functions";
 
 describe("sendPromptFunction", () => {
   let received: string[];
   const listener = (e: Event) => {
-    received.push((e as CustomEvent<{ text: string }>).detail.text);
+    const request = (e as CustomEvent<SendPromptRequest>).detail;
+    if (request.claim()) {
+      received.push(request.text);
+      request.resolve();
+    }
   };
 
   beforeEach(() => {
@@ -28,7 +33,7 @@ describe("sendPromptFunction", () => {
 
   it("dispatches exactly one CustomEvent with the text for valid args", async () => {
     await expect(
-      sendPromptFunction.handler({ text: "draw a chart" })
+      sendPromptFunction.handler({ text: "draw a chart" }),
     ).resolves.toEqual({ ok: true });
     expect(received).toEqual(["draw a chart"]);
   });
@@ -36,6 +41,7 @@ describe("sendPromptFunction", () => {
   it.each([
     ["missing text", {}],
     ["empty string", { text: "" }],
+    ["whitespace only", { text: " \n\t " }],
     ["number", { text: 42 }],
     ["over 4000 chars", { text: "a".repeat(4001) }],
     ["extra junk only", { junk: "x" }],
@@ -46,7 +52,7 @@ describe("sendPromptFunction", () => {
 
   it("accepts text at exactly 4000 chars", async () => {
     await expect(
-      sendPromptFunction.handler({ text: "a".repeat(4000) })
+      sendPromptFunction.handler({ text: "a".repeat(4000) }),
     ).resolves.toEqual({ ok: true });
     expect(received).toHaveLength(1);
   });
@@ -70,13 +76,13 @@ describe("openLinkFunction", () => {
 
   it("opens an https URL in a new tab with noopener,noreferrer", async () => {
     await expect(
-      openLinkFunction.handler({ url: "https://example.com/docs" })
+      openLinkFunction.handler({ url: "https://example.com/docs" }),
     ).resolves.toEqual({ ok: true });
     expect(openSpy).toHaveBeenCalledTimes(1);
     expect(openSpy).toHaveBeenCalledWith(
       "https://example.com/docs",
       "_blank",
-      "noopener,noreferrer"
+      "noopener,noreferrer",
     );
   });
 
@@ -95,7 +101,7 @@ describe("openLinkFunction", () => {
   it("rejects https URLs outside the env allowlist", async () => {
     vi.stubEnv("NEXT_PUBLIC_OPEN_LINK_ALLOWED_ORIGINS", "https://github.com");
     await expect(
-      openLinkFunction.handler({ url: "https://evil.com/x" })
+      openLinkFunction.handler({ url: "https://evil.com/x" }),
     ).rejects.toThrow();
     expect(openSpy).not.toHaveBeenCalled();
   });
@@ -103,12 +109,12 @@ describe("openLinkFunction", () => {
   it("allows https URLs inside the env allowlist", async () => {
     vi.stubEnv("NEXT_PUBLIC_OPEN_LINK_ALLOWED_ORIGINS", "https://github.com");
     await expect(
-      openLinkFunction.handler({ url: "https://github.com/CopilotKit" })
+      openLinkFunction.handler({ url: "https://github.com/CopilotKit" }),
     ).resolves.toEqual({ ok: true });
     expect(openSpy).toHaveBeenCalledWith(
       "https://github.com/CopilotKit",
       "_blank",
-      "noopener,noreferrer"
+      "noopener,noreferrer",
     );
   });
 });
@@ -118,12 +124,12 @@ describe("isAllowedLinkUrl", () => {
     vi.unstubAllEnvs();
   });
 
-  it.each([
-    "https://example.com",
-    "https://example.com/path?query=1#hash",
-  ])("allows %s without an allowlist", (url) => {
-    expect(isAllowedLinkUrl(url)).toBe(true);
-  });
+  it.each(["https://example.com", "https://example.com/path?query=1#hash"])(
+    "allows %s without an allowlist",
+    (url) => {
+      expect(isAllowedLinkUrl(url)).toBe(true);
+    },
+  );
 
   it.each([
     "javascript:alert(1)",
@@ -139,27 +145,27 @@ describe("isAllowedLinkUrl", () => {
   });
 
   it("allows an https URL whose origin is in the allowlist", () => {
-    expect(isAllowedLinkUrl("https://github.com/x", ["https://github.com"])).toBe(
-      true
-    );
+    expect(
+      isAllowedLinkUrl("https://github.com/x", ["https://github.com"]),
+    ).toBe(true);
   });
 
   it("rejects an https URL whose origin is not in the allowlist", () => {
     expect(isAllowedLinkUrl("https://evil.com", ["https://github.com"])).toBe(
-      false
+      false,
     );
   });
 
   it("rejects origin-prefix lookalike hosts", () => {
     expect(
-      isAllowedLinkUrl("https://github.com.evil.com/x", ["https://github.com"])
+      isAllowedLinkUrl("https://github.com.evil.com/x", ["https://github.com"]),
     ).toBe(false);
   });
 
   it("falls back to the env allowlist when no explicit list is given", () => {
     vi.stubEnv(
       "NEXT_PUBLIC_OPEN_LINK_ALLOWED_ORIGINS",
-      "https://github.com, https://copilotkit.ai"
+      "https://github.com, https://copilotkit.ai",
     );
     expect(isAllowedLinkUrl("https://github.com/x")).toBe(true);
     expect(isAllowedLinkUrl("https://copilotkit.ai/blog")).toBe(true);

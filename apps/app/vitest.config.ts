@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 
 export default defineConfig({
   plugins: [react()],
+  css: { postcss: { plugins: [] } },
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
@@ -11,5 +12,6 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
+    server: { deps: { inline: [/@copilotkit\/react-core/] } },
   },
 });

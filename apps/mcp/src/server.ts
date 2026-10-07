@@ -1,4 +1,7 @@
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import {
+  McpServer,
+  ResourceTemplate,
+} from "@modelcontextprotocol/sdk/server/mcp.js";
 import * as z from "zod";
 import { listSkills, loadSkill } from "./skills.js";
 import { assembleDocument } from "./renderer.js";
@@ -13,7 +16,10 @@ export function createMcpServer(): McpServer {
   server.registerResource(
     "skills-list",
     "skills://list",
-    { description: "JSON array of available skill names", mimeType: "application/json" },
+    {
+      description: "JSON array of available skill names",
+      mimeType: "application/json",
+    },
     async () => ({
       contents: [
         {
@@ -22,7 +28,7 @@ export function createMcpServer(): McpServer {
           text: JSON.stringify(listSkills()),
         },
       ],
-    })
+    }),
   );
 
   server.registerResource(
@@ -36,7 +42,10 @@ export function createMcpServer(): McpServer {
         })),
       }),
     }),
-    { description: "Full text of a skill instruction document", mimeType: "text/plain" },
+    {
+      description: "Full text of a skill instruction document",
+      mimeType: "text/plain",
+    },
     async (uri, { name }) => ({
       contents: [
         {
@@ -45,7 +54,7 @@ export function createMcpServer(): McpServer {
           text: loadSkill(name as string),
         },
       ],
-    })
+    }),
   );
 
   // Prompts: pre-composed skill prompts
@@ -59,7 +68,7 @@ export function createMcpServer(): McpServer {
           content: { type: "text", text: loadSkill("master-agent-playbook") },
         },
       ],
-    })
+    }),
   );
 
   server.registerPrompt(
@@ -72,7 +81,7 @@ export function createMcpServer(): McpServer {
           content: { type: "text", text: loadSkill("svg-diagram-skill") },
         },
       ],
-    })
+    }),
   );
 
   server.registerPrompt(
@@ -85,7 +94,7 @@ export function createMcpServer(): McpServer {
           content: { type: "text", text: loadSkill("agent-skills-vol2") },
         },
       ],
-    })
+    }),
   );
 
   // Tool: assemble complete HTML document with design system
@@ -93,17 +102,23 @@ export function createMcpServer(): McpServer {
     "assemble_document",
     {
       description:
-        "Wraps HTML with OpenGenerativeUI theme CSS, SVG classes, form styles, and bridge JS. " +
+        "Wraps HTML with Open Generative UI theme CSS, SVG classes, form styles, and bridge JS. " +
         "Returns a complete iframe-ready HTML document.",
       inputSchema: {
         title: z.string().describe("Short title for the visualization"),
-        description: z.string().describe("One-sentence explanation of what this shows"),
-        html: z.string().describe("Self-contained HTML fragment with inline <style> and <script>"),
+        description: z
+          .string()
+          .describe("One-sentence explanation of what this shows"),
+        html: z
+          .string()
+          .describe(
+            "Self-contained HTML fragment with inline <style> and <script>",
+          ),
       },
     },
     async ({ html }) => ({
       content: [{ type: "text", text: assembleDocument(html) }],
-    })
+    }),
   );
 
   return server;

@@ -13,7 +13,7 @@ You can generate rich, inline SVG diagrams to visually explain concepts. Use thi
 
 ## SVG Setup
 
-Always use this template:
+Use this template as a starting point; add an accessible title and description:
 
 ```svg
 <svg width="100%" viewBox="0 0 680 H" xmlns="http://www.w3.org/2000/svg">
@@ -28,10 +28,10 @@ Always use this template:
 </svg>
 ```
 
-- **Width is always 680px** via viewBox. Set `width="100%"` so it scales responsively.
+- **680px is a useful default coordinate width** via viewBox. Set `width="100%"` so it scales responsively.
 - **H (height)** = bottom-most element's y + height + 40px padding. Don't guess — compute it.
 - **Safe content area**: x=40 to x=640, y=40 to y=(H-40).
-- **No wrapping divs**, no `<html>`, `<head>`, `<body>`, or DOCTYPE.
+- **Body fragments only**: no `<html>`, `<head>`, `<body>`, or DOCTYPE.
 - **Background is transparent** — the host provides the background.
 
 ---
@@ -190,7 +190,7 @@ For complex topics, use multiple smaller SVGs instead of one dense one:
 ## Example: Simple 3-Step Flow
 
 ```svg
-<svg width="100%" viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg">
+<svg width="100%" viewBox="0 0 680 288" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5"
             markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -243,3 +243,11 @@ For complex topics, use multiple smaller SVGs instead of one dense one:
 - **Annotations on the side**: Put explanatory labels in the right margin (x > 560) with leader lines pointing to the relevant element.
 - **Consistent heights**: All boxes of the same type should be the same height.
 - **Whitespace is your friend**: Don't fill every pixel. Breathing room makes diagrams readable.
+
+## Host and accessibility
+
+Use assemble_document for the standalone MCP HTML contract. If the web app exposes
+generateSandboxedUi, follow that tool's separate ordered streaming parameters.
+Diagrams are optional when text is clearer. Include an accessible title/description
+and keep labels readable on narrow screens. Reflow complex diagrams instead of
+shrinking all text. Label illustrative data; never invent current evidence.

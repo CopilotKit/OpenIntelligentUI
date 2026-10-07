@@ -57,3 +57,25 @@ def test_main_uses_build_model():
     names = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)}
     assert "build_model" in names
     assert "ChatOpenAI" not in main_src.read_text()
+
+
+@pytest.mark.parametrize('name', ['', '   ', 'gemini-example', 'typo-model'])
+def test_invalid_model_configuration_fails_before_client_creation(monkeypatch, name):
+    monkeypatch.setenv('LLM_MODEL', name)
+    with pytest.raises(ValueError, match='LLM_MODEL'):
+        build_model()
+
+
+@pytest.mark.parametrize(('model', 'key'), [
+    ('claude-opus-4-6', 'ANTHROPIC_API_KEY'),
+    ('gpt-5.4-2026-03-05', 'OPENAI_API_KEY'),
+])
+@pytest.mark.parametrize('value', [None, '', '   '])
+def test_missing_provider_key_has_actionable_error(monkeypatch, model, key, value):
+    monkeypatch.setenv('LLM_MODEL', model)
+    if value is None:
+        monkeypatch.delenv(key, raising=False)
+    else:
+        monkeypatch.setenv(key, value)
+    with pytest.raises(ValueError, match=key):
+        build_model()
