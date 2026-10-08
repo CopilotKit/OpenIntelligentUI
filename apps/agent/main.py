@@ -20,6 +20,7 @@ from src.skill_backend import SKILL_SOURCES, build_agent_backend
 from src.query import query_data
 from src.todos import AgentState, todo_tools
 from src.form import generate_form
+from src.trip_images import get_trip_stop_images
 from src.plan import plan_visualization
 from src.prompt import SYSTEM_PROMPT
 
@@ -27,7 +28,7 @@ load_dotenv()
 
 agent = create_deep_agent(
     model=build_model(),
-    tools=[query_data, plan_visualization, *todo_tools, generate_form],
+    tools=[query_data, get_trip_stop_images, plan_visualization, *todo_tools, generate_form],
     middleware=[
         CopilotKitMiddleware(),
         JevVisualizationMiddleware(),

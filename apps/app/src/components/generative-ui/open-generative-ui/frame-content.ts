@@ -1,3 +1,4 @@
+import { TRIP_ANIMATOR_SCRIPT } from "./trip-animator";
 import {
   THEME_CSS,
   SVG_CLASSES_CSS,
@@ -28,7 +29,7 @@ export const CSP_META_TAG = `<meta http-equiv="Content-Security-Policy" content=
       https://cdn.jsdelivr.net
       https://unpkg.com;
     style-src 'unsafe-inline';
-    img-src 'self' data: blob: https://basemap.nationalmap.gov;
+    img-src 'self' data: blob: https://basemap.nationalmap.gov https://upload.wikimedia.org https://thumb.wikimedia.org;
     font-src 'self' data:;
     connect-src 'self'
       https://cdnjs.cloudflare.com
@@ -53,6 +54,7 @@ export function buildFinalFrameContent(html: string, css?: string): string {
   const headContent =
     CSP_META_TAG +
     IMPORTMAP_SCRIPT_TAG +
+    TRIP_ANIMATOR_SCRIPT +
     DESIGN_SYSTEM_STYLE_TAG +
     (css ? `<style>${css}</style>` : "");
   const withHead = ensureHead(html);

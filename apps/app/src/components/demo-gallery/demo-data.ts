@@ -12,12 +12,12 @@ export interface DemoItem {
 export const DEMO_EXAMPLES: DemoItem[] = [
   {
     id: "map",
-    title: "Explore a live map",
+    title: "Animate a coastal trip",
     category: "Understand",
     emoji: "⌖",
     description: "Select a landmark and explore its surroundings.",
     prompt:
-      "Show a live map of San Francisco with pins for Golden Gate Bridge, Golden Gate Park, Ferry Building, and Coit Tower. Let me select a landmark, zoom and pan, and reset the view. Use the configured USGS map tiles, keep the map compact, and label landmark coordinates as approximate.",
+      "Plan an illustrative four-day coastal trip from San Francisco to Los Angeles, stopping at Half Moon Bay, Santa Cruz, Monterey, and Santa Barbara. Show a real map with numbered pins and photo cards. Slowly draw the itinerary over 28 seconds, highlighting each stop and card as it arrives. Include pause, replay and clickable stop cards. Use live USGS tiles and sourced photos; label the connecting line as an itinerary sketch, not verified driving directions.",
   },
   {
     id: "bicycle",

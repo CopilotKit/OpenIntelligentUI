@@ -1,3 +1,4 @@
+import { TRIP_ANIMATOR_SCRIPT } from "./open-generative-ui/trip-animator";
 import {
   THEME_CSS,
   SVG_CLASSES_CSS,
@@ -73,6 +74,7 @@ ${scriptParts.join("\n")}
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(title)}</title>
   ${IMPORTMAP_SCRIPT_TAG}
+  ${TRIP_ANIMATOR_SCRIPT}
   <style>
     ${THEME_CSS}
     ${SVG_CLASSES_CSS}

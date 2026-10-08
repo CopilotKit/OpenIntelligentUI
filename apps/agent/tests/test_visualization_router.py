@@ -28,6 +28,7 @@ def response(choice):
         ("table", "a2ui"),
         ("line_chart", "open_generative_ui"),
         ("map", "open_generative_ui"),
+        ("animated_route", "open_generative_ui"),
         ("interactive_diagram", "open_generative_ui"),
         ("text", "text"),
     ],
@@ -66,6 +67,7 @@ def test_continuation_reuses_decision_but_new_human_reroutes():
         ("table", "send_a2ui_json_to_client"),
         ("line_chart", "generateSandboxedUi"),
         ("map", "generateSandboxedUi"),
+        ("animated_route", "generateSandboxedUi"),
         ("text", None),
     ],
 )
