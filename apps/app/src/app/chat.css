@@ -153,3 +153,53 @@
   font-size: 0.8rem;
   opacity: 0.75;
 }
+
+/* Preserve the reader's position while streamed content grows. */
+.chat-content {
+  overflow-anchor: none;
+}
+.chat-content [data-testid="copilot-copy-button"],
+.chat-content [data-testid="copilot-user-copy-button"] {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+.chat-content [data-testid="copilot-assistant-message"]:hover [data-testid="copilot-copy-button"],
+.chat-content [data-testid="copilot-assistant-message"]:focus-within [data-testid="copilot-copy-button"],
+.chat-content [data-testid="copilot-user-message"]:hover [data-testid="copilot-user-copy-button"],
+.chat-content [data-testid="copilot-user-message"]:focus-within [data-testid="copilot-user-copy-button"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+.answer-markdown [data-answer-reveal="pending"] {
+  opacity: 0;
+  transform: translateY(6px);
+}
+.answer-markdown [data-answer-reveal="visible"] {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 320ms ease, transform 320ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .answer-markdown [data-answer-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+@media (hover: none) {
+  .chat-content [data-testid="copilot-copy-button"],
+  .chat-content [data-testid="copilot-user-copy-button"] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+.reader-scroll-view {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overflow-anchor: none;
+  padding: 0 4px;
+}

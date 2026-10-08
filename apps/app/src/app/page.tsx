@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { ReaderScrollView } from "@/components/chat/reader-scroll-view";
+import { AnswerMarkdown } from "@/components/chat/answer-markdown";
 import {
   CopilotChat,
   useAgent,
@@ -17,6 +19,28 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [retrying, setRetrying] = useState(false);
   const retryingRef = useRef(false);
+  const chatRoot = useRef<HTMLDivElement>(null);
+  const latestQuestion = agent.messages.filter((message) => message.role === "user").at(-1)?.id;
+
+  // Move only when a question is submitted. Streamed text and growing visuals
+  // must never take scroll ownership from the reader.
+  useEffect(() => {
+    if (!latestQuestion || !chatRoot.current) return;
+    const root = chatRoot.current;
+    const revealQuestion = () => {
+      const question = Array.from(root.querySelectorAll<HTMLElement>('[data-testid="copilot-user-message"]'))
+        .find((element) => element.dataset.messageId === latestQuestion);
+      if (!question) return false;
+      question.scrollIntoView?.({ block: "start", behavior: "instant" });
+      return true;
+    };
+    if (revealQuestion()) return;
+    const observer = new MutationObserver(() => {
+      if (revealQuestion()) observer.disconnect();
+    });
+    observer.observe(root, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [latestQuestion]);
 
   useEffect(() => {
     const subscription = agent.subscribe({
@@ -95,8 +119,11 @@ export default function HomePage() {
             </button>
           </div>
         )}
-        <div className="chat-content">
+        <div className="chat-content" ref={chatRoot}>
           <CopilotChat
+            autoScroll={false}
+            scrollView={ReaderScrollView}
+            messageView={{ assistantMessage: { markdownRenderer: AnswerMarkdown } }}
             onError={() =>
               setError(
                 "Something interrupted the answer. Try again or send another message.",
