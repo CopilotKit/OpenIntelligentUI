@@ -105,3 +105,32 @@ awaiting, catch errors into a visible retryable status, and restore it in finall
 Never trigger a message on load or an input-change event. For external links use
 Websandbox.connection.remote.openLink({ url }) with an HTTPS URL. These are the
 host's validated bridge methods; do not substitute globals from the MCP renderer.
+
+## Live geographic maps
+
+Use a real Leaflet map for places, geographic exploration, or explicit live-map
+requests. The configured provider is USGS The National Map (US topographic
+coverage); do not claim global detailed coverage. Use maxNativeZoom:16 and
+maxZoom:18. For unsupported locations explain the coverage limitation. The sandbox permits tile images from exactly
+`https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}`; other remote images are blocked.
+Do not replace a live map with a schematic SVG or invent live traffic, routing,
+place opening hours, or geocoding. Landmark coordinates may be approximate and
+must be labeled as such; the basemap tiles are live.
+
+Load Leaflet 1.9.4 from `https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js`
+using a script element and await its load event inside an async setup function.
+Fetch `https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css`, check response.ok,
+and insert its text into a style element. Remote stylesheet links are blocked.
+Use L.circleMarker or inline L.divIcon markers to avoid remote marker images.
+Give the map container a fixed responsive height (e.g. 340px), call
+map.invalidateSize() after setup, and keep controls, details and attribution
+visible within a compact layout. Use scrollWheelZoom:false so reading the chat
+does not unexpectedly zoom the map; provide the standard zoom controls and pan.
+
+Keep the browser's default referrer behavior and caching. Include visible
+`USGS The National Map` linked to https://www.usgs.gov/programs/national-geospatial-program/national-map
+in L.tileLayer's attribution. Request only the currently visible tiles: no
+prefetch, bulk download, or offline caching controls. The public tile service is
+best-effort. Show an explicit readable error if library loading or tile loading
+fails; never leave an unlabeled blank map. Use a status element with role=status
+and distinguish loading, loaded and failed states based on actual tile events.

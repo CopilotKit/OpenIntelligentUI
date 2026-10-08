@@ -11,6 +11,15 @@ export interface DemoItem {
 
 export const DEMO_EXAMPLES: DemoItem[] = [
   {
+    id: "map",
+    title: "Explore a live map",
+    category: "Understand",
+    emoji: "⌖",
+    description: "Select a landmark and explore its surroundings.",
+    prompt:
+      "Show a live map of San Francisco with pins for Golden Gate Bridge, Golden Gate Park, Ferry Building, and Coit Tower. Let me select a landmark, zoom and pan, and reset the view. Use the configured USGS map tiles, keep the map compact, and label landmark coordinates as approximate.",
+  },
+  {
     id: "bicycle",
     title: "A bicycle, explained",
     category: "Understand",

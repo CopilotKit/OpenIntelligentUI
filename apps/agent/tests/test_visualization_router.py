@@ -27,6 +27,7 @@ def response(choice):
     [
         ("table", "a2ui"),
         ("line_chart", "open_generative_ui"),
+        ("map", "open_generative_ui"),
         ("interactive_diagram", "open_generative_ui"),
         ("text", "text"),
     ],
@@ -64,6 +65,7 @@ def test_continuation_reuses_decision_but_new_human_reroutes():
     [
         ("table", "send_a2ui_json_to_client"),
         ("line_chart", "generateSandboxedUi"),
+        ("map", "generateSandboxedUi"),
         ("text", None),
     ],
 )
@@ -94,6 +96,10 @@ def test_route_filters_renderers_preserving_data_tools(choice, allowed):
         allowed == "send_a2ui_json_to_client"
     )
     assert "barChart" not in names and "pieChart" not in names
+    if choice == "map":
+        assert "basemap.nationalmap.gov" in result.system_message.content
+        assert "USGS attribution" in result.system_message.content
+        assert "coverage limits" in result.system_message.content
 
 
 def test_missing_key_is_actionable(monkeypatch):
