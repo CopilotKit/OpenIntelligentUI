@@ -7,7 +7,7 @@ from urllib.parse import quote, unquote, urlsplit
 import httpx
 from langchain.tools import tool
 
-HEADERS = {"User-Agent": "OpenGenerativeUI/1.0 (https://github.com/CopilotKit/OpenGenerativeUI)"}
+HEADERS = {"User-Agent": "OpenGenerativeUI/1.0 (https://github.com/CopilotKit/OpenIntelligentUI)"}
 IMAGE_HOSTS = {"upload.wikimedia.org", "thumb.wikimedia.org"}
 
 

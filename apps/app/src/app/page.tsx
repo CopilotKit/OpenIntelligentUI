@@ -84,7 +84,7 @@ export default function HomePage() {
             New chat
           </button>
           <a
-            href="https://github.com/CopilotKit/OpenGenerativeUI"
+            href="https://github.com/CopilotKit/OpenIntelligentUI"
             target="_blank"
             rel="noopener noreferrer"
           >

@@ -1,6 +1,6 @@
 # Product and agent behavior
 
-**Open Generative UI by CopilotKit: answers you can interact with.** The experience helps people understand something, compare options, or make a useful tool for the moment.
+**Open Intelligent UI by CopilotKit: answers you can interact with.** The experience helps people understand something, compare options, or make a useful tool for the moment.
 
 ## Choosing the response
 
@@ -16,7 +16,7 @@ Jev selects the presentation for each turn: A2UI for basic tables, Open Generati
 
 ## Chat and generated answers
 
-The interface is a chat with three starter suggestions for understanding, comparing, and making a tool. Users can choose a suggestion or type any request. Each submission starts agent generation, subject to the configured provider and available tools. The header provides New chat and links to GitHub and CopilotKit.
+The interface is a chat with starter suggestions for maps, explanations, comparisons, and calculators. Users can choose a suggestion or type any request. Each submission starts agent generation, subject to the configured provider and available tools. The header provides New chat and links to GitHub and CopilotKit.
 
 Generated UI must have functional controls, readable labels, keyboard access, responsive layout, reduced-motion support, and clear loading/error states. Numeric tools must reject blank, non-finite, out-of-range, and zero-divisor inputs; show units and assumptions; and avoid NaN, Infinity, and misleading stale outputs.
 
@@ -43,6 +43,6 @@ The sandbox's control state is not automatically agent memory. A deliberate “A
 
 The ordered streaming contract and sandbox rules are documented in [Architecture](architecture.md). The local model factory uses existing LangChain provider clients; product positioning does not establish native GPT-6 API support or change pinned models.
 
-Existing repository URLs, package names, runtime options, activity/event names, and deployment service names retain their established identifiers. Product copy changes should not break those integration surfaces.
+The source repository is now `CopilotKit/OpenIntelligentUI`. Package names, runtime options, activity/event names, and deployment service names retain their established identifiers. Product copy changes should not break those integration surfaces.
 
 Use the [launch workflow](deployment.md#verification-and-launch) to verify the experience. A passing build, a working provider-backed conversation, and a deployed service are different states and should be reported separately.

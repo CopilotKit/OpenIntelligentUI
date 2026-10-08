@@ -284,13 +284,13 @@ MIT
 
 ## Support
 
-For issues, feature requests, or questions, visit the [OpenGenerativeUI repository](https://github.com/CopilotKit/OpenGenerativeUI).
+For issues, feature requests, or questions, visit the [OpenGenerativeUI repository](https://github.com/CopilotKit/OpenIntelligentUI).
 
 ## Contributing
 
 This is a standalone deployment package. To contribute improvements:
 
-1. Fork the main [OpenGenerativeUI repository](https://github.com/CopilotKit/OpenGenerativeUI)
+1. Fork the main [OpenGenerativeUI repository](https://github.com/CopilotKit/OpenIntelligentUI)
 2. Make changes to `apps/mcp/` (or the source files it's forked from)
 3. Submit a pull request
 

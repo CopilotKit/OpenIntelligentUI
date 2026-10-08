@@ -1,12 +1,12 @@
 # Getting started
 
-Run Open Generative UI by CopilotKit locally with Node.js 22+, pnpm 9+, Python 3.12+, and [uv](https://docs.astral.sh/uv/).
+Run Open Intelligent UI by CopilotKit locally with Node.js 22+, pnpm 9+, Python 3.12+, and [uv](https://docs.astral.sh/uv/).
 
 ## Install
 
 ```bash
-git clone https://github.com/CopilotKit/OpenGenerativeUI.git
-cd OpenGenerativeUI
+git clone https://github.com/CopilotKit/OpenIntelligentUI.git
+cd OpenIntelligentUI
 make setup
 ```
 
@@ -23,7 +23,7 @@ TYPESAFE_API_KEY=your-typesafe-key
 JEV_MODEL=jev-latest
 ```
 
-The model factory accepts `claude-*` names through Anthropic and `chat-latest` or `gpt-*` names through OpenAI. To use OpenAI, set a model available to your account in `LLM_MODEL` and set `OPENAI_API_KEY` instead. The selected answer provider’s key and the Jev key are required. Unset `LLM_MODEL` uses the local default; an empty value or unsupported prefix fails with a configuration error.
+The model factory accepts `claude-*` names through Anthropic and `chat-latest` or `gpt-*` names through OpenAI. To override the default, set a model available to your account in `LLM_MODEL` and supply its provider key. The selected answer provider’s key and the Jev key are required. Unset `LLM_MODEL` uses the local default; an empty value or unsupported prefix fails with a configuration error.
 
 Check model availability and access with a real request. This repository does not guarantee that every model name works or implement a separate native GPT-6 API. Keep provider keys on the agent server.
 
