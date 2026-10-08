@@ -23,7 +23,7 @@ VISUALIZATIONS = {
     "flowchart": "Explain steps, branches, processes, dependencies, or decisions.",
     "static_diagram": "Explain spatial structure or relationships; interaction adds little value.",
     "interactive_diagram": "Explain a mechanism or model by changing meaningful variables or controls.",
-    "animated_route": "Trip itineraries or journeys: slowly animate an ordered route on a real map with numbered stops and linked destination cards.",
+    "animated_route": "Trip itineraries or journeys: sequentially pin numbered stops onto a real map with numbered stops and linked destination cards.",
     "map": "Explore real geographic locations with a live tiled map, selectable markers, pan and zoom.",
     "calculator": "Compute outputs from user-adjustable inputs with formulas and units.",
 }
@@ -193,7 +193,7 @@ def routed_request(request):
     if decision["visualization"] in {"map", "animated_route"}:
         note += "\nFor US geographic maps, use Leaflet 1.9.4 with live tiles from https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}. Read the advanced-visualization map guidance. Never substitute an SVG schematic for a requested live map. Include visible USGS attribution and tile-load error feedback. The configured provider covers the US; explain coverage limits for other regions."
     if decision["visualization"] == "animated_route":
-        note += "\nCreate an animated itinerary matching the advanced-visualization animated trip guidance: use window.createTripAnimator, a 28-second route draw with holds, numbered pins and synchronized horizontal destination cards. Fetch sourced photos using get_trip_stop_images and retain credits. Include Pause/Resume and Replay; no automatic page scrolling. Label route connections illustrative unless backed by directions data; never invent mileage, closures or driving times."
+        note += "\nCreate an animated itinerary matching the advanced-visualization animated trip guidance: use window.createTripAnimator, a 6-second sequence of dots dropping and settling onto the map using pinElements, connections revealed behind the pins and synchronized horizontal destination cards; keep the map still and do not animate a traveling dot. Fetch sourced photos using get_trip_stop_images and retain credits. Include Pause/Resume and Replay; no automatic page scrolling. Label route connections illustrative unless backed by directions data; never invent mileage, closures or driving times."
     content = request.system_message.content if request.system_message else ""
     if isinstance(content, list):
         content = [*content, {"type": "text", "text": note}]

@@ -10,7 +10,7 @@ beforeEach(() => {
 });
 afterEach(() => { reduced = false; vi.unstubAllGlobals(); });
 
-it("draws slowly, pauses without a time jump, and finishes exactly at the last stop", () => {
+it("pins sequentially, pauses without a time jump, and finishes exactly at the last stop", () => {
   const frame = vi.fn();
   const animator = createTripAnimator({ stopCount: 4, durationMs: 24000, onFrame: frame });
   animator.play(); tick(0); tick(6000);
@@ -27,7 +27,7 @@ it("selects a stop, pauses the tour, and can replay from the beginning", () => {
   const animator = createTripAnimator({ stopCount: 6, onFrame: frame, onState: state });
   animator.play(); animator.seek(3);
   expect(state).toHaveBeenLastCalledWith("paused");
-  expect(frame.mock.lastCall?.[0]).toMatchObject({ activeStop: 3, progress: .6 });
+  expect(frame.mock.lastCall?.[0]).toMatchObject({ activeStop: 3, pinProgress: 1 });
   animator.replay();
   expect(frame.mock.lastCall?.[0].progress).toBe(0);
   expect(state).toHaveBeenLastCalledWith("playing");
@@ -54,7 +54,31 @@ it("runs independently after serialization into the sandbox", () => {
   const standalone = new Function("return (" + createTripAnimator.toString() + ")")();
   const frame = vi.fn();
   const animator = standalone({ stopCount: 3, onFrame: frame });
-  animator.play(); tick(0); tick(28000);
+  animator.play(); tick(0); tick(6000);
   expect(frame.mock.lastCall?.[0].activeStop).toBe(2);
+  animator.dispose();
+});
+
+
+it("drops inner pins in sequence, holds landed pins, and resets them on replay", () => {
+  const pins = Array.from({ length: 6 }, () => document.createElement("span"));
+  const frame = vi.fn();
+  const animator = createTripAnimator({ stopCount: 6, pinElements: pins, onFrame: frame });
+  expect(pins.every(pin => pin.style.opacity === "0")).toBe(true);
+  expect(pins.map(pin => pin.textContent)).toEqual(["1", "2", "3", "4", "5", "6"]);
+  animator.play(); tick(0); tick(550);
+  expect(pins[0].style.transform).toBe("translateY(0px) scale(1)");
+  expect(pins[1].style.opacity).toBe("0");
+  tick(1250);
+  expect(frame.mock.lastCall?.[0]).toMatchObject({ pinIndex: 1, activeStop: 1 });
+  expect(pins[1].style.opacity).toBe("1");
+  expect(pins[2].style.opacity).toBe("0");
+  tick(6000);
+  expect(pins.every(pin => pin.style.opacity === "1")).toBe(true);
+  animator.replay();
+  expect(pins.every(pin => pin.style.opacity === "0")).toBe(true);
+  animator.seek(2);
+  expect(pins[2].style.opacity).toBe("1");
+  expect(pins[3].style.opacity).toBe("0");
   animator.dispose();
 });

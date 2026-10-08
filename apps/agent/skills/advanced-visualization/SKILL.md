@@ -136,13 +136,14 @@ best-effort. Show an explicit readable error if library loading or tile loading
 fails; never leave an unlabeled blank map. Use a status element with role=status
 and distinguish loading, loaded and failed states based on actual tile events.
 
-## Slowly animated trip itineraries
+## Trip itineraries with sequential pin drops
 
 For journeys and multi-stop trips, build a compact editorial itinerary card:
 short title and subtitle, day-count and stop-count chips, a real 300px-high
 Leaflet map, then a horizontally scrollable row of destination cards. Use numbered
 L.divIcon pins (white/black, with one restrained accent for the active stop), a
-thin dashed full itinerary line and a solid progressively drawn route. Each card
+thin connecting line revealed behind the pins. The motion is pinning dots onto the
+map one by one, not a traveling dot or a slowly traced driving route. Each card
 has a 110px photo crop, stop number, place name, day and one short description.
 Fetch photos with get_trip_stop_images. Use only returned image_url values; show
 artist and license linked to credit_url. For unavailable photos use a text card,
@@ -157,10 +158,19 @@ itineraries clearly proposed rather than booked or verified.
 
 The host installs `window.createTripAnimator` in the final sandbox. Use this
 shared controller rather than inventing independent timers. Options are
-`{stopCount, durationMs:28000, onFrame, onState}`. It calls onFrame immediately,
-then while playing with `{progress, fromIndex, toIndex, fraction, activeStop}`.
-Indices are zero-based. `fraction` eases from 0 to 1 along a leg and holds at its
-end; `activeStop` advances on arrival. Return value exposes `play()`, `pause()`,
+`{stopCount, durationMs:6000, pinElements, onFrame, onState}`. It calls onFrame immediately,
+then while playing with `{progress, pinIndex, pinProgress, activeStop}` (legacy
+`fromIndex`, `toIndex`, `fraction` are also available, but do not use them for pinning).
+Indices are zero-based. Each pin drops from 18px above, with a restrained spring
+settle, during the first 55% of its slot; the remainder is a brief pause.
+`pinIndex` is the current pin, `pinProgress` its landing fraction, `activeStop`
+is the current pin index. Pass `pinElements` as the INNER numbered-dot elements
+inside each L.divIcon. The helper animates their opacity and transform every frame,
+including pause/seek/replay, so no separate CSS animation timers are needed.
+Never pass Leaflet's outer marker element: its transform positions the marker.
+Create all markers first, with inner dots initially opacity:0 and visible text
+for their stop number, e.g. `<span class="pin-dot">1</span>`; no fade-in applied
+to the whole map. Respect reduced motion by showing all pins immediately. Return value exposes `play()`, `pause()`,
 `replay()`, `seek(stopIndex)` (pauses), and `dispose()`. onState receives
 `playing`, `paused` or `complete`. Keep construction outside callbacks referencing
 the returned controller because the initial callback runs synchronously.
@@ -168,17 +178,15 @@ the returned controller because the initial callback runs synchronously.
 Example wiring inside the async map setup, after map, polyline and cards exist:
 
 ```js
-function connectTour(points, routeLine, traveler, activateStop, reportState) {
+function connectTour(points, routeLine, pinElements, activateStop, reportState) {
   return window.createTripAnimator({
     stopCount: points.length,
-    durationMs: 28000,
+    durationMs: 6000,
+    pinElements: pinElements,
     onFrame: function(frame) {
-      var a = points[frame.fromIndex];
-      var b = points[frame.toIndex];
-      var position = [a[0] + (b[0] - a[0]) * frame.fraction,
-                      a[1] + (b[1] - a[1]) * frame.fraction];
-      routeLine.setLatLngs(points.slice(0, frame.fromIndex + 1).concat([position]));
-      traveler.setLatLng(position);
+      // A connection appears as its destination pin settles; no moving traveler.
+      var count = frame.pinIndex + (frame.pinProgress >= .7 ? 1 : 0);
+      routeLine.setLatLngs(points.slice(0, count));
       activateStop(frame.activeStop);
     },
     onState: reportState
@@ -187,7 +195,7 @@ function connectTour(points, routeLine, traveler, activateStop, reportState) {
 ```
 
 Fit all stops once. Keep the camera steady while playing so the user can follow
-the slow drawing; do not fly between stops or auto-scroll the chat. In activateStop,
+the sequential pin drops; do not fly between stops or auto-scroll the chat. In activateStop,
 only update classes/aria-current if the index changed. On arrival, keep the active
 card visible by setting the horizontal card strip's scrollLeft to the card's
 offsetLeft minus the strip's offsetLeft, clamped to the strip's scrollable range.
@@ -201,5 +209,4 @@ Start once after at least one successful basemap tile load and after wiring all
 controls, not on every tile event. Respect prefers-reduced-motion: the controller
 shows the completed route without autoplay. It pauses when the page becomes
 hidden and cleans up on pagehide. Offscreen content must never scroll itself into
-view; a user scrolling back to a paused tour can press Resume. Keep replay speed
-slow, and do not loop indefinitely. Handle errors in the ordinary visible status.
+view; a user scrolling back to a paused tour can press Resume. Keep the default sequence around six seconds, and do not loop indefinitely. Handle errors in the ordinary visible status.

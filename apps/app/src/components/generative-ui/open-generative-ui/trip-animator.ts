@@ -4,10 +4,14 @@ export interface TripFrame {
   toIndex: number;
   fraction: number;
   activeStop: number;
+  pinIndex: number;
+  pinProgress: number;
 }
 export interface TripAnimationOptions {
   stopCount: number;
   durationMs?: number;
+  /** Inner marker nodes, never Leaflet positioning wrappers. */
+  pinElements?: HTMLElement[];
   onFrame: (frame: TripFrame) => void;
   onState?: (state: "playing" | "paused" | "complete") => void;
 }
@@ -15,11 +19,14 @@ export interface TripAnimationOptions {
 /** Self-contained: serialized into the sandbox, without host objects or network access. */
 export function createTripAnimator(options: TripAnimationOptions) {
   const { stopCount, onFrame, onState } = options;
-  const duration = options.durationMs ?? 28000;
+  const duration = options.durationMs ?? 6000;
   if (!Number.isInteger(stopCount) || stopCount < 2 || stopCount > 30)
     throw new Error("A trip needs 2–30 stops.");
   if (!Number.isFinite(duration) || duration < 1000 || duration > 120000)
     throw new Error("Trip duration must be between 1 and 120 seconds.");
+  options.pinElements?.forEach((pin, index) => {
+    if (!pin.textContent?.trim()) pin.textContent = String(index + 1);
+  });
   let elapsed = 0;
   let lastTime: number | null = null;
   let frameId: number | null = null;
@@ -33,8 +40,19 @@ export function createTripAnimator(options: TripAnimationOptions) {
     // Travel for 80% of each leg, then hold at the destination for 20%.
     const travel = Math.min(1, (step - fromIndex) / .8);
     const fraction = travel * travel * (3 - 2 * travel);
+    const pinStep = progress * stopCount;
+    const pinIndex = Math.min(stopCount - 1, Math.floor(pinStep));
+    const pinProgress = progress === 1 ? 1 : Math.min(1, (pinStep - pinIndex) / .55);
+    options.pinElements?.forEach((pin, index) => {
+      const landing = index < pinIndex ? 1 : index === pinIndex ? pinProgress : 0;
+      // A short drop with a restrained spring settle; preserve Leaflet's outer transform.
+      const t = landing - 1;
+      const ease = 1 + 2.2 * t * t * t + 1.2 * t * t;
+      pin.style.opacity = landing > 0 ? "1" : "0";
+      pin.style.transform = `translateY(${-18 * (1 - ease)}px) scale(${.72 + .28 * ease})`;
+    });
     onFrame({ progress, fromIndex, toIndex: fromIndex + 1, fraction,
-      activeStop: fraction === 1 ? fromIndex + 1 : fromIndex });
+      activeStop: pinIndex, pinIndex, pinProgress });
   };
   const pause = () => {
     if (disposed) return;
@@ -71,13 +89,15 @@ export function createTripAnimator(options: TripAnimationOptions) {
     if (!Number.isInteger(stop) || stop < 0 || stop >= stopCount)
       throw new Error("Stop index is outside this trip.");
     pause();
-    elapsed = duration * stop / (stopCount - 1);
+    elapsed = stop === stopCount - 1 ? duration : duration * (stop + .6) / stopCount;
     emit();
     onState?.(elapsed >= duration ? "complete" : "paused");
   };
   const replay = () => {
     if (disposed) return;
-    seek(0);
+    pause();
+    elapsed = 0;
+    emit();
     play();
   };
   const onVisibility = () => { if (document.hidden) pause(); };

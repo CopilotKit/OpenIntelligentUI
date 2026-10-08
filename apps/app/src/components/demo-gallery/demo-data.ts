@@ -17,7 +17,7 @@ export const DEMO_EXAMPLES: DemoItem[] = [
     emoji: "⌖",
     description: "Select a landmark and explore its surroundings.",
     prompt:
-      "Plan an illustrative four-day coastal trip from San Francisco to Los Angeles, stopping at Half Moon Bay, Santa Cruz, Monterey, and Santa Barbara. Show a real map with numbered pins and photo cards. Slowly draw the itinerary over 28 seconds, highlighting each stop and card as it arrives. Include pause, replay and clickable stop cards. Use live USGS tiles and sourced photos; label the connecting line as an itinerary sketch, not verified driving directions.",
+      "Plan an illustrative four-day coastal trip from San Francisco to Los Angeles, stopping at Half Moon Bay, Santa Cruz, Monterey, and Santa Barbara. Show a real map with numbered pins and photo cards. Pin the numbered dots onto the map one by one over 6 seconds: each dot drops gently into place with a small spring settle, then stays. Reveal connecting segments behind the pins and highlight the corresponding card. Keep the map camera still; do not animate a traveler along the route. Include pause, replay and clickable stop cards. Use live USGS tiles and sourced photos; label the connecting line as an itinerary sketch, not verified driving directions.",
   },
   {
     id: "bicycle",
