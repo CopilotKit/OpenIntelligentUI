@@ -15,6 +15,7 @@ from deepagents import create_deep_agent
 from src.anthropic_compat import ConsecutiveSystemMessagesMiddleware
 from src.bounded_memory_saver import BoundedMemorySaver
 from src.model import build_model
+from src.visualization_router import JevVisualizationMiddleware
 from src.skill_backend import SKILL_SOURCES, build_agent_backend
 from src.query import query_data
 from src.todos import AgentState, todo_tools
@@ -27,7 +28,11 @@ load_dotenv()
 agent = create_deep_agent(
     model=build_model(),
     tools=[query_data, plan_visualization, *todo_tools, generate_form],
-    middleware=[CopilotKitMiddleware(), ConsecutiveSystemMessagesMiddleware()],
+    middleware=[
+        CopilotKitMiddleware(),
+        JevVisualizationMiddleware(),
+        ConsecutiveSystemMessagesMiddleware(),
+    ],
     context_schema=AgentState,
     skills=SKILL_SOURCES,
     backend=build_agent_backend,

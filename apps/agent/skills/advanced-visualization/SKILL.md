@@ -6,8 +6,9 @@ allowed-tools: []
 
 # Interactive answer implementation
 
-Use this guidance after choosing a custom UI because it helps the task. Prefer
-available native components for straightforward supported data presentations.
+Use this guidance after choosing a custom UI because it helps the task. Follow
+Jev’s renderer and visualization decision. A2UI handles basic tables; this sandbox
+handles charts, diagrams and custom interaction.
 Do not turn every answer into a dashboard. Use multiple sections when needed,
 including headings, assumptions, units, sources, and instructions inside the UI.
 
@@ -25,7 +26,7 @@ top-level await is invalid. Import inside an async function and handle failure:
 
 ```js
 async function setupScene() {
-  const THREE = await import("three");
+  const THREE = await import('three');
   const { OrbitControls } = await import(
     "three/examples/jsm/controls/OrbitControls.js"
   );

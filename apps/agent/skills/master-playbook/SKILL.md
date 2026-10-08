@@ -6,9 +6,8 @@ allowed-tools: []
 
 # Open Generative UI response playbook
 
-Answer the task directly. Use text for a short answer, writing, or code; native
-components when an available tool fits; generateSandboxedUi for useful custom
-interaction or visual explanation. Native rendering is not evidence of live data.
+Answer the task directly. Use text for a short answer, writing, or code; A2UI Table for basic tabular answers; generateSandboxedUi for charts, diagrams
+and custom interaction. Follow Jev’s renderer and visualization decision. Native rendering is not evidence of live data.
 
 - Understand: show relationships or mechanisms, with a meaningful variable or stepper.
 - Compare: make criteria and assumptions visible; use a table for simple cases,

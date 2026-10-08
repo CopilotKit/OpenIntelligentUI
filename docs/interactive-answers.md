@@ -7,12 +7,12 @@
 | User task                                    | Useful response                                               |
 | -------------------------------------------- | ------------------------------------------------------------- |
 | A quick fact, writing, code, or conversation | Direct text                                                   |
-| A supported structured presentation          | Available native component                                    |
+| A basic table or exact-value comparison      | A2UI Table selected by Jev                                     |
 | Understand a mechanism or relationship       | Diagram or interactive explainer                              |
 | Compare options                              | Table, criteria, and tradeoffs; adjustable weights if helpful |
 | Make a tool                                  | Functional inputs, computation, outputs, and reset            |
 
-The agent can combine text and multiple distinct sections. It does not need to announce a plan or narrate a completed UI back to the user. `plan_visualization` remains available for work where an explicit plan helps. A successful “UI generated” result is not a reason to rebuild the same answer.
+Jev selects the presentation for each turn: A2UI for basic tables, Open Generative UI for charts, diagrams and calculators, or text. See [Visualization routing](visualization-routing.md). The agent can combine text and multiple distinct sections. It does not need to announce a plan or narrate a completed UI back to the user. `plan_visualization` remains available for work where an explicit plan helps. A successful “UI generated” result is not a reason to rebuild the same answer.
 
 ## Chat and generated answers
 

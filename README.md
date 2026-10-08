@@ -22,7 +22,7 @@ make dev
 
 Open the [app](http://localhost:3000). The [agent health endpoint](http://localhost:8123/health) confirms the agent service is running. See [Getting started](docs/getting-started.md) for configuration and verification.
 
-The local model default remains `claude-fable-5`, requiring `ANTHROPIC_API_KEY`. A `gpt-*` value for `LLM_MODEL` uses `OPENAI_API_KEY`. Blank/unsupported model prefixes and missing provider keys fail at startup. Provider access and model availability must be verified in your environment; configuring a name does not establish support. The Render blueprint has its own explicit model setting, documented in [Deployment](docs/deployment.md).
+The default model is `chat-latest`, OpenAI’s documented alias for the latest ChatGPT Instant model, requiring `OPENAI_API_KEY`. Jev (`jev-latest`, requiring `TYPESAFE_API_KEY`) selects the renderer and visualization for each user turn. Basic tables use A2UI; charts, diagrams and calculators use Open Generative UI. Provider failures are surfaced instead of silently substituting another router or model. See [Visualization routing](docs/visualization-routing.md).
 
 ## How it works
 

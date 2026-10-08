@@ -77,6 +77,9 @@ def test_main_graph_discovers_skills_on_a_real_agent_turn(monkeypatch):
     from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
     from langchain_core.messages import AIMessage, HumanMessage
     import src.model
+    import src.visualization_router
+
+    monkeypatch.setattr(src.visualization_router, "route", lambda context: {"renderer": "text", "visualization": "text", "confidence": 1, "source": "jev"})
 
     class ToolCapableFakeModel(FakeMessagesListChatModel):
         def bind_tools(self, tools, **kwargs):

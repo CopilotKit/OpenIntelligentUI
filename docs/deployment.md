@@ -11,7 +11,7 @@ The repository's `render.yaml` defines two services:
 | `open-generative-ui-agent` | Python 3.12.6, `apps/agent` | `pip install uv && uv sync`                                                                            | `uv run uvicorn main:app --host 0.0.0.0 --port $PORT`, `/health` |
 | `open-generative-ui-app`   | Node 22, repository root    | `corepack enable && pnpm install --no-frozen-lockfile && pnpm exec turbo run build --filter=@repo/app` | `pnpm --filter @repo/app start`, `/api/health`                   |
 
-The blueprint currently explicitly sets `LLM_MODEL=gpt-5.4-2026-03-05`, requiring `OPENAI_API_KEY`. This is separate from the Python factory's local default `claude-fable-5`, which requires `ANTHROPIC_API_KEY`. Verify access to the selected model before launch; a configured model name does not prove availability.
+The blueprint and Python factory default to `LLM_MODEL=chat-latest`, requiring `OPENAI_API_KEY`. Jev visualization routing additionally requires `TYPESAFE_API_KEY`; `JEV_MODEL` defaults to `jev-latest`. Verify access to the selected model before launch; a configured model name does not prove availability.
 
 | Variable                                  | Service       | Purpose                                                                             |
 | ----------------------------------------- | ------------- | ----------------------------------------------------------------------------------- |

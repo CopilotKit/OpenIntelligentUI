@@ -14,14 +14,16 @@ make setup
 
 ## Configure the agent
 
-Edit `apps/agent/.env`. For the unchanged local default:
+Edit `apps/agent/.env`. For the default configuration:
 
 ```dotenv
-ANTHROPIC_API_KEY=your-provider-key
-LLM_MODEL=claude-fable-5
+OPENAI_API_KEY=your-provider-key
+LLM_MODEL=chat-latest
+TYPESAFE_API_KEY=your-typesafe-key
+JEV_MODEL=jev-latest
 ```
 
-The model factory accepts `claude-*` names through Anthropic and `gpt-*` names through OpenAI. To use OpenAI, set a model available to your account in `LLM_MODEL` and set `OPENAI_API_KEY` instead. Only the selected provider's key is required. Unset `LLM_MODEL` uses the local default; an empty value or unsupported prefix fails with a configuration error.
+The model factory accepts `claude-*` names through Anthropic and `chat-latest` or `gpt-*` names through OpenAI. To use OpenAI, set a model available to your account in `LLM_MODEL` and set `OPENAI_API_KEY` instead. The selected answer provider’s key and the Jev key are required. Unset `LLM_MODEL` uses the local default; an empty value or unsupported prefix fails with a configuration error.
 
 Check model availability and access with a real request. This repository does not guarantee that every model name works or implement a separate native GPT-6 API. Keep provider keys on the agent server.
 

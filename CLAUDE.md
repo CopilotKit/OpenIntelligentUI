@@ -29,7 +29,7 @@ Use the existing validated `Websandbox.connection.remote.sendPrompt({ text })` a
 
 ## Configuration and checks
 
-The local default model is `claude-fable-5`. `claude-*` requires `ANTHROPIC_API_KEY`; `gpt-*` requires `OPENAI_API_KEY`. Do not invent native model APIs or silently change pinned model IDs. See `render.yaml` for its separate explicit deployment model setting.
+The local default model is `chat-latest` (ChatGPT Instant). `claude-*` requires `ANTHROPIC_API_KEY`; `chat-latest` and `gpt-*` require `OPENAI_API_KEY`. Jev routing requires `TYPESAFE_API_KEY`. Do not invent native model APIs or silently change pinned model IDs. See `render.yaml` for its separate explicit deployment model setting.
 
 ```bash
 pnpm install

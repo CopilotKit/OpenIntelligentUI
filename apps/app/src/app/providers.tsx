@@ -6,7 +6,10 @@ import { OPEN_GEN_UI_DESIGN_SKILL } from "@repo/design-system";
 import { OPEN_GEN_UI_ACTIVITY_RENDERER } from "@/components/generative-ui/open-generative-ui";
 import { SANDBOX_FUNCTIONS } from "@/lib/sandbox/sandbox-functions";
 import { OpenGenUIPromptBridge } from "@/lib/sandbox/prompt-bridge";
+import { tableCatalog } from "@/components/generative-ui/table-catalog";
 import { ThemeProvider } from "@/hooks/use-theme";
+
+const a2ui = { catalog: tableCatalog };
 
 const renderActivityMessages = [OPEN_GEN_UI_ACTIVITY_RENDERER];
 const openGenerativeUI = {
@@ -23,6 +26,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         enableInspector={false}
         renderActivityMessages={renderActivityMessages}
         openGenerativeUI={openGenerativeUI}
+        a2ui={a2ui}
       >
         <CopilotChatConfigurationProvider>
           <OpenGenUIPromptBridge />
