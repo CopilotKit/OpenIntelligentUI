@@ -104,6 +104,19 @@ export function TemplateCard({
 }: TemplateCardProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [previewReady, setPreviewReady] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const cancelDeleteRef = useRef<HTMLButtonElement>(null);
+  const deleteButtonRef = useRef<HTMLButtonElement>(null);
+  const wasConfirmingDelete = useRef(false);
+
+  useEffect(() => {
+    if (confirmingDelete) {
+      cancelDeleteRef.current?.focus();
+    } else if (wasConfirmingDelete.current) {
+      deleteButtonRef.current?.focus();
+    }
+    wasConfirmingDelete.current = confirmingDelete;
+  }, [confirmingDelete]);
 
   const previewHtml = html ? `<!DOCTYPE html>
 <html><head><meta charset="utf-8">
@@ -209,27 +222,62 @@ body {
       </div>
 
       {/* Actions */}
-      <div className="flex gap-2 p-3 pt-0">
-        <button
-          onClick={() => onApply(id)}
-          className="flex-1 text-xs font-medium py-1.5 rounded-lg transition-all duration-150 hover:scale-[1.02] text-white"
-          style={{
-            background: "linear-gradient(135deg, var(--color-lilac-dark, #6366f1), var(--color-mint-dark, #10b981))",
-          }}
-        >
-          Apply
-        </button>
-        {onDelete && (
-          <button
-            onClick={() => onDelete(id)}
-            className="text-xs px-3 py-1.5 rounded-lg transition-colors duration-150"
-            style={{
-              border: "1px solid var(--color-border-tertiary, rgba(0,0,0,0.1))",
-              color: "var(--color-text-danger, #A32D2D)",
+      <div className="p-3 pt-0">
+        {confirmingDelete && onDelete ? (
+          <div
+            role="group"
+            aria-label={`Delete ${name}?`}
+            className="flex flex-col gap-2"
+            onKeyDown={(event) => {
+              if (event.key === "Escape") setConfirmingDelete(false);
             }}
           >
-            Delete
-          </button>
+            <p className="text-xs" style={{ color: "var(--text-secondary, #666)" }}>
+              Delete this template? This cannot be undone.
+            </p>
+            <div className="flex gap-2">
+              <button
+                ref={cancelDeleteRef}
+                onClick={() => setConfirmingDelete(false)}
+                className="flex-1 text-xs font-medium py-1.5 rounded-lg"
+                style={{ border: "1px solid var(--color-border-tertiary, rgba(0,0,0,0.1))" }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => onDelete(id)}
+                className="flex-1 text-xs font-medium py-1.5 rounded-lg text-white"
+                style={{ background: "var(--color-text-danger, #A32D2D)" }}
+              >
+                Delete template
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex gap-2">
+            <button
+              onClick={() => onApply(id)}
+              className="flex-1 text-xs font-medium py-1.5 rounded-lg transition-all duration-150 hover:scale-[1.02] text-white"
+              style={{
+                background: "linear-gradient(135deg, var(--color-lilac-dark, #6366f1), var(--color-mint-dark, #10b981))",
+              }}
+            >
+              Apply
+            </button>
+            {onDelete && (
+              <button
+                ref={deleteButtonRef}
+                onClick={() => setConfirmingDelete(true)}
+                className="text-xs px-3 py-1.5 rounded-lg transition-colors duration-150"
+                style={{
+                  border: "1px solid var(--color-border-tertiary, rgba(0,0,0,0.1))",
+                  color: "var(--color-text-danger, #A32D2D)",
+                }}
+              >
+                Delete
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>
