@@ -13,7 +13,7 @@ The interface opens directly to chat. Type your request or choose a starter sugg
 ## Try it
 
 - **Animate a coastal trip** — a real USGS map with numbered pins, credited destination photos, and a six-second pin-drop sequence. Pause, replay, or select a stop. Connections are illustrative, not verified driving directions.
-- **A bicycle, explained** — explore a mechanism with an interactive diagram.
+- **Pitch, Roll & Yaw** — rotate a 3D airplane with labeled axes, angle controls, smooth demonstrations, and reset.
 - **Find your kind of weekend** — compare trip ideas and adjust your preferences.
 - **Split the bill fairly** — change the total, tip, and group size in a working calculator.
 

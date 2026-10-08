@@ -11,6 +11,15 @@ export interface DemoItem {
 
 export const DEMO_EXAMPLES: DemoItem[] = [
   {
+    id: "demo-pitch-roll-yaw",
+    title: "Pitch, Roll & Yaw",
+    category: "Understand",
+    emoji: "✈",
+    description: "Rotate a 3D airplane and explore its three axes of motion.",
+    prompt:
+      "Create an interactive 3D airplane in Three.js that explains pitch, roll, and yaw. Make the airplane recognizable with a fuselage, wings, tail and cockpit, on a clean light background. Start with a three-quarter view. Give each axis a labeled slider with its angle and a button that smoothly demonstrates that motion, plus a Reset button. Show color-coded labeled axes through the plane: pitch raises or lowers the nose about the lateral axis, roll banks the wings about the longitudinal axis, and yaw turns the nose left or right about the vertical axis. Match each label, control and rotation correctly. Animate demonstrations over about 1.5 seconds, keep the camera stable during demonstrations, and let me drag to orbit the camera. Include one short explanation per axis. Keep the canvas compact enough that the controls are visible in chat. Respect reduced motion and show a readable error if WebGL cannot initialize. This is a conceptual rotation model, not a flight simulator.",
+  },
+  {
     id: "map",
     title: "Animate a coastal trip",
     category: "Understand",
