@@ -47,7 +47,7 @@ useComponent({
 
 ## Open Generative UI — Sandboxed Streaming Widgets
 
-Free-form HTML/SVG widgets use CopilotKit's canonical **Open Generative UI** rail instead of a custom component. The agent streams a whole UI — styles, markup, and behavior — and the frontend renders it live in a sandboxed iframe.
+Free-form HTML/SVG widgets use CopilotKit's canonical **Open Generative UI** rail instead of a custom component. The agent streams a whole UI — styles, markup, and behavior — and the frontend renders it live in a sandboxed iframe. See the [Open Generative UI docs](https://docs.copilotkit.ai/generative-ui/open-generative-ui) for the full reference.
 
 How the pieces connect:
 

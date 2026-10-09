@@ -1,4 +1,4 @@
-// OpenGenerativeUI document assembly for the MCP server.
+// OpenIntelligentUI document assembly for the MCP server.
 // Design-system CSS is single-sourced from @repo/design-system.
 
 import { THEME_CSS, SVG_CLASSES_CSS, FORM_STYLES_CSS } from "@repo/design-system";

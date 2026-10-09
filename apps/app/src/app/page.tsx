@@ -62,7 +62,7 @@ export default function HomePage() {
     try {
       await copilotkit.runAgent({ agent });
     } catch (cause) {
-      console.error("Open Generative UI retry failed", cause);
+      console.error("Open Intelligent UI retry failed", cause);
       setError(
         "The agent is unavailable. Check your connection or local agent configuration, then retry.",
       );
@@ -78,7 +78,7 @@ export default function HomePage() {
         Skip to chat
       </a>
       <header className="chat-header">
-        <span className="chat-name">Open Generative UI</span>
+        <span className="chat-name">Open Intelligent UI</span>
         <nav aria-label="Main navigation">
           <button type="button" onClick={() => window.location.assign("/")}>
             New chat

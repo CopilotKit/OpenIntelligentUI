@@ -82,7 +82,7 @@ For the stdio transport (Claude Desktop integration), add to your `claude_deskto
 ```json
 {
   "mcpServers": {
-    "open-generative-ui": {
+    "open-intelligent-ui": {
       "command": "node",
       "args": ["dist/stdio.js"],
       "cwd": "/path/to/apps/mcp"
@@ -103,7 +103,7 @@ Add to your `.mcp.json`:
 
 ```json
 {
-  "openGenerativeUI": {
+  "openIntelligentUI": {
     "url": "http://localhost:3100/mcp"
   }
 }

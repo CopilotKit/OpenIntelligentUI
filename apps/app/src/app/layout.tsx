@@ -10,11 +10,11 @@ export const metadata: Metadata = {
       process.env.RENDER_EXTERNAL_URL ||
       "https://opengenerativeui.copilotkit.ai",
   ),
-  title: "Open Generative UI — Answers you can interact with",
+  title: "Open Intelligent UI — Answers you can interact with",
   description:
     "Explore ideas, compare your options, and make useful tools with interactive AI responses. Open source, built with CopilotKit.",
   openGraph: {
-    title: "Open Generative UI",
+    title: "Open Intelligent UI",
     description:
       "Answers you can interact with. Open source, built with CopilotKit.",
     type: "website",

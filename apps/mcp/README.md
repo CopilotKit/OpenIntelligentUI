@@ -212,27 +212,27 @@ Advanced visualization instructions: dashboards, simulations, UI mockups.
 
 ```bash
 # Build image
-docker build -t open-generative-ui-mcp .
+docker build -t open-intelligent-ui-mcp .
 
 # Run container
-docker run -p 3100:3100 open-generative-ui-mcp
+docker run -p 3100:3100 open-intelligent-ui-mcp
 
 # With custom port and CORS
 docker run \
   -p 3100:3100 \
   -e MCP_PORT=3100 \
   -e ALLOWED_ORIGINS="http://localhost:3000,https://myapp.com" \
-  open-generative-ui-mcp
+  open-intelligent-ui-mcp
 ```
 
 ### Node.js
 
 ```bash
 # Install globally or locally
-npm install -g open-generative-ui-mcp
+npm install -g open-intelligent-ui-mcp
 
 # Run
-MCP_PORT=3100 ALLOWED_ORIGINS="*" open-generative-ui-mcp
+MCP_PORT=3100 ALLOWED_ORIGINS="*" open-intelligent-ui-mcp
 
 # Or with node
 node dist/index.js

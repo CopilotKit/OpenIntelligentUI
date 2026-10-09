@@ -102,7 +102,7 @@ export function createMcpServer(): McpServer {
     "assemble_document",
     {
       description:
-        "Wraps HTML with Open Generative UI theme CSS, SVG classes, form styles, and bridge JS. " +
+        "Wraps HTML with Open Intelligent UI theme CSS, SVG classes, form styles, and bridge JS. " +
         "Returns a complete iframe-ready HTML document.",
       inputSchema: {
         title: z.string().describe("Short title for the visualization"),

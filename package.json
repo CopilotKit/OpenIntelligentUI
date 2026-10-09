@@ -5,7 +5,7 @@
     "dev": "concurrently \"turbo run dev\" \"pnpm run dev:agent\" --names turbo,agent --kill-others",
     "dev:app": "turbo run dev --filter='@repo/app'",
     "dev:agent": "cd apps/agent && uv sync && uv run uvicorn main:app --host 0.0.0.0 --port 8123 --reload",
-    "dev:mcp": "turbo run dev --filter='open-generative-ui-mcp'",
+    "dev:mcp": "turbo run dev --filter='open-intelligent-ui-mcp'",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
