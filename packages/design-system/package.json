@@ -1,7 +1,7 @@
 {
   "name": "@repo/design-system",
   "version": "0.1.0",
-  "description": "Shared OpenGenerativeUI design-system CSS and import map",
+  "description": "Shared OpenIntelligentUI design-system CSS and import map",
   "private": true,
   "type": "module",
   "main": "./dist/index.js",

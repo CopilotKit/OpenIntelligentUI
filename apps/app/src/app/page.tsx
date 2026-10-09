@@ -108,7 +108,7 @@ export default function HomePage() {
                   <span className="text-lg sm:text-xl leading-none" role="img" aria-label="CopilotKit">🪁</span>
                 </div>
                 <p className="text-sm sm:text-base font-semibold m-0 leading-snug" style={{ color: "var(--text-primary)" }}>
-                  Open Generative UI
+                  Open Intelligent UI
                   <span className="hidden sm:inline font-normal" style={{ color: "var(--text-secondary)" }}> — powered by CopilotKit</span>
                 </p>
               </div>
@@ -129,7 +129,7 @@ export default function HomePage() {
                   <span className="hidden sm:inline">Demos</span>
                 </button>
                 <a
-                  href="https://github.com/CopilotKit/OpenGenerativeUI"
+                  href="https://github.com/CopilotKit/OpenIntelligentUI"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold text-white no-underline whitespace-nowrap transition-all duration-150 hover:-translate-y-px"

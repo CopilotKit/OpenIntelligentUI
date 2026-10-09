@@ -3,8 +3,8 @@
 ## Clone and Install
 
 ```bash
-git clone https://github.com/CopilotKit/OpenGenerativeUI.git
-cd OpenGenerativeUI
+git clone https://github.com/CopilotKit/OpenIntelligentUI.git
+cd OpenIntelligentUI
 
 # Install all dependencies and create .env
 make setup
@@ -52,7 +52,7 @@ make dev-mcp     # MCP server only
 ## Verify It Works
 
 1. Open [http://localhost:3000](http://localhost:3000)
-2. You should see the Open Generative UI chat interface
+2. You should see the Open Intelligent UI chat interface
 3. Try typing "Create a todo list for a weekend project" or click one of the demo suggestions
 4. The agent should respond and you'll see generative UI rendered in the chat
 

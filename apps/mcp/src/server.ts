@@ -5,7 +5,7 @@ import { assembleDocument } from "./renderer.js";
 
 export function createMcpServer(): McpServer {
   const server = new McpServer({
-    name: "open-generative-ui",
+    name: "open-intelligent-ui",
     version: "0.1.0",
   });
 
@@ -93,7 +93,7 @@ export function createMcpServer(): McpServer {
     "assemble_document",
     {
       description:
-        "Wraps HTML with OpenGenerativeUI theme CSS, SVG classes, form styles, and bridge JS. " +
+        "Wraps HTML with OpenIntelligentUI theme CSS, SVG classes, form styles, and bridge JS. " +
         "Returns a complete iframe-ready HTML document.",
       inputSchema: {
         title: z.string().describe("Short title for the visualization"),

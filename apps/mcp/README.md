@@ -1,10 +1,10 @@
-# OpenGenerativeUI MCP Server
+# OpenIntelligentUI MCP Server
 
-A standalone, independently deployable [Model Context Protocol](https://modelcontextprotocol.io) server that exposes OpenGenerativeUI's design system, skills, and document renderer to any MCP-compatible client.
+A standalone, independently deployable [Model Context Protocol](https://modelcontextprotocol.io) server that exposes OpenIntelligentUI's design system, skills, and document renderer to any MCP-compatible client.
 
 ## Features
 
-- **Design System Tool** — `assemble_document` wraps HTML fragments with OpenGenerativeUI's complete CSS design system and bridge JavaScript
+- **Design System Tool** — `assemble_document` wraps HTML fragments with OpenIntelligentUI's complete CSS design system and bridge JavaScript
 - **Skill Resources** — Browse and read skill instruction documents via `skills://list` and `skills://{name}`
 - **Prompt Templates** — Pre-composed prompts for common visualization tasks: `create_widget`, `create_svg_diagram`, `create_visualization`
 - **Standalone** — No dependencies on other packages; can be deployed independently
@@ -72,7 +72,7 @@ pnpm build
 ```json
 {
   "mcpServers": {
-    "open-generative-ui": {
+    "open-intelligent-ui": {
       "command": "node",
       "args": ["dist/stdio.js"],
       "cwd": "/absolute/path/to/apps/mcp"
@@ -86,7 +86,7 @@ For development, you can use `tsx` directly:
 ```json
 {
   "mcpServers": {
-    "open-generative-ui": {
+    "open-intelligent-ui": {
       "command": "npx",
       "args": ["tsx", "src/stdio.ts"],
       "cwd": "/absolute/path/to/apps/mcp"
@@ -101,7 +101,7 @@ Add to `.mcp.json`:
 
 ```json
 {
-  "openGenerativeUI": {
+  "openIntelligentUI": {
     "url": "http://localhost:3100/mcp"
   }
 }
@@ -118,7 +118,7 @@ Then start the HTTP server with `pnpm dev`.
 
 ### Tool: `assemble_document`
 
-Wraps an HTML fragment with the complete OpenGenerativeUI design system.
+Wraps an HTML fragment with the complete OpenIntelligentUI design system.
 
 **Input:**
 ```typescript
@@ -212,27 +212,27 @@ Advanced visualization instructions: dashboards, simulations, UI mockups.
 
 ```bash
 # Build image
-docker build -t open-generative-ui-mcp .
+docker build -t open-intelligent-ui-mcp .
 
 # Run container
-docker run -p 3100:3100 open-generative-ui-mcp
+docker run -p 3100:3100 open-intelligent-ui-mcp
 
 # With custom port and CORS
 docker run \
   -p 3100:3100 \
   -e MCP_PORT=3100 \
   -e ALLOWED_ORIGINS="http://localhost:3000,https://myapp.com" \
-  open-generative-ui-mcp
+  open-intelligent-ui-mcp
 ```
 
 ### Node.js
 
 ```bash
 # Install globally or locally
-npm install -g open-generative-ui-mcp
+npm install -g open-intelligent-ui-mcp
 
 # Run
-MCP_PORT=3100 ALLOWED_ORIGINS="*" open-generative-ui-mcp
+MCP_PORT=3100 ALLOWED_ORIGINS="*" open-intelligent-ui-mcp
 
 # Or with node
 node dist/index.js
@@ -284,13 +284,13 @@ MIT
 
 ## Support
 
-For issues, feature requests, or questions, visit the [OpenGenerativeUI repository](https://github.com/CopilotKit/OpenGenerativeUI).
+For issues, feature requests, or questions, visit the [OpenIntelligentUI repository](https://github.com/CopilotKit/OpenIntelligentUI).
 
 ## Contributing
 
 This is a standalone deployment package. To contribute improvements:
 
-1. Fork the main [OpenGenerativeUI repository](https://github.com/CopilotKit/OpenGenerativeUI)
+1. Fork the main [OpenIntelligentUI repository](https://github.com/CopilotKit/OpenIntelligentUI)
 2. Make changes to `apps/mcp/` (or the source files it's forked from)
 3. Submit a pull request
 
