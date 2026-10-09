@@ -1,4 +1,4 @@
-// OpenGenerativeUI design system: theme tokens, SVG classes, form styles,
+// OpenIntelligentUI design system: theme tokens, SVG classes, form styles,
 // and the CDN import map shared by the Next.js app and the MCP server.
 
 // ─── Theme Variables ─────────────────────────────────────────────────
@@ -433,7 +433,7 @@ a:hover { text-decoration: underline; }
 // Injected as agent context for the generateSandboxedUi tool. Replaces the
 // canonical default guidance, which contradicts this design system.
 export const OPEN_GEN_UI_DESIGN_SKILL = `
-The sandbox already includes the OpenGenerativeUI design system. Build on it instead of restyling from scratch.
+The sandbox already includes the OpenIntelligentUI design system. Build on it instead of restyling from scratch.
 
 Colors and theming:
 - Use the CSS variables for every color: --color-background-primary / --color-background-secondary / --color-background-tertiary, --color-text-primary / --color-text-secondary / --color-text-tertiary, plus the semantic info/danger/success/warning variants (--color-background-info, --color-text-danger, --color-border-success, etc.).

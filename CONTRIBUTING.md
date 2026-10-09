@@ -1,4 +1,4 @@
-# Contributing to Open Generative UI
+# Contributing to Open Intelligent UI
 
 ⭐ Thank you for your interest in contributing!!
 
@@ -12,29 +12,29 @@ We love community contributions! That said, we want to make sure we're all on th
 Investing a lot of time and effort just to find out it doesn't align with the project feels awful, and we don't want that to happen.
 It also helps to make sure the work you're planning isn't already in progress.
 
-Please file an issue first: [https://github.com/CopilotKit/OpenGenerativeUI/issues](https://github.com/CopilotKit/OpenGenerativeUI/issues)
+Please file an issue first: [https://github.com/CopilotKit/OpenIntelligentUI/issues](https://github.com/CopilotKit/OpenIntelligentUI/issues)
 Or, reach out to us on Discord: https://discord.com/invite/6dffbvGU3D
 
 Ready to contribute but seeking guidance? Reach out to us directly on [Discord](https://discord.gg/6dffbvGU3D) for immediate assistance! Alternatively, you're welcome to raise an issue and one of our dedicated maintainers will promptly steer you in the right direction!
 
 ## Found a bug?
 
-If you find a bug in the source code, you can help us by [submitting an issue](https://github.com/CopilotKit/OpenGenerativeUI/issues/new) to our GitHub Repository. Even better, you can submit a Pull Request with a fix.
+If you find a bug in the source code, you can help us by [submitting an issue](https://github.com/CopilotKit/OpenIntelligentUI/issues/new) to our GitHub Repository. Even better, you can submit a Pull Request with a fix.
 
 ## Missing a feature?
 
-So, you've got an awesome feature in mind? Throw it over to us by [creating an issue](https://github.com/CopilotKit/open-generative-ui/issues/new) on our GitHub Repo.
+So, you've got an awesome feature in mind? Throw it over to us by [creating an issue](https://github.com/CopilotKit/OpenIntelligentUI/issues/new) on our GitHub Repo.
 
 # How do I make a code contribution?
 
 ## Step 1: Make a fork
 
-Fork the [open-generative-ui](https://github.com/CopilotKit/OpenGenerativeUI/issues) repository to your GitHub account. This means that you'll have a copy of the repository under _your-GitHub-username/open-generative-ui_.
+Fork the [OpenIntelligentUI](https://github.com/CopilotKit/OpenIntelligentUI/issues) repository to your GitHub account. This means that you'll have a copy of the repository under _your-GitHub-username/OpenIntelligentUI_.
 
 ## Step 2: Clone the repository to your local machine
 
 ```bash
-git clone https://github.com/<your-GitHub-username>/OpenGenerativeUI
+git clone https://github.com/<your-GitHub-username>/OpenIntelligentUI
 ```
 
 ## Step 3: Prepare the development environment

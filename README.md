@@ -1,10 +1,8 @@
-# Open Generative UI
+# Open Intelligent UI
 
 An open-source showcase for building rich, interactive AI-generated UI with [CopilotKit](https://copilotkit.ai) and [LangChain Deep Agents](https://docs.langchain.com/oss/python/deepagents/overview). Ask the agent to visualize algorithms, create 3D animations, render charts, or generate interactive diagrams — all rendered as live HTML/SVG inside a sandboxed iframe.
 
-https://github.com/user-attachments/assets/ed28c734-e54e-4412-873f-4801da544a7f
-
-https://github.com/user-attachments/assets/ba7db70d-07c0-49af-b221-f962f30245e2
+https://github.com/user-attachments/assets/232cfd7c-9e99-4c6f-814b-5c7e07a87ece
 
 ## What It Does
 
@@ -30,7 +28,7 @@ make dev      # Start all services
 > | Model | Notes |
 > |-------|-------|
 > | `claude-fable-5` | Default |
-> | `claude-opus-4-6` | Strong alternative |
+> | `claude-opus-5-5` | Strong alternative |
 >
 > Setting `LLM_MODEL` to a `gpt-*` name routes to OpenAI instead (requires `OPENAI_API_KEY`). For other providers, swap the chat model in `apps/agent/src/model.py` (see [docs/bring-to-your-app.md](docs/bring-to-your-app.md)). Smaller or weaker models will produce broken layouts, missing interactivity, or incomplete visualizations.
 
@@ -70,7 +68,7 @@ Add to your Claude Desktop config (`claude_desktop_config.json`):
 ```json
 {
   "mcpServers": {
-    "open-generative-ui": {
+    "open-intelligent-ui": {
       "command": "node",
       "args": ["dist/stdio.js"],
       "cwd": "/path/to/apps/mcp"
@@ -90,7 +88,7 @@ Add to `.mcp.json`:
 
 ```json
 {
-  "openGenerativeUI": {
+  "openIntelligentUI": {
     "url": "http://localhost:3100/mcp"
   }
 }
@@ -124,6 +122,8 @@ Deep agents also provide built-in planning (`write_todos`), filesystem tools, an
 
 ### How It Works
 
+Open Intelligent UI is built on CopilotKit's Open Generative UI. Read the [Open Generative UI docs](https://docs.copilotkit.ai/generative-ui/open-generative-ui) to see how it works under the hood.
+
 1. **User sends a prompt** via the CopilotKit chat UI
 2. **Deep agent decides** whether to respond with text, call a tool, or render a visual component — consulting relevant skills as needed
 3. **`generateSandboxedUi`** — the canonical tool the CopilotKit runtime exposes when `openGenerativeUI` is enabled — receives the UI as ordered streaming parameters: `initialHeight` → `placeholderMessages` → `css` → `html` → `jsFunctions` → `jsExpressions`
@@ -135,7 +135,7 @@ Deep agents also provide built-in planning (`write_todos`), filesystem tools, an
 
 | Pattern | Hook / Option | Example |
 |---------|---------------|---------|
-| Open Generative UI | `openGenerativeUI` + `renderActivityMessages` | Streaming sandboxed widgets via `generateSandboxedUi` |
+| [Open Generative UI](https://docs.copilotkit.ai/generative-ui/open-generative-ui) | `openGenerativeUI` + `renderActivityMessages` | Streaming sandboxed widgets via `generateSandboxedUi` |
 | Generative UI | `useComponent` | Pie charts, bar charts |
 | Frontend tools | `useFrontendTool` | Theme toggle |
 | Human-in-the-loop | `useHumanInTheLoop` | Meeting scheduler |
@@ -174,11 +174,11 @@ Next.js 16, React 19, Tailwind CSS 4, LangChain Deep Agents, LangGraph, CopilotK
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=CopilotKit%2FOpenGenerativeUI&type=date&legend=top-left">
+<a href="https://www.star-history.com/?repos=CopilotKit%2FOpenIntelligentUI&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=CopilotKit/OpenGenerativeUI&type=date&theme=dark&legend=bottom-right" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=CopilotKit/OpenGenerativeUI&type=date&legend=bottom-right" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=CopilotKit/OpenGenerativeUI&type=date&legend=bottom-right" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=CopilotKit/OpenIntelligentUI&type=date&theme=dark&legend=bottom-right" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=CopilotKit/OpenIntelligentUI&type=date&legend=bottom-right" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=CopilotKit/OpenIntelligentUI&type=date&legend=bottom-right" />
  </picture>
 </a>
 

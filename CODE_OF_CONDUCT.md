@@ -1,4 +1,4 @@
-# Code of Conduct for Open Generative UI
+# Code of Conduct for Open Intelligent UI
 
 ## Table of Contents
 
@@ -16,7 +16,7 @@
 
 ## 1. Statement of Purpose
 
-Open Generative UI is an open-source showcase and template for building rich, interactive AI-generated UI with [CopilotKit](https://copilotkit.ai) and [LangGraph](https://langchain-ai.github.io/langgraph/). As part of the CopilotKit ecosystem, our Code of Conduct aims to foster a collaborative, respectful, and innovative community that empowers contributors and users alike. By adhering to this code, we can ensure that our community thrives and remains a welcoming space for everyone.
+Open Intelligent UI is an open-source showcase and template for building rich, interactive AI-generated UI with [CopilotKit](https://copilotkit.ai) and [LangGraph](https://langchain-ai.github.io/langgraph/). As part of the CopilotKit ecosystem, our Code of Conduct aims to foster a collaborative, respectful, and innovative community that empowers contributors and users alike. By adhering to this code, we can ensure that our community thrives and remains a welcoming space for everyone.
 
 ---
 
@@ -96,7 +96,7 @@ Consequences for violating the Code of Conduct will be determined based on the s
 
 This Code of Conduct applies to all participants in the CopilotKit community, including contributors, maintainers, and users, both online and offline. It encompasses interactions in the following areas:
 
-- GitHub discussions and issues on the [open-generative-ui](https://github.com/CopilotKit/open-generative-ui) repository
+- GitHub discussions and issues on the [OpenIntelligentUI](https://github.com/CopilotKit/OpenIntelligentUI) repository
 - The broader [CopilotKit Discord](https://discord.gg/6dffbvGU3D)
 - Community meetings and events
 - Social media platforms
@@ -112,6 +112,6 @@ This Code of Conduct is adapted from the [CopilotKit Code of Conduct](https://gi
 
 ## 9. Get Involved
 
-We invite you to contribute to Open Generative UI! Whether through code, documentation, or community engagement, your participation is invaluable. For more information on how to contribute, please check our [Contributing Guide](./CONTRIBUTING.md).
+We invite you to contribute to Open Intelligent UI! Whether through code, documentation, or community engagement, your participation is invaluable. For more information on how to contribute, please check our [Contributing Guide](./CONTRIBUTING.md).
 
 Thank you for being part of the CopilotKit community! Together, we can build a safe, respectful, and innovative space for all.

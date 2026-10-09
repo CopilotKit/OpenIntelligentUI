@@ -1,6 +1,6 @@
-# Open Generative UI Documentation
+# Open Intelligent UI Documentation
 
-Open Generative UI is a showcase and template for building AI agents with [CopilotKit](https://copilotkit.ai) and [LangGraph](https://langchain-ai.github.io/langgraph/). It demonstrates agent-driven UI where an AI agent and users collaboratively manipulate shared application state.
+Open Intelligent UI is a showcase and template for building AI agents with [CopilotKit](https://copilotkit.ai) and [LangGraph](https://langchain-ai.github.io/langgraph/). It demonstrates agent-driven UI where an AI agent and users collaboratively manipulate shared application state.
 
 ## Prerequisites
 
