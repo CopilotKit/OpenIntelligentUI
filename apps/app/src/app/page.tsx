@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ProviderKeysDialog } from "@/components/chat/provider-keys-dialog";
 import { useProviderKeys } from "@/components/chat/provider-keys";
+import { KeyGatedChatView } from "@/components/chat/key-gated-chat-view";
 import Image from "next/image";
 import { ReaderScrollView } from "@/components/chat/reader-scroll-view";
 import { AnswerMarkdown } from "@/components/chat/answer-markdown";
@@ -17,8 +18,7 @@ export default function HomePage() {
   useGenerativeUIExamples();
   useExampleSuggestions();
   const { agent } = useAgent();
-  const { newChat, hasKeys } = useProviderKeys();
-  const [keysOpen, setKeysOpen] = useState(false);
+  const { newChat, hasKeys, keysOpen, setKeysOpen } = useProviderKeys();
   const { copilotkit } = useCopilotKit();
   const [error, setError] = useState<string | null>(null);
   const [retrying, setRetrying] = useState(false);
@@ -129,6 +129,7 @@ export default function HomePage() {
         )}
         <div className="chat-content" ref={chatRoot}>
           <CopilotChat
+            chatView={KeyGatedChatView}
             autoScroll={false}
             scrollView={ReaderScrollView}
             messageView={{ assistantMessage: { markdownRenderer: AnswerMarkdown } }}
@@ -141,7 +142,7 @@ export default function HomePage() {
               welcomeMessageText: "What would you like to explore?",
               chatInputPlaceholder: "Ask anything…",
               chatDisclaimerText:
-                "AI can make mistakes. Check important details.",
+                hasKeys ? "AI can make mistakes. Check important details." : "Add your OpenAI and Jev API keys to start. Keys clear when you refresh.",
             }}
           />
         </div>

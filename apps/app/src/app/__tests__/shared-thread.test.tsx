@@ -42,6 +42,7 @@ function EntryAndChat() {
 }
 
 beforeEach(() => {
+  HTMLDialogElement.prototype.showModal = function () { this.setAttribute("open", ""); };
   vi.stubGlobal(
     "ResizeObserver",
     class {
@@ -61,6 +62,7 @@ function mockRuntime() {
   vi.stubGlobal(
     "fetch",
     vi.fn(async (_url: RequestInfo | URL, init?: RequestInit) => {
+      if (String(_url) === "/api/provider-keys") return Response.json({ ok: true });
       const body = typeof init?.body === "string" ? JSON.parse(init.body) : {};
       if (body.method === "info" || String(_url).endsWith("/info")) {
         return Response.json({
@@ -149,6 +151,17 @@ it("submits through the real chat-only page composer and preserves its message",
     key: "Enter",
     code: "Enter",
   });
+  expect(await screen.findByRole("dialog", { name: "Add API keys to start" })).toBeVisible();
+  expect(runInputs).toHaveLength(0);
+  fireEvent.change(screen.getByLabelText("OpenAI API key"), { target: { value: "test-openai" } });
+  fireEvent.change(screen.getByLabelText("Jev API key"), { target: { value: "test-jev" } });
+  fireEvent.click(screen.getByRole("button", { name: "Test connection" }));
+  await screen.findByText("Both keys work. Save to start a new chat.");
+  fireEvent.click(screen.getByRole("button", { name: "Save keys" }));
+  await waitFor(() => expect(screen.getByTestId("runtime-status")).toHaveTextContent("connected"));
+  expect(screen.getByRole("textbox")).toHaveValue("Explain bicycle gears");
+  expect(runInputs).toHaveLength(0);
+  fireEvent.keyDown(screen.getByRole("textbox"), { key: "Enter", code: "Enter" });
   await waitFor(() => expect(runInputs).toHaveLength(1));
   expect(await screen.findByText("Explain bicycle gears")).toBeVisible();
 });

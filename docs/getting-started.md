@@ -16,7 +16,7 @@ make setup
 
 You can start the agent without shared provider keys and use **API keys** in the chat header to test and save your own OpenAI and Jev keys for the current browser session. Refreshing clears the keys.
 
-To provide shared credentials instead, edit `apps/agent/.env`:
+The chat interface asks for visitor keys before sending a message and preserves the draft during setup. To also provide shared credentials for direct API clients, edit `apps/agent/.env`:
 
 ```dotenv
 OPENAI_API_KEY=your-provider-key
