@@ -36,7 +36,7 @@ describe("memory-only provider keys", () => {
     const storage = vi.spyOn(Storage.prototype, "setItem");
     const cookie = vi.spyOn(document, "cookie", "set");
     setup();
-    expect(screen.getByRole("dialog")).toHaveAccessibleName("API keys");
+    expect(screen.getByRole("dialog")).toHaveAccessibleName("Add API keys to start");
     expect(screen.getByLabelText("OpenAI API key")).toHaveAttribute("type", "password");
     expect(screen.getByRole("button", { name: "Save keys" })).toBeDisabled();
     enterKeys();

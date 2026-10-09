@@ -59,7 +59,8 @@ export function ProviderKeysDialog({ onClose, disabled = false }: { onClose: () 
 
   return (
     <dialog ref={dialog} className="provider-keys-dialog" aria-labelledby="provider-keys-title" aria-describedby="provider-keys-privacy" onCancel={(event) => { event.preventDefault(); onClose(); }}>
-      <h2 id="provider-keys-title">API keys</h2>
+      <h2 id="provider-keys-title">{hasKeys ? "API keys" : "Add API keys to start"}</h2>
+      {!hasKeys && <p>Connect OpenAI for answers and Jev for choosing visualizations. Your message will stay ready to send.</p>}
       <p id="provider-keys-privacy">Keys stay only in this browser’s memory until you refresh or clear them. They are sent through this app’s server to their respective providers. Provider usage is charged to your accounts.</p>
       <p>Saving or clearing keys starts a new chat.</p>
       <form onSubmit={(event) => { event.preventDefault(); void testConnection(); }}>
@@ -68,7 +69,7 @@ export function ProviderKeysDialog({ onClose, disabled = false }: { onClose: () 
         <label htmlFor="provider-jev-key">Jev API key</label>
         <input id="provider-jev-key" type="password" maxLength={4096} autoComplete="off" spellCheck={false} autoCapitalize="none" value={jev} onChange={(event) => edit(setJev, event.target.value)} disabled={pending || disabled} />
         {error && <p role="alert">{error}</p>}
-        <p role="status" aria-live="polite">{pending ? "Checking both providers…" : validated ? "Both keys work. Save to start a new chat." : hasKeys ? "Your own keys are active for this session." : "Using the app’s shared configuration."}</p>
+        <p role="status" aria-live="polite">{pending ? "Checking both providers…" : validated ? "Both keys work. Save to start a new chat." : hasKeys ? "Your own keys are active for this session." : "Both keys are required to start chatting."}</p>
         <div className="provider-keys-actions">
           {hasKeys && <button type="button" disabled={pending || disabled} onClick={() => { clear(); onClose(); }}>Clear keys</button>}
           <button type="button" onClick={onClose}>Cancel</button>

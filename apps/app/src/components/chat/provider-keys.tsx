@@ -10,6 +10,10 @@ type ProviderKeysContextValue = {
   save: (keys: ProviderKeys) => void;
   clear: () => void;
   newChat: () => void;
+  draft: string;
+  setDraft: (value: string) => void;
+  keysOpen: boolean;
+  setKeysOpen: (value: boolean) => void;
 };
 const ProviderKeysContext = createContext<ProviderKeysContextValue | null>(null);
 
@@ -17,15 +21,17 @@ export function ProviderKeysProvider({ children }: { children: ReactNode }) {
   // Deliberately memory-only: never put credentials in browser storage or agent state.
   const [keys, setKeys] = useState<ProviderKeys | null>(null);
   const [session, setSession] = useState(0);
-  const newChat = () => setSession((value) => value + 1);
+  const [draft, setDraft] = useState("");
+  const [keysOpen, setKeysOpen] = useState(false);
+  const newChat = () => { setDraft(""); setSession((value) => value + 1); };
   return (
     <ProviderKeysContext.Provider value={{
       headers: keys ? { "x-openai-api-key": keys.openai, "x-jev-api-key": keys.jev } : undefined,
       hasKeys: keys !== null,
       session,
-      save: (value) => { setKeys(value); newChat(); },
+      save: (value) => { setKeys(value); setKeysOpen(false); setSession((value) => value + 1); },
       clear: () => { setKeys(null); newChat(); },
-      newChat,
+      newChat, draft, setDraft, keysOpen, setKeysOpen,
     }}>
       {children}
     </ProviderKeysContext.Provider>
