@@ -1,90 +1,69 @@
 # Architecture
 
-## Monorepo Structure
+Open Generative UI combines a Python agent with a CopilotKit runtime and a browser renderer. The `openGenerativeUI` runtime API and `generateSandboxedUi` tool connect them.
 
-This is a Turborepo monorepo with three apps:
+## Components
 
-```
-apps/
-├── app/        Next.js 16 frontend (React 19, TailwindCSS 4)
-├── agent/      Python LangGraph agent (FastAPI, OpenAI)
-└── mcp/        Model Context Protocol server (optional)
-```
+| Location                  | Responsibility                                            |
+| ------------------------- | --------------------------------------------------------- |
+| `apps/app/`               | Next.js frontend and `/api/copilotkit` runtime route      |
+| `apps/agent/`             | FastAPI, LangGraph, Deep Agent, tools, prompt, and skills |
+| `apps/mcp/`               | Optional standalone MCP resources and HTML assembler      |
+| `packages/design-system/` | Shared theme, SVG classes, and form styles                |
 
-The frontend and MCP server are managed by pnpm workspaces. The Python agent is managed separately with `uv`.
+Node packages use pnpm/Turborepo. The Python agent uses uv.
 
-## Request Flow
+## Request flow
 
-```
-Browser
-  │
-  ▼
-Next.js App (:3000)
-  │
-  ├── /api/copilotkit       ← CopilotKit API route
-  │     │
-  │     ▼
-  │   CopilotRuntime
-  │     │
-  │     ▼
-  │   LangGraphHttpAgent ──→ FastAPI Agent (:8123)
-  │                            │
-  │                            ├── LangGraph tools
-  │                            ├── CopilotKitMiddleware
-  │                            └── State management
-  │
-  └── React UI
-        │
-        ├── useAgent()          ← Read/write agent state
-        ├── useComponent()      ← Register generative UI
-        ├── useFrontendTool()   ← Agent-callable frontend actions
-        └── useHumanInTheLoop() ← Interactive prompts
+```text
+User prompt or chat starter suggestion
+  → CopilotKit chat / agent run
+  → Next.js /api/copilotkit
+  → LangGraphHttpAgent → FastAPI agent
+  → model + applicable tools and skills
+  → text, native component, or generateSandboxedUi
+  → CopilotKit activity stream → browser renderer
 ```
 
-## Key Files
+The agent uses `create_deep_agent`, CopilotKit middleware, an Anthropic compatibility middleware, and `BoundedMemorySaver(max_threads=200)`. The checkpoint store is process memory, not durable shared storage. Restarting or scaling the agent can lose or split conversation state.
 
-### Frontend (`apps/app/`)
+`src/model.py` chooses ChatAnthropic for `claude-*` and ChatOpenAI for `gpt-*`. It checks the selected provider's key before constructing the client. The local default is unchanged; deployed configuration can override it.
 
-| File | Purpose |
-|------|---------|
-| `src/app/layout.tsx` | Wraps the app with `<CopilotKit>` and `<ThemeProvider>` |
-| `src/app/page.tsx` | Main page — chat UI, demo gallery, background |
-| `src/app/api/copilotkit/route.ts` | Connects CopilotKit runtime to the LangGraph agent |
-| `src/hooks/use-generative-ui-examples.tsx` | Registers all generative UI components |
-| `src/hooks/use-example-suggestions.tsx` | Chat suggestion prompts |
-| `src/components/generative-ui/` | Chart, widget, and interactive components |
+`src/prompt.py` and the three agent skills guide response selection. Plain text is appropriate for direct answers. Native components handle supported structured tasks; custom UI serves useful diagrams, comparisons, calculators, and simulations. Planning is optional. See [Product and agent behavior](interactive-answers.md).
 
-### Agent (`apps/agent/`)
+## Streaming custom UI
 
-| File | Purpose |
-|------|---------|
-| `main.py` | Agent definition, FastAPI app, system prompt |
-| `src/todos.py` | `AgentState` schema and todo tools |
-| `src/query.py` | Sample data query tool |
-| `src/plan.py` | Visualization planning tool |
-| `src/form.py` | Form generation tool (AG-UI) |
-| `src/bounded_memory_saver.py` | Memory-capped checkpointer |
-| `skills/` | Skill documents loaded at startup |
+The runtime enables `openGenerativeUI`; its middleware translates `generateSandboxedUi` into `open-generative-ui` activity messages. The tool's ordered fields are:
 
-### MCP (`apps/mcp/`)
+1. `initialHeight`
+2. `placeholderMessages`
+3. `css`
+4. `html`
+5. `jsFunctions`
+6. `jsExpressions`
 
-| File | Purpose |
-|------|---------|
-| `src/server.ts` | MCP resources, prompts, and tools |
-| `src/renderer.ts` | HTML document assembly with design system |
-| `src/skills.ts` | Skill file loader |
-| `src/index.ts` | HTTP server |
-| `src/stdio.ts` | Stdio transport for Claude Desktop |
+The renderer holds the placeholder until CSS is complete, progressively updates a preview iframe, then initializes the final Websandbox iframe. Shared theme CSS and a CDN importmap are injected. JavaScript function/expression channels execute as classic scripts, so top-level await is invalid; asynchronous imports belong inside async functions.
 
-## State Sync
+The sandbox has no same-origin access to storage or host APIs. The host exposes validated `sendPrompt({ text })` and HTTPS `openLink({ url })` callbacks through `Websandbox.connection.remote`. Resize messages are checked and bounded before setting iframe height. Keep these boundaries intact when modifying the renderer.
 
-State flows bidirectionally between the agent and frontend via CopilotKit:
+A follow-up starts a new agent turn. Prior generated outputs serve as separate snapshots of that answer; their local controls can still change their own UI. There is no supported cross-call DOM patch API, and arbitrary iframe control state is not automatically synchronized to the agent. Follow-up buttons should include relevant selected values explicitly.
 
-```
-Frontend                          Agent
-────────                          ─────
-agent.state.todos    ◄────────    AgentState.todos
-agent.setState(...)  ────────►    Command(update={...})
-```
+## Chat and evidence
 
-Both the user (via React UI) and the agent (via tools) can modify the same state. CopilotKit handles synchronization automatically. See [Agent State](agent-state.md) for details.
+The page always displays CopilotChat, with three task-oriented starter suggestions. User prompts run the shared agent; answers and interactive components appear in that conversation. New chat starts a fresh thread. `query_data` returns an envelope with source metadata and all bundled sample CSV rows; its natural-language query is not applied. Neither a renderer nor a native card establishes a live data connection.
+
+Legacy todo tools remain in the agent and can manipulate their supported state; the login-form schema is a nonfunctional demonstration. They do not define the main product experience.
+
+## Standalone MCP
+
+The MCP server exposes skills, prompts, and `assemble_document`. The assembler returns HTML text with shared styles and legacy postMessage helpers. A consuming host must render the document in isolation and validate bridge requests. This server does not supply the web app's Websandbox bridge or importmap, and assembling a document does not display or deploy it.
+
+## Key implementation files
+
+- Agent: `apps/agent/main.py`, `src/model.py`, `src/prompt.py`, `src/query.py`, `skills/`.
+- Runtime: `apps/app/src/app/api/copilotkit/route.ts`, `src/lib/copilotkit-runtime-options.ts`.
+- Renderer: `apps/app/src/components/generative-ui/open-generative-ui/`.
+- Host bridge: `apps/app/src/lib/sandbox/`.
+- MCP assembly: `apps/mcp/src/server.ts`, `src/renderer.ts`.
+
+See [Deployment](deployment.md) for runtime configuration and operational limits.

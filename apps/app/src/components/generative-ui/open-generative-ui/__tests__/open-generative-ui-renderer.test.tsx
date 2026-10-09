@@ -296,6 +296,11 @@ describe("OpenGenUIActivityRenderer", () => {
       expect(scriptSrc).toContain(origin);
       expect(connectSrc).toContain(origin);
     }
+    const imgSrc = csp.match(/img-src[\s\S]*?;/)![0];
+    expect(imgSrc).toContain("https://basemap.nationalmap.gov");
+    expect(scriptSrc).not.toContain("basemap.nationalmap.gov");
+    expect(connectSrc).not.toContain("basemap.nationalmap.gov");
+    expect(imgSrc).not.toMatch(/https:;|https:\*|\*\./);
     // CSP precedes any generated content.
     expect(frameContent.indexOf("Content-Security-Policy")).toBeLessThan(
       frameContent.indexOf('<div id="gen-root">')

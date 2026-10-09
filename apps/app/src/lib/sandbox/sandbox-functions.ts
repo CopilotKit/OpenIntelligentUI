@@ -8,9 +8,18 @@ const formatIssues = (error: z.ZodError) =>
     .map((issue) => `${issue.path.join(".") || "(root)"}: ${issue.message}`)
     .join("; ");
 
-const sendPromptParameters = z.object({
-  text: z.string().min(1).max(4000),
+export const sendPromptParameters = z.object({
+  text: z.string().trim().min(1).max(4000),
 });
+
+// This request stays inside the host window; only the settled result crosses
+// the Websandbox bridge. A listener must claim it synchronously during dispatch.
+export interface SendPromptRequest {
+  text: string;
+  claim: () => boolean;
+  resolve: () => void;
+  reject: (reason: unknown) => void;
+}
 
 export const sendPromptFunction: SandboxFunction = {
   name: "sendPrompt",
@@ -20,12 +29,33 @@ export const sendPromptFunction: SandboxFunction = {
   handler: async (args) => {
     const result = sendPromptParameters.safeParse(args);
     if (!result.success) {
-      throw new Error(`sendPrompt: invalid arguments — ${formatIssues(result.error)}`);
+      throw new Error(
+        `sendPrompt: invalid arguments — ${formatIssues(result.error)}`,
+      );
     }
-    window.dispatchEvent(
-      new CustomEvent(SEND_PROMPT_EVENT, { detail: { text: result.data.text } })
-    );
-    return { ok: true };
+    return new Promise<{ ok: true }>((resolve, reject) => {
+      let claimed = false;
+      const request: SendPromptRequest = {
+        text: result.data.text,
+        claim: () => {
+          if (claimed) return false;
+          claimed = true;
+          return true;
+        },
+        resolve: () => resolve({ ok: true }),
+        reject,
+      };
+      window.dispatchEvent(
+        new CustomEvent(SEND_PROMPT_EVENT, { detail: request }),
+      );
+      if (!claimed) {
+        reject(
+          new Error(
+            "sendPrompt: chat bridge unavailable. Please reload the page and try again.",
+          ),
+        );
+      }
+    });
   },
 };
 
@@ -45,7 +75,7 @@ const envAllowedOrigins = (): string[] | undefined => {
 
 export function isAllowedLinkUrl(
   url: string,
-  allowedOrigins?: readonly string[]
+  allowedOrigins?: readonly string[],
 ): boolean {
   let parsed: URL;
   try {
@@ -67,7 +97,9 @@ export const openLinkFunction: SandboxFunction = {
   handler: async (args) => {
     const result = openLinkParameters.safeParse(args);
     if (!result.success) {
-      throw new Error(`openLink: invalid arguments — ${formatIssues(result.error)}`);
+      throw new Error(
+        `openLink: invalid arguments — ${formatIssues(result.error)}`,
+      );
     }
     const { url } = result.data;
     if (!isAllowedLinkUrl(url)) {

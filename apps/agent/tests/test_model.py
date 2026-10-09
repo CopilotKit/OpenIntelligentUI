@@ -1,5 +1,4 @@
-"""The agent runs on Anthropic Claude — Fable 5 by default, LLM_MODEL overridable.
-gpt-* model names route to ChatOpenAI as a production fallback."""
+"""Model defaults and provider-specific validation."""
 
 import os
 
@@ -14,10 +13,11 @@ from langchain_openai import ChatOpenAI
 from src.model import build_model
 
 
-def test_default_model_is_fable():
+def test_default_model_is_chatgpt_instant(monkeypatch):
+    monkeypatch.delenv("LLM_MODEL", raising=False)
     model = build_model()
-    assert isinstance(model, ChatAnthropic)
-    assert model.model == "claude-fable-5"
+    assert isinstance(model, ChatOpenAI)
+    assert model.model_name == "chat-latest"
 
 
 def test_llm_model_env_override(monkeypatch: pytest.MonkeyPatch):
@@ -40,7 +40,8 @@ def test_claude_model_names_route_to_anthropic(monkeypatch: pytest.MonkeyPatch):
     assert isinstance(build_model(), ChatAnthropic)
 
 
-def test_max_tokens_fits_full_widget_generation():
+def test_max_tokens_fits_full_widget_generation(monkeypatch):
+    monkeypatch.setenv("LLM_MODEL", "claude-fable-5")
     # langchain-anthropic's default (4096) truncates generateSandboxedUi args
     # mid-stream: css+html arrive but jsFunctions/jsExpressions are cut off, so
     # htmlComplete never fires and the widget never leaves the preview sandbox.
@@ -57,3 +58,29 @@ def test_main_uses_build_model():
     names = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)}
     assert "build_model" in names
     assert "ChatOpenAI" not in main_src.read_text()
+
+
+@pytest.mark.parametrize("name", ["", "   ", "gemini-example", "typo-model"])
+def test_invalid_model_configuration_fails_before_client_creation(monkeypatch, name):
+    monkeypatch.setenv("LLM_MODEL", name)
+    with pytest.raises(ValueError, match="LLM_MODEL"):
+        build_model()
+
+
+@pytest.mark.parametrize(
+    ("model", "key"),
+    [
+        ("claude-opus-4-6", "ANTHROPIC_API_KEY"),
+        ("gpt-5.4-2026-03-05", "OPENAI_API_KEY"),
+        ("chat-latest", "OPENAI_API_KEY"),
+    ],
+)
+@pytest.mark.parametrize("value", [None, "", "   "])
+def test_missing_provider_key_has_actionable_error(monkeypatch, model, key, value):
+    monkeypatch.setenv("LLM_MODEL", model)
+    if value is None:
+        monkeypatch.delenv(key, raising=False)
+    else:
+        monkeypatch.setenv(key, value)
+    with pytest.raises(ValueError, match=key):
+        build_model()

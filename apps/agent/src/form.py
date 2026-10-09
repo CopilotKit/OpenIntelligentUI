@@ -4,7 +4,8 @@ from langchain.tools import tool
 @tool
 def generate_form() -> str:
   """
-  Generates a login form for the user to sign in.
+  Return a non-functional sample login-form schema for protocol demonstrations.
+  This does not authenticate or save data. Never use it to collect real credentials.
   """
   components = [
       {

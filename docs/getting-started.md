@@ -1,71 +1,70 @@
-# Getting Started
+# Getting started
 
-## Clone and Install
+Run Open Intelligent UI by CopilotKit locally with Node.js 22+, pnpm 9+, Python 3.12+, and [uv](https://docs.astral.sh/uv/).
+
+## Install
 
 ```bash
 git clone https://github.com/CopilotKit/OpenIntelligentUI.git
 cd OpenIntelligentUI
-
-# Install all dependencies and create .env
 make setup
 ```
 
-`make setup` runs `pnpm install` and creates `apps/agent/.env` if it doesn't exist.
+`make setup` installs Node workspace dependencies and creates `apps/agent/.env` when absent. The agent's development command runs `uv sync` for Python dependencies.
 
-## Configure Environment
+## Configure the agent
 
-Add your Anthropic API key to `apps/agent/.env`:
+Edit `apps/agent/.env`. For the default configuration:
 
-```bash
-ANTHROPIC_API_KEY=sk-ant-...
+```dotenv
+OPENAI_API_KEY=your-provider-key
+LLM_MODEL=chat-latest
+TYPESAFE_API_KEY=your-typesafe-key
+JEV_MODEL=jev-latest
 ```
 
-You can also set these optional variables in the root `.env`:
+The model factory accepts `claude-*` names through Anthropic and `chat-latest` or `gpt-*` names through OpenAI. To override the default, set a model available to your account in `LLM_MODEL` and supply its provider key. The selected answer provider’s key and the Jev key are required. Unset `LLM_MODEL` uses the local default; an empty value or unsupported prefix fails with a configuration error.
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `LLM_MODEL` | `claude-fable-5` | Claude model for the agent |
-| `RATE_LIMIT_ENABLED` | `false` | Enable per-IP rate limiting |
-| `RATE_LIMIT_WINDOW_MS` | `60000` | Rate limit window (ms) |
-| `RATE_LIMIT_MAX` | `40` | Max requests per window |
-| `MCP_SERVER_URL` | — | Optional MCP server URL |
+Check model availability and access with a real request. This repository does not guarantee that every model name works or implement a separate native GPT-6 API. Keep provider keys on the agent server.
 
-## Run the Project
+## Configure the frontend
+
+Optional settings belong in `apps/app/.env.local` or the frontend process environment:
+
+| Variable                   | Default                 | Purpose                   |
+| -------------------------- | ----------------------- | ------------------------- |
+| `LANGGRAPH_DEPLOYMENT_URL` | `http://localhost:8123` | Agent URL                 |
+| `MCP_SERVER_URL`           | Unset                   | Optional MCP integration  |
+| `RATE_LIMIT_ENABLED`       | `false`                 | Per-IP runtime rate limit |
+| `RATE_LIMIT_WINDOW_MS`     | `60000`                 | Rate-limit window         |
+| `RATE_LIMIT_MAX`           | `40`                    | Requests per window       |
+
+The root [.env.example](../.env.example) documents both services' settings; placing variables only in a root `.env` is not the setup described here.
+
+## Start and verify
 
 ```bash
-# Start all services (frontend + agent)
 make dev
 ```
 
-This starts:
-- **Frontend** at [http://localhost:3000](http://localhost:3000) (Next.js)
-- **Agent** at [http://localhost:8123](http://localhost:8123) (FastAPI/LangGraph)
+This starts the frontend, agent, and MCP development processes. Open the [app](http://localhost:3000); the [agent](http://localhost:8123/health) and [frontend](http://localhost:3000/api/health) health endpoints should return `{"status":"ok"}`.
 
-You can also start services individually:
+1. Open the chat interface and confirm the composer is usable. Rendering the chat shell does not require a successful model call.
+2. Ask a simple factual question; the assistant should be able to answer directly in text.
+3. Submit “Make a bill splitter with editable total, tip, and number of people.” Check that a generated tool works and rejects invalid input.
+4. Ask a follow-up with changed assumptions. It should produce a new answer without requiring an earlier output to be patched.
+5. Try a current-data request. Without a relevant source tool, the assistant should explain the limitation or use clearly labeled inputs, not invent live data.
 
-```bash
-make dev-app     # Frontend only
-make dev-agent   # Agent only
-make dev-mcp     # MCP server only
-```
-
-## Verify It Works
-
-1. Open [http://localhost:3000](http://localhost:3000)
-2. You should see the Open Intelligent UI chat interface
-3. Try typing "Create a todo list for a weekend project" or click one of the demo suggestions
-4. The agent should respond and you'll see generative UI rendered in the chat
-
-## Project Scripts
+A health response confirms process availability; only a real prompt tests provider authentication and generation. See [Verification and launch](deployment.md#verification-and-launch) for the broader checks.
 
 ```bash
-make build   # Build all apps
-make lint    # Lint all apps
-make clean   # Clean build artifacts
-make help    # Show all available commands
+make dev-app
+make dev-agent
+make dev-mcp
+pnpm test
+uv run --directory apps/agent pytest
+make lint
+make build
 ```
 
-## Next Steps
-
-- [Architecture](architecture.md) — Understand how the pieces fit together
-- [Bring to Your App](bring-to-your-app.md) — Use these patterns in your own project
+Run individual development commands in separate terminals when needed. See [Architecture](architecture.md) and [Product and agent behavior](interactive-answers.md).

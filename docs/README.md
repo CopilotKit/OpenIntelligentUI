@@ -1,25 +1,21 @@
-# Open Intelligent UI Documentation
+# Open Intelligent UI documentation
 
-Open Intelligent UI is a showcase and template for building AI agents with [CopilotKit](https://copilotkit.ai) and [LangGraph](https://langchain-ai.github.io/langgraph/). It demonstrates agent-driven UI where an AI agent and users collaboratively manipulate shared application state.
+**Answers you can interact with**, by [CopilotKit](https://copilotkit.ai). The agent chooses text, native components, or custom interactive answers to help people understand, compare, and make tools.
 
-## Prerequisites
+Local prerequisites: Node.js 22+, pnpm 9+, Python 3.12+, uv, an OpenAI key for the default `chat-latest` answer model, and a TypeSafe key for Jev visualization routing. `claude-*` overrides use Anthropic instead of OpenAI.
 
-- Node.js 22+
-- Python 3.12+
-- [pnpm](https://pnpm.io/) 9+
-- [uv](https://docs.astral.sh/uv/) (Python package manager)
-- An OpenAI API key
+| Guide                                                | Description                                            |
+| ---------------------------------------------------- | ------------------------------------------------------ |
+| [Getting started](getting-started.md)                | Install, configure, and verify the project             |
+| [Product and agent behavior](interactive-answers.md) | Response selection, examples, evidence, and follow-ups |
+| [Visualization routing](visualization-routing.md) | Jev, A2UI tables, charts, diagrams, and maps |
+| [Architecture](architecture.md)                      | Agent, runtime, streaming renderer, and sandbox        |
+| [Deployment](deployment.md)                          | Configuration and launch verification                  |
+| [Bring to your app](bring-to-your-app.md)            | Adopt the integration patterns                         |
+| [Agent state](agent-state.md)                        | Shared state examples                                  |
+| [Generative UI](generative-ui.md)                    | Native component examples                              |
+| [Agent tools](agent-tools.md)                        | Python tool examples                                   |
+| [Human in the loop](human-in-the-loop.md)            | Collect user input through tools                       |
+| [MCP integration](mcp-integration.md)                | Optional MCP integration                               |
 
-## Documentation
-
-| Guide | Description |
-|-------|-------------|
-| [Getting Started](getting-started.md) | Install, configure, and run the project |
-| [Architecture](architecture.md) | How the monorepo and request flow are structured |
-| [Agent State](agent-state.md) | Bidirectional state sync between agent and frontend |
-| [Generative UI](generative-ui.md) | Register React components the agent can render |
-| [Agent Tools](agent-tools.md) | Create Python tools that read and update state |
-| [Human in the Loop](human-in-the-loop.md) | Pause the agent to collect user input |
-| [MCP Integration](mcp-integration.md) | Optional Model Context Protocol server |
-| [Deployment](deployment.md) | Deploy to Render or other platforms |
-| [Bring to Your App](bring-to-your-app.md) | Adopt these patterns in your own project |
+Existing API and package identifiers retain their original names for compatibility. The lower-level example guides describe reusable patterns; the product behavior and current setup guides above define the experience.

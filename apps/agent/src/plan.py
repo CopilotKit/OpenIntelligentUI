@@ -7,9 +7,9 @@ from langchain.tools import tool
 def plan_visualization(
     approach: str, technology: str, key_elements: list[str]
 ) -> str:
-    """Plan a visualization before building it. MUST be called before
-    generateSandboxedUi, pieChart, or barChart. Outlines the approach,
-    technology choice, and key elements.
+    """Optionally explain a complex visualization approach before building it.
+    Use when planning helps the user understand scope; it is not required before
+    generateSandboxedUi, pieChart, or barChart.
 
     Args:
         approach: One sentence describing the visualization strategy.

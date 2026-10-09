@@ -2,17 +2,17 @@
 
 Generative UI lets the agent render React components directly in the chat. Instead of responding with text, the agent can produce charts, interactive widgets, visualizations, and custom UI.
 
-Hook-based generative UI in this project is registered in `apps/app/src/hooks/use-generative-ui-examples.tsx`. Free-form sandboxed widgets use the runtime-level **Open Generative UI** rail (see below), wired up in `apps/app/src/app/layout.tsx`.
+Hook-based generative UI in this project is registered in `apps/app/src/hooks/use-generative-ui-examples.tsx`. Free-form sandboxed widgets use the runtime-level **Open Generative UI** rail (see below), wired up in `apps/app/src/app/providers.tsx`.
 
 ## Hooks Overview
 
-| Hook | Purpose |
-|------|---------|
-| `useComponent` | Register a named React component the agent can render with parameters |
-| `useFrontendTool` | Register a tool the agent can call that runs in the browser |
-| `useRenderTool` | Custom renderer for a specific backend tool |
-| `useDefaultRenderTool` | Fallback renderer for any tool without a custom renderer |
-| `useHumanInTheLoop` | Interactive component that pauses the agent for user input |
+| Hook                   | Purpose                                                               |
+| ---------------------- | --------------------------------------------------------------------- |
+| `useComponent`         | Register a named React component the agent can render with parameters |
+| `useFrontendTool`      | Register a tool the agent can call that runs in the browser           |
+| `useRenderTool`        | Custom renderer for a specific backend tool                           |
+| `useDefaultRenderTool` | Fallback renderer for any tool without a custom renderer              |
+| `useHumanInTheLoop`    | Interactive component that pauses the agent for user input            |
 
 All hooks are imported from `@copilotkit/react-core/v2`. Sandboxed streaming widgets are not hook-registered — they ride the runtime's `openGenerativeUI` option and the provider's `renderActivityMessages` prop.
 
@@ -29,10 +29,12 @@ import { useComponent } from "@copilotkit/react-core/v2";
 const PieChartProps = z.object({
   title: z.string(),
   description: z.string(),
-  data: z.array(z.object({
-    label: z.string(),
-    value: z.number(),
-  })),
+  data: z.array(
+    z.object({
+      label: z.string(),
+      value: z.number(),
+    }),
+  ),
 });
 
 useComponent({
@@ -74,12 +76,14 @@ const openGenerativeUI = {
 The iframe environment includes:
 
 **ES Module Libraries** (importmap pre-injected; use `<script type="module">` with bare imports in html, or `await import(...)` inside an async function in `jsFunctions` — the js channels run as classic scripts, so top-level `await` is not allowed):
+
 - `three` — 3D graphics (`import * as THREE from "three"`)
 - `gsap` — Animation (`import gsap from "gsap"`)
 - `d3` — Data visualization (`import * as d3 from "d3"`)
 - `chart.js/auto` — Charts
 
 **CSS Variables** for theming (light/dark mode):
+
 ```css
 var(--color-background-primary)
 var(--color-background-secondary)
@@ -100,14 +104,17 @@ Register a tool that the agent can call but that executes in the browser:
 ```tsx
 import { useFrontendTool } from "@copilotkit/react-core/v2";
 
-useFrontendTool({
-  name: "toggleTheme",
-  description: "Toggle the app between light and dark mode.",
-  parameters: z.object({}),
-  handler: async () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+useFrontendTool(
+  {
+    name: "toggleTheme",
+    description: "Toggle the app between light and dark mode.",
+    parameters: z.object({}),
+    handler: async () => {
+      setTheme(theme === "dark" ? "light" : "dark");
+    },
   },
-}, [theme, setTheme]);
+  [theme, setTheme],
+);
 ```
 
 The agent sees this as a callable tool. When it invokes `toggleTheme`, the handler runs in the browser.

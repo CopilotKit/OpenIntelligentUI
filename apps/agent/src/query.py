@@ -11,6 +11,13 @@ with open(_csv_path) as _f:
 @tool
 def query_data(query: str):
     """
-    Query the database, takes natural language. Always call before showing a chart or graph.
+    Return the bundled sample business dataset, NOT live business data.
+    The query is context only; this tool returns all rows without filtering.
+    Use only when the user wants sample data. Do not call for unrelated charts.
     """
-    return _cached_data
+    return {
+        "source": "Bundled db.csv sample dataset",
+        "is_sample": True,
+        "query_applied": False,
+        "rows": [dict(row) for row in _cached_data],
+    }

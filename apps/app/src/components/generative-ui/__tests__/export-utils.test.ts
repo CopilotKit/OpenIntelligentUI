@@ -115,3 +115,11 @@ describe("assembleStandaloneHtmlFromActivity", () => {
     expect(doc).toContain("<title>&lt;b&gt;Bad&lt;/b&gt;</title>");
   });
 });
+
+it("includes the shared trip animator before generated itinerary code", () => {
+  const doc = assembleStandaloneHtmlFromActivity({
+    jsExpressions: ["window.createTripAnimator({stopCount:2,onFrame:function(){}}).play();"],
+  });
+  expect(doc).toContain("window.createTripAnimator =");
+  expect(doc.indexOf("window.createTripAnimator =")).toBeLessThan(doc.indexOf("window.createTripAnimator({"));
+});

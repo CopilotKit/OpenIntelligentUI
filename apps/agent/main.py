@@ -5,7 +5,6 @@ It defines the workflow graph, state, tools, nodes and edges.
 
 import os
 import warnings
-from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -16,9 +15,12 @@ from deepagents import create_deep_agent
 from src.anthropic_compat import ConsecutiveSystemMessagesMiddleware
 from src.bounded_memory_saver import BoundedMemorySaver
 from src.model import build_model
+from src.visualization_router import JevVisualizationMiddleware
+from src.skill_backend import SKILL_SOURCES, build_agent_backend
 from src.query import query_data
 from src.todos import AgentState, todo_tools
 from src.form import generate_form
+from src.trip_images import get_trip_stop_images
 from src.plan import plan_visualization
 from src.prompt import SYSTEM_PROMPT
 
@@ -26,10 +28,15 @@ load_dotenv()
 
 agent = create_deep_agent(
     model=build_model(),
-    tools=[query_data, plan_visualization, *todo_tools, generate_form],
-    middleware=[CopilotKitMiddleware(), ConsecutiveSystemMessagesMiddleware()],
+    tools=[query_data, get_trip_stop_images, plan_visualization, *todo_tools, generate_form],
+    middleware=[
+        CopilotKitMiddleware(),
+        JevVisualizationMiddleware(),
+        ConsecutiveSystemMessagesMiddleware(),
+    ],
     context_schema=AgentState,
-    skills=[str(Path(__file__).parent / "skills")],
+    skills=SKILL_SOURCES,
+    backend=build_agent_backend,
     checkpointer=BoundedMemorySaver(max_threads=200),
     system_prompt=SYSTEM_PROMPT,
 )
@@ -46,7 +53,7 @@ add_langgraph_fastapi_endpoint(
     app=app,
     agent=LangGraphAGUIAgent(
         name="sample_agent",
-        description="CopilotKit + LangGraph demo agent",
+        description="Open Generative UI by CopilotKit — answers you can interact with",
         graph=agent,
     ),
     path="/",

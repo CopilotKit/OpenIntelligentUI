@@ -18,15 +18,19 @@ services:
         value: "3.12.6"
       - key: ANTHROPIC_API_KEY
         sync: false
-      # Optional fallback: set LLM_MODEL to a gpt-* name to route to OpenAI
+      # OpenAI key for the default ChatGPT Instant model
       - key: OPENAI_API_KEY
         sync: false
       - key: LANGSMITH_API_KEY
         sync: false
-      # gpt-* names route via OpenAI, Claude names via Anthropic
+      # chat-latest and gpt-* route via OpenAI, Claude names via Anthropic
       # (see apps/agent/src/model.py)
       - key: LLM_MODEL
-        value: gpt-5.4-2026-03-05
+        value: chat-latest
+      - key: TYPESAFE_API_KEY
+        sync: false
+      - key: JEV_MODEL
+        value: jev-latest
     buildFilter:
       paths:
         - apps/agent/**
@@ -48,6 +52,9 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "22"
+      # Public origin used for social-preview metadata; existing hostname retained.
+      - key: APP_URL
+        value: https://opengenerativeui.copilotkit.ai
       - key: SKIP_INSTALL_DEPS
         value: "true"
       - key: LANGGRAPH_DEPLOYMENT_URL

@@ -1,187 +1,205 @@
+<div align="center">
+
 # Open Intelligent UI
 
-An open-source showcase for building rich, interactive AI-generated UI with [CopilotKit](https://copilotkit.ai) and [LangChain Deep Agents](https://docs.langchain.com/oss/python/deepagents/overview). Ask the agent to visualize algorithms, create 3D animations, render charts, or generate interactive diagrams — all rendered as live HTML/SVG inside a sandboxed iframe.
+### Answers you can interact with.
 
-https://github.com/user-attachments/assets/232cfd7c-9e99-4c6f-814b-5c7e07a87ece
+**An open-source chat interface that turns questions into explanations, comparisons, and working tools.**
 
-## What It Does
+Built with [CopilotKit](https://github.com/CopilotKit/CopilotKit) and [AG-UI](https://docs.ag-ui.com/introduction). · [Get started](#get-started) · [Overview](#overview) · [Demos](#demo-scenes) · [Architecture](#how-it-works) · [Contributing](CONTRIBUTING.md)
 
-The agent produces **generative UI** — not just text responses, but fully interactive visual components:
+[![CI](https://github.com/CopilotKit/OpenIntelligentUI/actions/workflows/ci.yml/badge.svg)](https://github.com/CopilotKit/OpenIntelligentUI/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-- **Algorithm visualizations** — binary search, BFS vs DFS, sorting algorithms
-- **3D animations** — interactive WebGL/CSS3D scenes
-- **Charts & diagrams** — pie charts, bar charts, network diagrams
-- **Interactive widgets** — forms, simulations, math plots
+Clone the project, connect your model and visualization router, and adapt the interface and agent to your own workflows.
 
-All visuals are rendered in sandboxed iframes with automatic light/dark theming, progressive reveal animations, and responsive sizing.
+[**Building with Open Intelligent UI? Talk to an engineer →**](https://www.copilotkit.ai/talk-to-an-engineer?ref=openintelligentui_readme&utm_source=github&utm_medium=readme&utm_campaign=openintelligentui)
 
-## Quick Start
+</div>
+
+---
+
+<div align="center">
+
+<table><tr><td>
+
+https://github.com/user-attachments/assets/eb1666c1-e177-410b-96eb-9eb5c5534d95
+
+</td></tr></table>
+
+</div>
+
+_The 54-second launch film: ask, explore a 3D explanation, compare options, use a calculator, and follow a coastal itinerary. These are rendered launch scenes; the app runs the agent for each request._
+
+## Overview
+
+Ask a question, explore an idea, compare your options, or make a tool for the moment. The agent chooses a direct text answer, a native component, or a custom interactive UI based on what helps you accomplish the task.
+
+- **Understand** — explore a mechanism, step through an explanation, or change a variable.
+- **Compare** — examine criteria, assumptions, and tradeoffs side by side.
+- **Make a tool** — use a calculator, planner, or interactive model with working controls.
+
+The interface opens directly to chat. Type your request or choose a starter suggestion to begin an agent run. Text, native components, and generated interactive answers appear in the conversation. Sample numbers are illustrations, not live business or weather data.
+
+## Demo scenes
+
+From the launch film: explanations, comparisons, working tools, and maps in one conversation.
+
+### Explore in 3D
+
+Rotate an airplane with labeled pitch, roll, and yaw axes. Change the angles, play a smooth demonstration, or reset the view.
+
+<div align="center">
+
+<table><tr><td>
+
+https://github.com/user-attachments/assets/d0f96662-c8c0-4b25-8c0a-c26b032eb463
+
+</td></tr></table>
+
+</div>
+
+_3D plane · 4 seconds._
+
+### Turn comparisons into charts
+
+Compare exact values in a table, then ask a follow-up to visualize the differences. Jev selects A2UI for basic tables and Open Generative UI for charts and more complex visuals.
+
+<div align="center">
+
+<table><tr><td>
+
+https://github.com/user-attachments/assets/36c67a73-ddcf-4d64-b76a-ff659c988836
+
+</td></tr></table>
+
+</div>
+
+_Tables and charts · 8 seconds. Plan names and prices are illustrative._
+
+### Make a tool for the moment
+
+Split a bill with controls for the total, tip, and group size. Calculations update as you change the inputs.
+
+<div align="center">
+
+<table><tr><td>
+
+https://github.com/user-attachments/assets/a878a71c-2189-4313-848d-49216b52ce5b
+
+</td></tr></table>
+
+</div>
+
+_Bill splitter · 5 seconds._
+
+### Follow a trip on the map
+
+Explore a coastal itinerary with numbered pins and destination photos. The app uses live USGS tiles, credits its photos, and lets you pause, replay, or select a stop. Connections illustrate the itinerary; they are not verified driving directions.
+
+<div align="center">
+
+<table><tr><td>
+
+https://github.com/user-attachments/assets/2dd65441-e0e7-4813-891f-9bd476e873d6
+
+</td></tr></table>
+
+</div>
+
+_Coastal map · 4 seconds._
+
+<details>
+<summary>Scene gallery</summary>
+
+| 3D explanations | Tables → charts |
+| --- | --- |
+| ![3D airplane with pitch, roll, and yaw controls](https://github.com/user-attachments/assets/b74a1551-a096-4c12-84e8-af79949a2df6) | ![A plan comparison becomes a cost-per-seat chart](https://github.com/user-attachments/assets/6a25cc1d-d401-4914-b4f8-6488f3b17005) |
+| Explore aircraft rotation with labeled axes and sliders. | Compare exact values, then visualize them with a follow-up. |
+
+| Interactive tools | Maps |
+| --- | --- |
+| ![Bill splitter recalculating the share per person](https://github.com/user-attachments/assets/dea3c40b-025c-4d50-8fef-b14c50e3ca62) | ![California coastal itinerary with numbered map pins and photo cards](https://github.com/user-attachments/assets/098d4aad-95a9-4229-aae6-2de38f1eaa69) |
+| Change the group size and tip; the calculation updates. | Follow a coastal itinerary with map pins and destination photos. |
+
+</details>
+
+## Try it
+
+- **Animate a coastal trip** — a real USGS map with numbered pins, credited destination photos, and a six-second pin-drop sequence. Pause, replay, or select a stop. Connections are illustrative, not verified driving directions.
+- **Pitch, Roll & Yaw** — rotate a 3D airplane with labeled axes, angle controls, smooth demonstrations, and reset.
+- **Find your kind of weekend** — compare trip ideas and adjust your preferences.
+- **Split the bill fairly** — change the total, tip, and group size in a working calculator.
+
+These starters run the agent; they are not prerecorded responses. Jev chooses the presentation, so outputs can vary. Map tiles and destination photos require network access. Streaming answers preserve your reading position, reveal text as it enters view, and show the copy action on hover or keyboard focus (always available on touch).
+
+<a id="run-locally"></a>
+
+## Get started
+
+Prerequisites: Node.js 22+, pnpm 9+, Python 3.12+, and [uv](https://docs.astral.sh/uv/).
 
 ```bash
-make setup    # Install deps + create .env template
-# Edit apps/agent/.env with your real Anthropic API key
-make dev      # Start all services
+git clone https://github.com/CopilotKit/OpenIntelligentUI.git
+cd OpenIntelligentUI
+make setup
+# Set OPENAI_API_KEY and TYPESAFE_API_KEY in apps/agent/.env
+make dev
 ```
 
-> **Strong models required.** Generative UI demands high-capability models that can produce complex, well-structured HTML/SVG in a single pass. The agent runs on Anthropic Claude — `claude-fable-5` by default. Override with `LLM_MODEL` in your `.env`:
->
-> | Model | Notes |
-> |-------|-------|
-> | `claude-fable-5` | Default |
-> | `claude-opus-5-5` | Strong alternative |
->
-> Setting `LLM_MODEL` to a `gpt-*` name routes to OpenAI instead (requires `OPENAI_API_KEY`). For other providers, swap the chat model in `apps/agent/src/model.py` (see [docs/bring-to-your-app.md](docs/bring-to-your-app.md)). Smaller or weaker models will produce broken layouts, missing interactivity, or incomplete visualizations.
+Open the [app](http://localhost:3000). The [agent health endpoint](http://localhost:8123/health) confirms the agent service is running. See [Getting started](docs/getting-started.md) for configuration and verification.
 
-- **App**: http://localhost:3000
-- **Agent**: http://localhost:8123
+The default model is `chat-latest`, OpenAI’s documented alias for the latest ChatGPT Instant model, requiring `OPENAI_API_KEY`. Jev (`jev-latest`, requiring `TYPESAFE_API_KEY`) selects the renderer and visualization for each user turn. Basic tables use A2UI; charts, diagrams, calculators, and maps use Open Generative UI. Provider failures are surfaced instead of silently substituting another router or model. See [Visualization routing](docs/visualization-routing.md).
 
-### Available Commands
+## How it works
 
-| Command | Description |
-|---------|-------------|
-| `make setup` | Install all dependencies and create `.env` template |
-| `make dev` | Start all services (frontend + agent + mcp) |
-| `make dev-app` | Start Next.js frontend only |
-| `make dev-agent` | Start LangGraph agent only |
-| `make dev-mcp` | Start MCP server only |
-| `make build` | Build all apps |
-| `make lint` | Lint all apps |
-| `make clean` | Clean build artifacts |
-| `make help` | Show all available commands |
+The Python Deep Agent uses a task-first system prompt and focused skills. CopilotKit carries the agent stream to the Next.js app. Native components handle supported structured tasks; `generateSandboxedUi` streams custom HTML, CSS, and JavaScript into an isolated iframe.
 
-You can also use `pnpm` directly (`pnpm dev`, `pnpm dev:app`, `pnpm dev:agent`, etc.).
+Custom UI parameters must arrive in this order:
 
-## MCP Server (Self-Hosted)
+`initialHeight` → `placeholderMessages` → `css` → `html` → `jsFunctions` → `jsExpressions`
 
-The repo includes a standalone [Model Context Protocol](https://modelcontextprotocol.io) server that exposes the design system, skill instructions, and an HTML document assembler to any MCP-compatible client — including Claude Desktop, Claude Code, and Cursor.
+Local controls run inside the sandbox. A user-clicked follow-up can send selected values through the validated host bridge and start another agent turn. Prior outputs remain separate conversation artifacts; there is no cross-call patch API. See [Product and agent behavior](docs/interactive-answers.md) and [Architecture](docs/architecture.md).
 
-### What it provides
-
-- **`assemble_document` tool** — wraps HTML fragments with the full design system CSS and bridge JS, returning an iframe-ready document
-- **Skill resources** — browse and read skill instruction documents (`skills://list`, `skills://{name}`)
-- **Prompt templates** — pre-composed prompts for widgets, SVG diagrams, and advanced visualizations
-
-### Claude Desktop (stdio)
-
-Add to your Claude Desktop config (`claude_desktop_config.json`):
-
-```json
-{
-  "mcpServers": {
-    "open-intelligent-ui": {
-      "command": "node",
-      "args": ["dist/stdio.js"],
-      "cwd": "/path/to/apps/mcp"
-    }
-  }
-}
+```text
+apps/app/                Next.js + CopilotKit frontend
+apps/agent/              Python Deep Agent + FastAPI
+apps/mcp/                Optional standalone MCP server
+packages/design-system/  Shared theme, SVG, and form styles
 ```
 
-### Claude Code / HTTP clients
+## Development
 
 ```bash
-# Start the HTTP server
-cd apps/mcp && pnpm dev
+make dev-app     # Frontend
+make dev-agent   # Agent
+make dev-mcp     # Optional MCP server
+pnpm test       # JavaScript workspace tests
+uv run --directory apps/agent pytest
+make lint
+make build
 ```
 
-Add to `.mcp.json`:
+The [launch workflow](docs/deployment.md#verification-and-launch) includes browser checks and a real provider smoke test. Tests and builds alone do not verify model access or a deployment.
 
-```json
-{
-  "openIntelligentUI": {
-    "url": "http://localhost:3100/mcp"
-  }
-}
-```
+## Standalone MCP
 
-See [apps/mcp/README.md](apps/mcp/README.md) for full configuration, Docker deployment, and API reference.
+The optional MCP server exposes skill resources, prompt templates, and `assemble_document`. The assembler returns an HTML document as text; a compatible host must render it and implement its bridge. It is distinct from the web app's streaming Websandbox integration.
 
-## Architecture
+See the [MCP server guide](apps/mcp/README.md) for HTTP, stdio, and Docker configuration.
 
-Turborepo monorepo with three packages:
+## Compatibility and documentation
 
-```
-apps/
-├── app/       Next.js 16 frontend (CopilotKit v2, React 19, Tailwind 4)
-├── agent/     Deep Agent (deepagents + CopilotKit middleware, skills-based)
-└── mcp/       Standalone MCP server (design system + skills + document assembler)
-```
+Built with CopilotKit. The `openGenerativeUI` runtime API and `generateSandboxedUi` tool power the streaming experience.
 
-### Deep Agent + Skills
+- [Documentation index](docs/README.md)
+- [Bring these patterns to your app](docs/bring-to-your-app.md)
+- [Source repository](https://github.com/CopilotKit/OpenIntelligentUI)
 
-The agent backend uses [LangChain Deep Agents](https://docs.langchain.com/oss/python/deepagents/overview) (`create_deep_agent`) with a skills-based architecture. Instead of injecting all visualization instructions into the system prompt, skills are defined as `SKILL.md` files in `apps/agent/skills/` and loaded on-demand via progressive disclosure:
+## Contributing
 
-```
-apps/agent/skills/
-├── advanced-visualization/SKILL.md   # UI mockups, dashboards, Chart.js, generative art
-├── master-playbook/SKILL.md          # Response philosophy, decision trees, narration patterns
-└── svg-diagrams/SKILL.md             # SVG generation rules, component patterns, diagram types
-```
-
-Deep agents also provide built-in planning (`write_todos`), filesystem tools, and sub-agent support.
-
-### How It Works
-
-Open Intelligent UI is built on CopilotKit's Open Generative UI. Read the [Open Generative UI docs](https://docs.copilotkit.ai/generative-ui/open-generative-ui) to see how it works under the hood.
-
-1. **User sends a prompt** via the CopilotKit chat UI
-2. **Deep agent decides** whether to respond with text, call a tool, or render a visual component — consulting relevant skills as needed
-3. **`generateSandboxedUi`** — the canonical tool the CopilotKit runtime exposes when `openGenerativeUI` is enabled — receives the UI as ordered streaming parameters: `initialHeight` → `placeholderMessages` → `css` → `html` → `jsFunctions` → `jsExpressions`
-4. **`OpenGenerativeUIMiddleware`** in the runtime translates the streaming tool call into `open-generative-ui` activity events the frontend subscribes to
-5. **The demo's activity renderer** (registered via `renderActivityMessages`) shows the html streaming in live — morphing each update into a preview iframe with Idiomorph so nothing flickers — then boots the final websandbox iframe with the shared design-system CSS and CDN importmap injected
-6. **Sandbox bridge + autosize** — the generated UI calls back into the host through Zod-validated `sendPrompt`/`openLink` sandbox functions, and a ResizeObserver inside the iframe continuously reports content height for seamless auto-sizing
-
-### Key CopilotKit Patterns
-
-| Pattern | Hook / Option | Example |
-|---------|---------------|---------|
-| [Open Generative UI](https://docs.copilotkit.ai/generative-ui/open-generative-ui) | `openGenerativeUI` + `renderActivityMessages` | Streaming sandboxed widgets via `generateSandboxedUi` |
-| Generative UI | `useComponent` | Pie charts, bar charts |
-| Frontend tools | `useFrontendTool` | Theme toggle |
-| Human-in-the-loop | `useHumanInTheLoop` | Meeting scheduler |
-| Default tool render | `useDefaultRenderTool` | Tool execution status |
-
-## Decision Matrix — Picking the Right Visual
-
-| User asks about...          | Output type              | Technology          |
-|-----------------------------|--------------------------|---------------------|
-| How X works (physical)      | Illustrative diagram     | SVG                 |
-| How X works (abstract)      | Interactive explainer    | HTML + inline SVG   |
-| Process / steps             | Flowchart                | SVG                 |
-| Architecture / containment  | Structural diagram       | SVG                 |
-| Database schema / ERD       | Relationship diagram     | Mermaid             |
-| Trends over time            | Line chart               | Chart.js            |
-| Category comparison         | Bar chart                | Chart.js            |
-| Part of whole               | Doughnut chart           | Chart.js            |
-| KPIs / metrics              | Dashboard                | HTML metric cards   |
-| Design a UI                 | Mockup                   | HTML                |
-| Choose between options      | Comparison cards         | HTML grid           |
-| Cyclic process              | Step-through             | HTML stepper        |
-| Physics / math              | Simulation               | Canvas + JS         |
-| Function / equation         | Plotter                  | SVG + JS            |
-| Data exploration            | Sortable table           | HTML + JS           |
-| Creative / decorative       | Art / illustration       | SVG                 |
-| 3D visualization            | 3D scene                 | Three.js            |
-| Music / audio               | Synthesizer              | Tone.js             |
-| Network / graph             | Force layout             | D3.js               |
-| Quick factual answer        | Plain text               | None                |
-| Code solution               | Code block               | None                |
-| Emotional support           | Warm text                | None                |
-
-## Tech Stack
-
-Next.js 16, React 19, Tailwind CSS 4, LangChain Deep Agents, LangGraph, CopilotKit v2, Turborepo, Recharts
-
-## Star History
-
-<a href="https://www.star-history.com/?repos=CopilotKit%2FOpenIntelligentUI&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=CopilotKit/OpenIntelligentUI&type=date&theme=dark&legend=bottom-right" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=CopilotKit/OpenIntelligentUI&type=date&legend=bottom-right" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=CopilotKit/OpenIntelligentUI&type=date&legend=bottom-right" />
- </picture>
-</a>
+See [Contributing](CONTRIBUTING.md) for the development workflow and [the documentation index](docs/README.md) for guides to the agent, rendering, and deployment.
 
 ## License
 
-MIT
+[MIT](LICENSE).

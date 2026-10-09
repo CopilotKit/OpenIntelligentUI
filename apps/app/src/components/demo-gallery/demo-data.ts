@@ -1,9 +1,4 @@
-export type DemoCategory =
-  | "3D / Animation"
-  | "Data Visualization"
-  | "Diagrams"
-  | "Interactive"
-  | "UI Components";
+export type DemoCategory = "Understand" | "Compare" | "Make a tool";
 
 export interface DemoItem {
   id: string;
@@ -18,109 +13,70 @@ export const DEMO_EXAMPLES: DemoItem[] = [
   {
     id: "demo-pitch-roll-yaw",
     title: "Pitch, Roll & Yaw",
-    description:
-      "Interactive 3D airplane explaining pitch, roll, and yaw with control buttons",
-    category: "3D / Animation",
-    emoji: "✈️",
+    category: "Understand",
+    emoji: "✈",
+    description: "Rotate a 3D airplane and explore its three axes of motion.",
     prompt:
-      "Create a 3D plane in Three.js to explain how pitch, roll, and yaw work. Give me buttons to control each axis. Add labels showing which rotation is which.",
+      "Create an interactive 3D airplane in Three.js that explains pitch, roll, and yaw. Make the airplane recognizable with a fuselage, wings, tail and cockpit, on a clean light background. Start with a three-quarter view. Give each axis a labeled slider with its angle and a button that smoothly demonstrates that motion, plus a Reset button. Show color-coded labeled axes through the plane: pitch raises or lowers the nose about the lateral axis, roll banks the wings about the longitudinal axis, and yaw turns the nose left or right about the vertical axis. Match each label, control and rotation correctly. Animate demonstrations over about 1.5 seconds, keep the camera stable during demonstrations, and let me drag to orbit the camera. Include one short explanation per axis. Keep the canvas compact enough that the controls are visible in chat. Respect reduced motion and show a readable error if WebGL cannot initialize. This is a conceptual rotation model, not a flight simulator.",
   },
   {
-    id: "demo-weather",
-    title: "Weather Card",
-    description:
-      "Current weather conditions with temperature, humidity, wind, and UV index",
-    category: "UI Components",
-    emoji: "🌤️",
+    id: "map",
+    title: "Animate a coastal trip",
+    category: "Understand",
+    emoji: "⌖",
+    description: "Select a landmark and explore its surroundings.",
     prompt:
-      "Create a beautiful weather card showing current conditions for San Francisco with temperature, humidity, wind speed, UV index, and a 5-day mini forecast.",
+      "Plan an illustrative four-day coastal trip from San Francisco to Los Angeles, stopping at Half Moon Bay, Santa Cruz, Monterey, and Santa Barbara. Show a real map with numbered pins and photo cards. Pin the numbered dots onto the map one by one over 6 seconds: each dot drops gently into place with a small spring settle, then stays. Reveal connecting segments behind the pins and highlight the corresponding card. Keep the map camera still; do not animate a traveler along the route. Include pause, replay and clickable stop cards. Use live USGS tiles and sourced photos; label the connecting line as an itinerary sketch, not verified driving directions.",
   },
   {
-    id: "demo-binary-search",
-    title: "Binary Search",
-    description:
-      "Step-by-step visualization of binary search on a sorted array",
-    category: "Diagrams",
-    emoji: "🔍",
+    id: "bicycle",
+    title: "A bicycle, explained",
+    category: "Understand",
+    emoji: "↗",
+    description: "Explore the small mechanics behind a big idea.",
     prompt:
-      "Visualize how binary search works on a sorted list. Step by step with animation. Show the high, low, and mid pointers moving.",
+      "Explain how a bicycle's gears work with an interactive diagram. Let me change the gear ratio and see how pedal turns relate to wheel turns. Label the simplified assumptions and keep the controls usable on mobile.",
   },
   {
-    id: "demo-solar-system",
-    title: "Solar System",
-    description:
-      "3D solar system with orbiting planets you can click for facts",
-    category: "3D / Animation",
-    emoji: "🪐",
+    id: "probability",
+    title: "Make probability click",
+    category: "Understand",
+    emoji: "◌",
+    description: "Run the experiment. See the pattern emerge.",
     prompt:
-      "Build a 3D solar system with orbiting planets using Three.js. Let me click on each planet to see facts about it. Include realistic relative sizes and orbital speeds.",
+      "Help me understand the Monty Hall problem with a simulation. Let me compare always staying versus always switching over repeated trials, explain the host's rules, and label simulated results separately from theoretical probabilities.",
   },
   {
-    id: "demo-dashboard",
-    title: "KPI Dashboard",
-    description:
-      "Quarterly performance dashboard with metrics cards and bar chart",
-    category: "Data Visualization",
-    emoji: "📊",
+    id: "trip",
+    title: "Find your kind of weekend",
+    category: "Compare",
+    emoji: "⌁",
+    description: "Balance time, budget, and a little adventure.",
     prompt:
-      "Create a KPI dashboard showing Q1 2026 performance with revenue, active users, and conversion rate. Include a monthly revenue bar chart and trend indicators.",
+      "Help me compare a coastal, city, and mountain weekend for two. Build an interactive comparison with adjustable budget and travel-time preferences. Use clearly labeled illustrative estimates, not live prices, and explain how the recommendation changes.",
   },
   {
-    id: "demo-sorting",
-    title: "Sorting Comparison",
-    description:
-      "Animated side-by-side comparison of bubble sort vs quicksort",
-    category: "Diagrams",
-    emoji: "📶",
+    id: "meal",
+    title: "Dinner, minus the guesswork",
+    category: "Make a tool",
+    emoji: "✳",
+    description: "A menu and shopping list that scale with you.",
     prompt:
-      "Create an animated comparison of bubble sort vs quicksort running side by side on the same random array. Add speed controls and a step counter.",
+      "Make a vegetarian dinner planner for friends. Let me change the guest count from 2 to 12 and recalculate ingredient quantities. Include a preparation checklist, flag allergens, and explain any quantities that do not scale linearly.",
   },
   {
-    id: "demo-pomodoro",
-    title: "Pomodoro Timer",
-    description:
-      "Focus timer with circular progress ring, session counter, and controls",
-    category: "Interactive",
-    emoji: "🍅",
+    id: "split",
+    title: "Split the bill fairly",
+    category: "Make a tool",
+    emoji: "÷",
+    description: "Change the numbers. Settle it in seconds.",
     prompt:
-      "Build a Pomodoro timer with a circular progress ring, start/pause/reset buttons, and a session counter. Use 25 min work / 5 min break intervals. Make it look clean and minimal.",
-  },
-  {
-    id: "demo-neural-network",
-    title: "Neural Network",
-    description:
-      "Interactive neural network diagram with animated forward pass",
-    category: "Diagrams",
-    emoji: "🧠",
-    prompt:
-      "Visualize a simple neural network with input, hidden, and output layers. Animate the forward pass showing data flowing through the network. Let me adjust the number of neurons per layer.",
-  },
-  {
-    id: "demo-invoice",
-    title: "Invoice Card",
-    description:
-      "Compact invoice card with amount, client info, and action buttons",
-    category: "UI Components",
-    emoji: "🧾",
-    prompt:
-      "Create an invoice card showing a monthly billing summary with client name, amount due, invoice number, and send/expand action buttons.",
-  },
-  {
-    id: "demo-music-visualizer",
-    title: "Music Equalizer",
-    description:
-      "Audio equalizer visualization with animated frequency bars and controls",
-    category: "3D / Animation",
-    emoji: "🎵",
-    prompt:
-      "Create a music equalizer visualization with animated bars that respond to frequency sliders. Add controls for bass, mid, and treble. Use a gradient color scheme.",
+      "Build a bill splitter with editable subtotal, tip percentage, and number of people. Show the total and each person's share, validate inputs, and allocate rounding cents so all shares sum to the exact total. Do not imply that any payment is sent.",
   },
 ];
 
 export const DEMO_CATEGORIES: DemoCategory[] = [
-  "3D / Animation",
-  "Data Visualization",
-  "Diagrams",
-  "Interactive",
-  "UI Components",
+  "Understand",
+  "Compare",
+  "Make a tool",
 ];

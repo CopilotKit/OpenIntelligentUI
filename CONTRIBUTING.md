@@ -1,4 +1,4 @@
-# Contributing to Open Intelligent UI
+# Contributing to Open Generative UI
 
 ⭐ Thank you for your interest in contributing!!
 
@@ -23,18 +23,18 @@ If you find a bug in the source code, you can help us by [submitting an issue](h
 
 ## Missing a feature?
 
-So, you've got an awesome feature in mind? Throw it over to us by [creating an issue](https://github.com/CopilotKit/OpenIntelligentUI/issues/new) on our GitHub Repo.
+So, you've got an awesome feature in mind? Throw it over to us by [creating an issue](https://github.com/CopilotKit/open-generative-ui/issues/new) on our GitHub Repo.
 
 # How do I make a code contribution?
 
 ## Step 1: Make a fork
 
-Fork the [OpenIntelligentUI](https://github.com/CopilotKit/OpenIntelligentUI/issues) repository to your GitHub account. This means that you'll have a copy of the repository under _your-GitHub-username/OpenIntelligentUI_.
+Fork the [OpenIntelligentUI](https://github.com/CopilotKit/OpenIntelligentUI) repository to your GitHub account. This means that you'll have a copy of the repository under _your-GitHub-username/OpenIntelligentUI_.
 
 ## Step 2: Clone the repository to your local machine
 
 ```bash
-git clone https://github.com/<your-GitHub-username>/OpenIntelligentUI
+git clone https://github.com/<your-GitHub-username>/OpenGenerativeUI
 ```
 
 ## Step 3: Prepare the development environment
