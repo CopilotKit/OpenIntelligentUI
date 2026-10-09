@@ -1,10 +1,37 @@
+<div align="center">
+
 # Open Intelligent UI
 
-**Answers you can interact with.** An open-source project by [CopilotKit](https://copilotkit.ai).
+### Answers you can interact with.
 
-Watch the launch film · 54 seconds
+**An open-source chat interface that turns questions into explanations, comparisons, and working tools.**
+
+Built with [CopilotKit](https://github.com/CopilotKit/CopilotKit) and [AG-UI](https://docs.ag-ui.com/introduction). · [Get started](#get-started) · [Overview](#overview) · [Demos](#demo-scenes) · [Architecture](#how-it-works) · [Contributing](CONTRIBUTING.md)
+
+[![CI](https://github.com/CopilotKit/OpenIntelligentUI/actions/workflows/ci.yml/badge.svg)](https://github.com/CopilotKit/OpenIntelligentUI/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+Clone the project, connect your model and visualization router, and adapt the interface and agent to your own workflows.
+
+[**Building with Open Intelligent UI? Talk to an engineer →**](https://www.copilotkit.ai/talk-to-an-engineer?ref=openintelligentui_readme&utm_source=github&utm_medium=readme&utm_campaign=openintelligentui)
+
+</div>
+
+---
+
+<div align="center">
+
+<table><tr><td>
 
 https://github.com/user-attachments/assets/eb1666c1-e177-410b-96eb-9eb5c5534d95
+
+</td></tr></table>
+
+</div>
+
+_The 54-second launch film: ask, explore a 3D explanation, compare options, use a calculator, and follow a coastal itinerary. These are rendered launch scenes; the app runs the agent for each request._
+
+## Overview
 
 Ask a question, explore an idea, compare your options, or make a tool for the moment. The agent chooses a direct text answer, a native component, or a custom interactive UI based on what helps you accomplish the task.
 
@@ -18,6 +45,73 @@ The interface opens directly to chat. Type your request or choose a starter sugg
 
 From the launch film: explanations, comparisons, working tools, and maps in one conversation.
 
+### Explore in 3D
+
+Rotate an airplane with labeled pitch, roll, and yaw axes. Change the angles, play a smooth demonstration, or reset the view.
+
+<div align="center">
+
+<table><tr><td>
+
+https://github.com/user-attachments/assets/d0f96662-c8c0-4b25-8c0a-c26b032eb463
+
+</td></tr></table>
+
+</div>
+
+_3D plane · 4 seconds._
+
+### Turn comparisons into charts
+
+Compare exact values in a table, then ask a follow-up to visualize the differences. Jev selects A2UI for basic tables and Open Generative UI for charts and more complex visuals.
+
+<div align="center">
+
+<table><tr><td>
+
+https://github.com/user-attachments/assets/36c67a73-ddcf-4d64-b76a-ff659c988836
+
+</td></tr></table>
+
+</div>
+
+_Tables and charts · 8 seconds. Plan names and prices are illustrative._
+
+### Make a tool for the moment
+
+Split a bill with controls for the total, tip, and group size. Calculations update as you change the inputs.
+
+<div align="center">
+
+<table><tr><td>
+
+https://github.com/user-attachments/assets/a878a71c-2189-4313-848d-49216b52ce5b
+
+</td></tr></table>
+
+</div>
+
+_Bill splitter · 5 seconds._
+
+### Follow a trip on the map
+
+Explore a coastal itinerary with numbered pins and destination photos. The app uses live USGS tiles, credits its photos, and lets you pause, replay, or select a stop. Connections illustrate the itinerary; they are not verified driving directions.
+
+<div align="center">
+
+<table><tr><td>
+
+https://github.com/user-attachments/assets/2dd65441-e0e7-4813-891f-9bd476e873d6
+
+</td></tr></table>
+
+</div>
+
+_Coastal map · 4 seconds._
+
+<details>
+<summary>Scene gallery</summary>
+
 | 3D explanations | Tables → charts |
 | --- | --- |
 | ![3D airplane with pitch, roll, and yaw controls](https://github.com/user-attachments/assets/b74a1551-a096-4c12-84e8-af79949a2df6) | ![A plan comparison becomes a cost-per-seat chart](https://github.com/user-attachments/assets/6a25cc1d-d401-4914-b4f8-6488f3b17005) |
@@ -27,25 +121,6 @@ From the launch film: explanations, comparisons, working tools, and maps in one 
 | --- | --- |
 | ![Bill splitter recalculating the share per person](https://github.com/user-attachments/assets/dea3c40b-025c-4d50-8fef-b14c50e3ca62) | ![California coastal itinerary with numbered map pins and photo cards](https://github.com/user-attachments/assets/098d4aad-95a9-4229-aae6-2de38f1eaa69) |
 | Change the group size and tip; the calculation updates. | Follow a coastal itinerary with map pins and destination photos. |
-
-<details>
-<summary>Watch the four short clips</summary>
-
-**3D plane · 4 seconds**
-
-https://github.com/user-attachments/assets/d0f96662-c8c0-4b25-8c0a-c26b032eb463
-
-**Tables and charts · 8 seconds**
-
-https://github.com/user-attachments/assets/36c67a73-ddcf-4d64-b76a-ff659c988836
-
-**Bill splitter · 5 seconds**
-
-https://github.com/user-attachments/assets/a878a71c-2189-4313-848d-49216b52ce5b
-
-**Coastal map · 4 seconds**
-
-https://github.com/user-attachments/assets/2dd65441-e0e7-4813-891f-9bd476e873d6
 
 </details>
 
@@ -58,7 +133,9 @@ https://github.com/user-attachments/assets/2dd65441-e0e7-4813-891f-9bd476e873d6
 
 These starters run the agent; they are not prerecorded responses. Jev chooses the presentation, so outputs can vary. Map tiles and destination photos require network access. Streaming answers preserve your reading position, reveal text as it enters view, and show the copy action on hover or keyboard focus (always available on touch).
 
-## Run locally
+<a id="run-locally"></a>
+
+## Get started
 
 Prerequisites: Node.js 22+, pnpm 9+, Python 3.12+, and [uv](https://docs.astral.sh/uv/).
 
@@ -119,6 +196,10 @@ Built with CopilotKit. The `openGenerativeUI` runtime API and `generateSandboxed
 - [Bring these patterns to your app](docs/bring-to-your-app.md)
 - [Source repository](https://github.com/CopilotKit/OpenIntelligentUI)
 
+## Contributing
+
+See [Contributing](CONTRIBUTING.md) for the development workflow and [the documentation index](docs/README.md) for guides to the agent, rendering, and deployment.
+
 ## License
 
-MIT
+[MIT](LICENSE).
