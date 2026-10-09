@@ -85,6 +85,11 @@ def request_model(fallback):
     for client in (sync_client, async_client):
         client.organization = None
         client.project = None
+        client.admin_api_key = None
+        client.webhook_secret = None
+        # The SDK merges OPENAI_CUSTOM_HEADERS even with default_headers={}.
+        # Clear that merge before any request so host Authorization cannot win.
+        client._custom_headers = {}
     model = ChatOpenAI(
         model=DEFAULT_MODEL,
         api_key=credentials.openai,

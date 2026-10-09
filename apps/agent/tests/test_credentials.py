@@ -276,6 +276,9 @@ def test_byok_clients_ignore_server_openai_environment(monkeypatch):
     from src.credentials import Credentials, current_credentials
     from src.model import request_model
     poison = {
+        'OPENAI_CUSTOM_HEADERS': 'Authorization: Bearer host-key\nOpenAI-Organization: host-org\nX-Host-Secret: host-secret',
+        'OPENAI_ADMIN_KEY': 'host-admin',
+        'OPENAI_WEBHOOK_SECRET': 'host-webhook',
         'OPENAI_ORG_ID': 'server-org',
         'OPENAI_ORGANIZATION': 'server-organization',
         'OPENAI_PROJECT_ID': 'server-project',
@@ -294,7 +297,53 @@ def test_byok_clients_ignore_server_openai_environment(monkeypatch):
             assert str(client.base_url) == 'https://api.openai.com/v1/'
             assert client.api_key == 'visitor-key'
             assert not client._client.trust_env
+            assert 'X-Host-Secret' not in client.default_headers
+            assert client.admin_api_key is None
+            assert client.webhook_secret is None
+        sent = []
+        def send(client, request, **kwargs):
+            sent.append(request)
+            return httpx.Response(200, request=request, json={
+                'id': 'test', 'object': 'chat.completion', 'created': 0,
+                'model': 'chat-latest', 'choices': [],
+            })
+        async def asend(client, request, **kwargs):
+            return send(client, request, **kwargs)
+        monkeypatch.setattr(httpx.Client, 'send', send)
+        monkeypatch.setattr(httpx.AsyncClient, 'send', asend)
+        model.root_client.chat.completions.create(model='chat-latest', messages=[])
+        asyncio.run(model.root_async_client.chat.completions.create(model='chat-latest', messages=[]))
+        assert len(sent) == 2
+        for request in sent:
+            assert request.headers['Authorization'] == 'Bearer visitor-key'
+            assert 'OpenAI-Organization' not in request.headers
+            assert 'OpenAI-Project' not in request.headers
+            assert 'X-Host-Secret' not in request.headers
         assert not model.openai_proxy
         assert all(os.environ[name] == value for name, value in poison.items())
     finally:
         current_credentials.reset(token)
+
+
+def test_byok_validation_and_jev_ignore_proxy_environment(monkeypatch):
+    from src.credentials import Credentials, current_credentials, validate_credentials
+    from src.visualization_router import route, aroute
+    observed = []
+    def post(self, url, **kwargs):
+        observed.append(self.trust_env)
+        return httpx.Response(503)
+    async def apost(self, url, **kwargs):
+        return post(self, url, **kwargs)
+    monkeypatch.setattr(httpx.Client, 'post', post)
+    monkeypatch.setattr(httpx.AsyncClient, 'post', apost)
+    creds = Credentials('visitor', 'jev')
+    asyncio.run(validate_credentials(creds))
+    token = current_credentials.set(creds)
+    try:
+        with pytest.raises(ValueError):
+            route([])
+        with pytest.raises(ValueError):
+            asyncio.run(aroute([]))
+    finally:
+        current_credentials.reset(token)
+    assert observed == [False, False, False, False]

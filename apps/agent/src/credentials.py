@@ -102,7 +102,7 @@ async def validate_credentials(credentials):
 
     async def check(provider, url, options):
         try:
-            async with httpx.AsyncClient(timeout=12, follow_redirects=False) as client:
+            async with httpx.AsyncClient(timeout=12, follow_redirects=False, trust_env=False) as client:
                 response = await client.post(url, **options)
             if response.is_success:
                 return None

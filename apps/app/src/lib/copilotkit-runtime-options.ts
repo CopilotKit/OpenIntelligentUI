@@ -2,6 +2,13 @@ import { LangGraphHttpAgent } from "@copilotkit/runtime/langgraph";
 
 import type { ProviderHeaders } from "./provider-keys";
 
+class CredentialSafeLangGraphAgent extends LangGraphHttpAgent {
+  protected override requestInit(input: Parameters<LangGraphHttpAgent["requestInit"]>[0]): RequestInit {
+    // Custom credential headers survive cross-origin fetch redirects. Fail closed.
+    return { ...super.requestInit(input), redirect: "error" };
+  }
+}
+
 export interface RuntimeOptionsEnv {
   langgraphUrl?: string;
   mcpServerUrl?: string;
@@ -17,7 +24,7 @@ export function normalizeLanggraphUrl(raw?: string): string {
 export function buildRuntimeOptions(env: RuntimeOptionsEnv) {
   return {
     agents: {
-      default: new LangGraphHttpAgent({
+      default: new CredentialSafeLangGraphAgent({
         url: normalizeLanggraphUrl(env.langgraphUrl),
         ...(env.providerHeaders && { headers: env.providerHeaders }),
       }),
