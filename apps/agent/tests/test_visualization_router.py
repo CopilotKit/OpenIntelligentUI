@@ -75,6 +75,7 @@ def test_route_filters_renderers_preserving_data_tools(choice, allowed):
     tools = [
         {"name": n}
         for n in [
+            "render_a2ui",
             "send_a2ui_json_to_client",
             "generate_a2ui",
             "generateSandboxedUi",
@@ -97,6 +98,8 @@ def test_route_filters_renderers_preserving_data_tools(choice, allowed):
     assert ("send_a2ui_json_to_client" in names) == (
         allowed == "send_a2ui_json_to_client"
     )
+    # @copilotkit/runtime's locked A2UI middleware injects render_a2ui.
+    assert ("render_a2ui" in names) == (choice == "table")
     assert "barChart" not in names and "pieChart" not in names
     if choice == "map":
         assert "basemap.nationalmap.gov" in result.system_message.content
@@ -190,7 +193,7 @@ def test_real_graph_filters_injected_frontend_tools_and_routes_once(monkeypatch)
                 "description": name,
                 "parameters": {"type": "object", "properties": {}},
             }
-            for name in ["generateSandboxedUi", "send_a2ui_json_to_client", "barChart"]
+            for name in ["generateSandboxedUi", "render_a2ui", "send_a2ui_json_to_client", "barChart"]
         ]
         await graph.ainvoke(
             {
@@ -209,6 +212,7 @@ def test_real_graph_filters_injected_frontend_tools_and_routes_once(monkeypatch)
     asyncio.run(run())
     assert bound and all(
         "generateSandboxedUi" in tools
+        and "render_a2ui" not in tools
         and "barChart" not in tools
         and "send_a2ui_json_to_client" not in tools
         for tools in bound

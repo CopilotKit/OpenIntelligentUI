@@ -28,6 +28,7 @@ VISUALIZATIONS = {
     "calculator": "Compute outputs from user-adjustable inputs with formulas and units.",
 }
 RENDER_TOOLS = {
+    "render_a2ui",
     "send_a2ui_json_to_client",
     "generate_a2ui",
     "generateSandboxedUi",
@@ -175,7 +176,7 @@ def routed_request(request):
         return request
     renderer = decision["renderer"]
     allowed = {
-        "a2ui": {"send_a2ui_json_to_client", "generate_a2ui"},
+        "a2ui": {"render_a2ui", "send_a2ui_json_to_client", "generate_a2ui"},
         "open_generative_ui": {"generateSandboxedUi"},
         "text": set(),
     }[renderer]
@@ -187,7 +188,7 @@ def routed_request(request):
     ]
     note = f"\n\nCRITICAL: Jev presentation decision for this user turn: renderer={renderer}; visualization={decision['visualization']}. Use this presentation when answering; do not substitute another rendering tool. If required data is unavailable, ask a concise clarification instead of fabricating it."
     if renderer == "a2ui":
-        note += '\nUse the A2UI Table component from catalog copilotkit://open-generative-ui-tables. Its title, columns (string array), rows (array of string arrays, same width as columns), and source (honest data provenance) are required. For send_a2ui_json_to_client use v0.9 operations: createSurface with surfaceId and catalogId, then updateComponents with the same surfaceId and a root component {"id":"root","component":"Table","title":...,"columns":[...],"rows":[[...]],"source":...}. Pass operations as a JSON string in a2ui_json. No HTML or scripts.'
+        note += '\nUse the A2UI Table component from catalog copilotkit://open-generative-ui-tables. Its title, columns (string array), rows (array of string arrays, same width as columns), and source (honest data provenance) are required. When render_a2ui is available, call it with surfaceId (a unique string), catalogId="copilotkit://open-generative-ui-tables", and components as a flat array containing {"id":"root","component":"Table","title":...,"columns":[...],"rows":[[...]],"source":...}. The Table is the root for this custom catalog. Pass these structured arguments directly, not serialized operations or a2ui_json. If another A2UI tool is available instead, follow its advertised argument schema and use this same catalog and Table component. No HTML or scripts.'
     elif renderer == "open_generative_ui":
         note += "\nUse generateSandboxedUi. Choose an appropriate simple library or SVG for this visualization; label axes, units and assumptions."
     if decision["visualization"] in {"map", "animated_route"}:
