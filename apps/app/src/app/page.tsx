@@ -82,6 +82,36 @@ export default function HomePage() {
 
   return (
     <>
+      {/* Mobile block */}
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 sm:hidden" style={{ background: "var(--color-background, #f5f5f7)" }}>
+        <div className="flex flex-col items-center gap-4 text-center max-w-xs">
+          <div
+            className="flex items-center justify-center w-14 h-14 rounded-2xl"
+            style={{ background: "linear-gradient(135deg, rgba(190,194,255,0.15), rgba(133,224,206,0.12))" }}
+          >
+            <span className="text-3xl">🪁</span>
+          </div>
+          <h1 className="text-lg font-semibold" style={{ color: "var(--text-primary, #1a1a1a)" }}>
+            Desktop Only
+          </h1>
+          <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary, #666)" }}>
+            Open Generative UI is not available on mobile yet. Please visit on a desktop browser for the full experience.
+          </p>
+          <a
+            href="https://github.com/CopilotKit/OpenGenerativeUI"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-flex items-center px-5 py-2.5 rounded-full text-sm font-semibold text-white no-underline"
+            style={{
+              background: "linear-gradient(135deg, var(--color-lilac-dark, #6366f1), var(--color-mint-dark, #10b981))",
+              boxShadow: "0 1px 4px rgba(149,153,204,0.3)",
+            }}
+          >
+            View on GitHub
+          </a>
+        </div>
+      </div>
+
       {/* Animated background */}
       <div className="abstract-bg">
         <div className="blob-3" />
