@@ -85,7 +85,7 @@ def test_main_graph_discovers_skills_on_a_real_agent_turn(monkeypatch):
         def bind_tools(self, tools, **kwargs):
             return self
 
-    monkeypatch.setattr(src.model, 'build_model', lambda: ToolCapableFakeModel(
+    monkeypatch.setattr(src.model, 'build_model', lambda **kwargs: ToolCapableFakeModel(
         responses=[AIMessage(content='Ready')],
     ))
     # Import the real graph configuration, replacing only the network model.

@@ -8,13 +8,20 @@ import warnings
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from copilotkit import CopilotKitMiddleware, LangGraphAGUIAgent
+from fastapi.responses import JSONResponse
+from copilotkit import CopilotKitMiddleware
 from ag_ui_langgraph import add_langgraph_fastapi_endpoint
 from deepagents import create_deep_agent
 
 from src.anthropic_compat import ConsecutiveSystemMessagesMiddleware
 from src.bounded_memory_saver import BoundedMemorySaver
-from src.model import build_model
+from src.model import build_model, RequestModelMiddleware, CredentialScopedModel
+from src.credentials import (
+    CredentialsMiddleware,
+    CredentialScopedAgent,
+    current_credentials,
+    validate_credentials,
+)
 from src.visualization_router import JevVisualizationMiddleware
 from src.skill_backend import SKILL_SOURCES, build_agent_backend
 from src.query import query_data
@@ -27,9 +34,10 @@ from src.prompt import SYSTEM_PROMPT
 load_dotenv()
 
 agent = create_deep_agent(
-    model=build_model(),
+    model=CredentialScopedModel(fallback=build_model(allow_unconfigured=True)),
     tools=[query_data, get_trip_stop_images, plan_visualization, *todo_tools, generate_form],
     middleware=[
+        RequestModelMiddleware(),
         CopilotKitMiddleware(),
         JevVisualizationMiddleware(),
         ConsecutiveSystemMessagesMiddleware(),
@@ -42,6 +50,15 @@ agent = create_deep_agent(
 )
 
 app = FastAPI()
+app.add_middleware(CredentialsMiddleware)
+
+
+@app.post("/credentials/validate")
+async def validate_provider_credentials():
+    credentials = current_credentials.get()
+    if credentials is None:
+        return JSONResponse({"ok": False, "code": "invalid_keys"}, status_code=400)
+    return await validate_credentials(credentials)
 
 
 @app.get("/health")
@@ -51,7 +68,7 @@ def health():
 
 add_langgraph_fastapi_endpoint(
     app=app,
-    agent=LangGraphAGUIAgent(
+    agent=CredentialScopedAgent(
         name="sample_agent",
         description="Open Generative UI by CopilotKit — answers you can interact with",
         graph=agent,

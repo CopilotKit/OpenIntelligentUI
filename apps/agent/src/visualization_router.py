@@ -114,7 +114,10 @@ def routing_input(state):
 
 
 def request_options(context):
-    key = os.environ.get("TYPESAFE_API_KEY", "").strip()
+    from src.credentials import current_credentials
+
+    credentials = current_credentials.get()
+    key = credentials.jev if credentials else os.environ.get("TYPESAFE_API_KEY", "").strip()
     if not key:
         raise ValueError(
             "TYPESAFE_API_KEY is required for Jev visualization routing. Configure it and restart the agent."
@@ -122,7 +125,7 @@ def request_options(context):
     return {
         "headers": {"Authorization": f"Bearer {key}"},
         "json": {
-            "model": os.environ.get("JEV_MODEL", "jev-latest"),
+            "model": "jev-latest" if credentials else os.environ.get("JEV_MODEL", "jev-latest"),
             "state": {"conversation": context},
             "questions": {
                 "visualization": {

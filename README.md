@@ -143,13 +143,22 @@ Prerequisites: Node.js 22+, pnpm 9+, Python 3.12+, and [uv](https://docs.astral.
 git clone https://github.com/CopilotKit/OpenIntelligentUI.git
 cd OpenIntelligentUI
 make setup
-# Set OPENAI_API_KEY and TYPESAFE_API_KEY in apps/agent/.env
+# Optional: set shared OPENAI_API_KEY and TYPESAFE_API_KEY in apps/agent/.env
+# Or use API keys in the chat header after starting the app
 make dev
 ```
 
 Open the [app](http://localhost:3000). The [agent health endpoint](http://localhost:8123/health) confirms the agent service is running. See [Getting started](docs/getting-started.md) for configuration and verification.
 
 The default model is `chat-latest`, OpenAI’s documented alias for the latest ChatGPT Instant model, requiring `OPENAI_API_KEY`. Jev (`jev-latest`, requiring `TYPESAFE_API_KEY`) selects the renderer and visualization for each user turn. Basic tables use A2UI; charts, diagrams, calculators, and maps use Open Generative UI. Provider failures are surfaced instead of silently substituting another router or model. See [Visualization routing](docs/visualization-routing.md).
+
+## Use your own API keys
+
+Open **API keys** in the chat header, enter an OpenAI key and a Jev key, then choose **Test connection** and **Save keys**. The connection test makes a small request to each provider. Your keys use `chat-latest` for answers and `jev-latest` for visualization routing, with usage billed to your provider accounts.
+
+Keys stay in browser memory until refresh or **Clear keys**; the app does not save them in browser storage. Requests send them through the application server to their respective providers. They are kept out of chat state and checkpoints, and hosted LangSmith tracing is disabled for requests using your keys. Only use this feature on a deployment whose operator you trust. Saving or clearing keys starts a new chat; **New chat** keeps your keys for the current session.
+
+The agent can run without shared provider keys. Visitors must then supply both keys before chatting. Configured server credentials remain available when visitors have not supplied their own.
 
 ## How it works
 
