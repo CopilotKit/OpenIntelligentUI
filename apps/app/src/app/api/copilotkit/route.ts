@@ -4,6 +4,7 @@ import {
   copilotRuntimeNextJSAppRouterEndpoint,
 } from "@copilotkit/runtime";
 import { NextRequest } from "next/server";
+import { readProviderHeaders, PROVIDER_KEY_INPUT_ERROR } from "@/lib/provider-keys";
 import { buildRuntimeOptions } from "@/lib/copilotkit-runtime-options";
 
 // Simple in-memory sliding-window rate limiter (per IP)
@@ -35,16 +36,24 @@ if (RATE_LIMIT_ENABLED) {
   }, 300_000);
 }
 
-const runtimeOptions = buildRuntimeOptions({
-  langgraphUrl: process.env.LANGGRAPH_DEPLOYMENT_URL,
-  mcpServerUrl: process.env.MCP_SERVER_URL,
-});
-
 export const POST = async (req: NextRequest) => {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   if (isRateLimited(ip)) {
     return new Response("Too many requests", { status: 429 });
   }
+
+  let providerHeaders;
+  try {
+    providerHeaders = readProviderHeaders(req.headers);
+  } catch {
+    return Response.json({ error: PROVIDER_KEY_INPUT_ERROR }, { status: 400, headers: { "Cache-Control": "no-store" } });
+  }
+  // Construct the agent per request so one visitor's keys cannot reach another.
+  const runtimeOptions = buildRuntimeOptions({
+    langgraphUrl: process.env.LANGGRAPH_DEPLOYMENT_URL,
+    mcpServerUrl: process.env.MCP_SERVER_URL,
+    providerHeaders,
+  });
 
   const { handleRequest } = copilotRuntimeNextJSAppRouterEndpoint({
     endpoint: "/api/copilotkit",

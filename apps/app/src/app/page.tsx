@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ProviderKeysDialog } from "@/components/chat/provider-keys-dialog";
+import { useProviderKeys } from "@/components/chat/provider-keys";
 import Image from "next/image";
 import { ReaderScrollView } from "@/components/chat/reader-scroll-view";
 import { AnswerMarkdown } from "@/components/chat/answer-markdown";
@@ -15,6 +17,8 @@ export default function HomePage() {
   useGenerativeUIExamples();
   useExampleSuggestions();
   const { agent } = useAgent();
+  const { newChat, hasKeys } = useProviderKeys();
+  const [keysOpen, setKeysOpen] = useState(false);
   const { copilotkit } = useCopilotKit();
   const [error, setError] = useState<string | null>(null);
   const [retrying, setRetrying] = useState(false);
@@ -61,8 +65,7 @@ export default function HomePage() {
     setError(null);
     try {
       await copilotkit.runAgent({ agent });
-    } catch (cause) {
-      console.error("Open Intelligent UI retry failed", cause);
+    } catch {
       setError(
         "The agent is unavailable. Check your connection or local agent configuration, then retry.",
       );
@@ -80,8 +83,11 @@ export default function HomePage() {
       <header className="chat-header">
         <span className="chat-name">Open Intelligent UI</span>
         <nav aria-label="Main navigation">
-          <button type="button" onClick={() => window.location.assign("/")}>
+          <button type="button" onClick={newChat} disabled={agent.isRunning || retrying}>
             New chat
+          </button>
+          <button type="button" onClick={() => setKeysOpen(true)} disabled={agent.isRunning || retrying} aria-haspopup="dialog">
+            API keys{hasKeys ? " •" : ""}
           </button>
           <a
             href="https://github.com/CopilotKit/OpenIntelligentUI"
@@ -106,8 +112,9 @@ export default function HomePage() {
           </a>
         </nav>
       </header>
+      {keysOpen && <ProviderKeysDialog onClose={() => setKeysOpen(false)} disabled={agent.isRunning || retrying} />}
       <main id="main-content" className="chat-main">
-        {error && agent.messages.length > 0 && (
+        {error && (
           <div className="chat-error" role="alert">
             <p>{error}</p>
             <button
@@ -117,6 +124,7 @@ export default function HomePage() {
             >
               Retry answer
             </button>
+            <button type="button" className="provider-keys-recover" disabled={retrying || agent.isRunning} onClick={() => setKeysOpen(true)}>API keys</button>
           </div>
         )}
         <div className="chat-content" ref={chatRoot}>

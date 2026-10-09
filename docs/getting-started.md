@@ -14,7 +14,9 @@ make setup
 
 ## Configure the agent
 
-Edit `apps/agent/.env`. For the default configuration:
+You can start the agent without shared provider keys and use **API keys** in the chat header to test and save your own OpenAI and Jev keys for the current browser session. Refreshing clears the keys.
+
+To provide shared credentials instead, edit `apps/agent/.env`:
 
 ```dotenv
 OPENAI_API_KEY=your-provider-key
@@ -23,9 +25,9 @@ TYPESAFE_API_KEY=your-typesafe-key
 JEV_MODEL=jev-latest
 ```
 
-The model factory accepts `claude-*` names through Anthropic and `chat-latest` or `gpt-*` names through OpenAI. To override the default, set a model available to your account in `LLM_MODEL` and supply its provider key. The selected answer provider’s key and the Jev key are required. Unset `LLM_MODEL` uses the local default; an empty value or unsupported prefix fails with a configuration error.
+The model factory accepts `claude-*` names through Anthropic and `chat-latest` or `gpt-*` names through OpenAI. To override the default, set a model available to your account in `LLM_MODEL` and supply its provider key. Shared mode requires the selected answer provider’s key and the Jev key; BYOK requests supply their own pair. Unset `LLM_MODEL` uses the local default; an empty value or unsupported prefix fails with a configuration error.
 
-Check model availability and access with a real request. This repository does not guarantee that every model name works or implement a separate native GPT-6 API. Keep provider keys on the agent server.
+Check model availability and access with a real request. This repository does not guarantee that every model name works or implement a separate native GPT-6 API. Never put shared provider keys in public frontend environment variables. See [BYOK behavior](../README.md#use-your-own-api-keys).
 
 ## Configure the frontend
 

@@ -1,0 +1,27 @@
+.provider-keys-dialog {
+  margin: auto;
+  width: min(480px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  padding: 24px;
+  color: var(--text-primary);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  box-shadow: 0 16px 64px #0003;
+}
+.provider-keys-dialog::backdrop { background: #0006; }
+.provider-keys-dialog h2 { margin: 0 0 12px; font-size: 20px; font-weight: 600; }
+.provider-keys-dialog p { margin: 12px 0; font-size: 13px; line-height: 1.6; }
+.provider-keys-dialog label { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 500; }
+.provider-keys-dialog input { width: 100%; min-width: 0; border: 1px solid var(--border-default); border-radius: 8px; padding: 10px; background: var(--surface-primary); font-size: 16px; }
+.provider-keys-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+.provider-keys-actions button { padding: 10px 12px; border: 1px solid var(--border-default); border-radius: 8px; font-size: 12px; cursor: pointer; }
+.provider-keys-actions .provider-keys-save { background: var(--text-primary); color: var(--surface-primary); }
+.provider-keys-actions button:disabled, .chat-header button:disabled { opacity: .45; cursor: not-allowed; }
+.provider-keys-dialog :focus-visible { outline: 2px solid #189370; outline-offset: 3px; }
+.chat-error .provider-keys-recover { margin-left: 16px; }
+@media (max-width: 600px) {
+  .chat-header { height: auto; min-height: 76px; flex-wrap: wrap; padding: 12px 16px; gap: 12px; }
+  .chat-header nav { flex-wrap: wrap; gap: 16px; }
+}
