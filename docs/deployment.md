@@ -15,7 +15,7 @@ For shared credentials, the blueprint and Python factory default to `LLM_MODEL=c
 
 | Variable                                  | Service       | Purpose                                                                             |
 | ----------------------------------------- | ------------- | ----------------------------------------------------------------------------------- |
-| `LLM_MODEL`                               | Agent         | `claude-*` routes to Anthropic; `gpt-*` routes to OpenAI                            |
+| `LLM_MODEL`                               | Agent         | `claude-*` routes to Anthropic; `gpt-*` to OpenAI; `vendor/model` to `OPENAI_BASE_URL` |
 | `ANTHROPIC_API_KEY`                       | Agent         | Required when selecting Anthropic                                                   |
 | `OPENAI_API_KEY`                          | Agent         | Required when selecting OpenAI                                                      |
 | `LANGSMITH_API_KEY`                       | As configured | Optional tracing configuration                                                      |
