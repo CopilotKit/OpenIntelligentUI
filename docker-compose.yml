@@ -1,0 +1,30 @@
+services:
+  agent:
+    build: apps/agent
+    env_file: apps/agent/.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8123/health')"]
+      interval: 30s
+
+  mcp:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.mcp
+    ports:
+      - "127.0.0.1:3100:3100"
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.app
+      args:
+        NEXT_PUBLIC_SERVER_KEYS: "true"
+    environment:
+      LANGGRAPH_DEPLOYMENT_URL: http://agent:8123
+      MCP_SERVER_URL: http://mcp:3100/mcp
+    ports:
+      - "127.0.0.1:${APP_PORT:-3000}:3000"
+    depends_on: [agent, mcp]
+    restart: unless-stopped

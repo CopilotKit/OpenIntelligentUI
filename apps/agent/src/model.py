@@ -6,6 +6,7 @@ from contextlib import contextmanager
 from langchain.agents.middleware import AgentMiddleware
 from langchain_core.outputs import ChatGeneration, ChatGenerationChunk, ChatResult
 from langchain_core.messages import AIMessageChunk
+from langchain_core.runnables import RunnableBinding
 from pydantic import Field
 from langchain_anthropic import ChatAnthropic
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -146,31 +147,48 @@ class CredentialScopedModel(BaseChatModel):
         tool_options = options.pop("_credential_tool_options", {})
         if tools is not None:
             model = model.bind_tools(tools, **tool_options)
+        # Call the provider's private methods so only this wrapper's run reports
+        # events. A public nested call inherits the graph's callbacks and streams
+        # every token and tool-call delta to AG-UI a second time.
+        if isinstance(model, RunnableBinding):
+            options = {**model.kwargs, **options}
+            model = model.bound
         return model, options
 
     def _generate(self, messages, stop=None, run_manager=None, **kwargs):
         with provider_error_boundary():
             model, options = self._target(kwargs)
-            message = model.invoke(messages, stop=stop, **options)
-            return ChatResult(generations=[ChatGeneration(message=message)])
+            return model._generate(messages, stop=stop, **options)
 
     async def _agenerate(self, messages, stop=None, run_manager=None, **kwargs):
         with provider_error_boundary():
             model, options = self._target(kwargs)
-            message = await model.ainvoke(messages, stop=stop, **options)
-            return ChatResult(generations=[ChatGeneration(message=message)])
+            return await model._agenerate(messages, stop=stop, **options)
 
     def _stream(self, messages, stop=None, run_manager=None, **kwargs):
         with provider_error_boundary():
             model, options = self._target(kwargs)
-            for chunk in model.stream(messages, stop=stop, **options):
-                yield ChatGenerationChunk(message=as_chunk(chunk))
+            if not streams(model):
+                yield as_generation_chunk(model._generate(messages, stop=stop, **options))
+                return
+            yield from model._stream(messages, stop=stop, **options)
 
     async def _astream(self, messages, stop=None, run_manager=None, **kwargs):
         with provider_error_boundary():
             model, options = self._target(kwargs)
-            async for chunk in model.astream(messages, stop=stop, **options):
-                yield ChatGenerationChunk(message=as_chunk(chunk))
+            if not streams(model):
+                yield as_generation_chunk(await model._agenerate(messages, stop=stop, **options))
+                return
+            async for chunk in model._astream(messages, stop=stop, **options):
+                yield chunk
+
+
+def streams(model):
+    return type(model)._stream is not BaseChatModel._stream or type(model)._astream is not BaseChatModel._astream
+
+
+def as_generation_chunk(result):
+    return ChatGenerationChunk(message=as_chunk(result.generations[0].message))
 
 
 def as_chunk(message):
