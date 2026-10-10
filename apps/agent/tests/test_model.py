@@ -84,3 +84,12 @@ def test_missing_provider_key_has_actionable_error(monkeypatch, model, key, valu
         monkeypatch.setenv(key, value)
     with pytest.raises(ValueError, match=key):
         build_model()
+
+
+def test_vendor_model_names_route_to_openai_compatible_gateway(monkeypatch):
+    monkeypatch.setenv("LLM_MODEL", "deepseek/deepseek-chat")
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://openrouter.ai/api/v1")
+    model = build_model()
+    assert isinstance(model, ChatOpenAI)
+    assert model.model_name == "deepseek/deepseek-chat"
+    assert str(model.root_client.base_url).startswith("https://openrouter.ai/api/v1")

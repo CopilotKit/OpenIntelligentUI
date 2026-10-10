@@ -25,7 +25,7 @@ TYPESAFE_API_KEY=your-typesafe-key
 JEV_MODEL=jev-latest
 ```
 
-The model factory accepts `claude-*` names through Anthropic and `chat-latest` or `gpt-*` names through OpenAI. To override the default, set a model available to your account in `LLM_MODEL` and supply its provider key. Shared mode requires the selected answer provider’s key and the Jev key; BYOK requests supply their own pair. Unset `LLM_MODEL` uses the local default; an empty value or unsupported prefix fails with a configuration error.
+The model factory accepts `claude-*` names through Anthropic and `chat-latest` or `gpt-*` names through OpenAI. `vendor/model` names, such as `deepseek/deepseek-chat`, go through an OpenAI-compatible gateway such as OpenRouter: set `OPENAI_BASE_URL=https://openrouter.ai/api/v1` and put the gateway key in `OPENAI_API_KEY`. Browser-supplied keys always use OpenAI. To override the default, set a model available to your account in `LLM_MODEL` and supply its provider key. Shared mode requires the selected answer provider’s key and the Jev key; BYOK requests supply their own pair. Unset `LLM_MODEL` uses the local default; an empty value or unsupported prefix fails with a configuration error.
 
 Check model availability and access with a real request. This repository does not guarantee that every model name works or implement a separate native GPT-6 API. Never put shared provider keys in public frontend environment variables. See [BYOK behavior](../README.md#use-your-own-api-keys).
 
