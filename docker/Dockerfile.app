@@ -33,6 +33,9 @@ COPY --from=deps /app/packages/design-system/node_modules ./packages/design-syst
 # Copy source code
 COPY . .
 
+# Inlined at build time; "true" skips the browser key prompt.
+ARG NEXT_PUBLIC_SERVER_KEYS
+
 # Enable pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 

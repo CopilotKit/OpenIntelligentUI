@@ -40,8 +40,19 @@ Optional settings belong in `apps/app/.env.local` or the frontend process enviro
 | `RATE_LIMIT_ENABLED`       | `false`                 | Per-IP runtime rate limit |
 | `RATE_LIMIT_WINDOW_MS`     | `60000`                 | Rate-limit window         |
 | `RATE_LIMIT_MAX`           | `40`                    | Requests per window       |
+| `NEXT_PUBLIC_SERVER_KEYS`  | Unset                   | Build-time; `true` skips the browser key prompt when the agent has its own keys |
 
 The root [.env.example](../.env.example) documents both services' settings; placing variables only in a root `.env` is not the setup described here.
+
+## Run with Docker Compose
+
+To self-host the app, agent, and MCP server with the agent's own keys, fill in `apps/agent/.env` (see above) and run:
+
+```bash
+docker compose up -d
+```
+
+The app listens on `http://localhost:3000` (set `APP_PORT` to change it) and the MCP server on `http://localhost:3100/mcp`; both bind to `127.0.0.1`. The compose build sets `NEXT_PUBLIC_SERVER_KEYS=true`, so chat uses the agent's `.env` keys without asking for browser keys. After editing `apps/agent/.env`, run `docker compose up -d agent` to apply it.
 
 ## Start and verify
 
