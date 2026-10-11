@@ -12,9 +12,14 @@ window.openLink = function(url) {
 };
 document.addEventListener('click', function(e) {
   var a = e.target.closest('a[href]');
-  if (a && a.href.startsWith('http')) {
+  if (!a) return;
+  // SVG <a> elements expose href as an SVGAnimatedString, not a string.
+  var url = typeof a.href === 'string'
+    ? a.href
+    : new URL(a.href.baseVal, document.baseURI).href;
+  if (url.startsWith('http')) {
     e.preventDefault();
-    window.parent.postMessage({ type: 'open-link', url: a.href }, '*');
+    window.parent.postMessage({ type: 'open-link', url: url }, '*');
   }
 });
 function reportHeight() {
