@@ -38,8 +38,16 @@ export const CSP_META_TAG = `<meta http-equiv="Content-Security-Policy" content=
       https://unpkg.com;
   ">`;
 
+const HEAD_OPEN_TAG = /<head(?:\s[^>]*)?>/i;
+
+/**
+ * Websandbox requires a literal lowercase "<head>" in its frame content and
+ * injects its bootstrap there, so "<HEAD>" or "<head lang=...>" is normalized
+ * (attributes on <head> have no effect) and a missing head is added.
+ */
 export function ensureHead(html: string): string {
-  if (/<head[\s>]/i.test(html)) return html;
+  if (html.includes("<head>")) return html;
+  if (HEAD_OPEN_TAG.test(html)) return html.replace(HEAD_OPEN_TAG, "<head>");
   return `<head></head>${html}`;
 }
 
@@ -58,11 +66,7 @@ export function buildFinalFrameContent(html: string, css?: string): string {
     DESIGN_SYSTEM_STYLE_TAG +
     (css ? `<style>${css}</style>` : "");
   const withHead = ensureHead(html);
-  const openTag = withHead.match(/<head[^>]*>/i);
-  if (!openTag || openTag.index === undefined) {
-    return `<head>${headContent}</head>${withHead}`;
-  }
-  const insertAt = openTag.index + openTag[0].length;
+  const insertAt = withHead.indexOf("<head>") + "<head>".length;
   return withHead.slice(0, insertAt) + headContent + withHead.slice(insertAt);
 }
 
