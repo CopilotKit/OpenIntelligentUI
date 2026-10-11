@@ -155,7 +155,10 @@ const result = await client.callTool("assemble_document", {
 });
 
 // result.content[0].text is a complete HTML document
-// Render in: <iframe sandbox="allow-scripts allow-same-origin" srcdoc={result.content[0].text} />
+// Render in: <iframe sandbox="allow-scripts" srcdoc={result.content[0].text} />
+// Do not add allow-same-origin: a srcdoc iframe shares the host page's origin,
+// so generated scripts could then read the host page and its storage. The
+// sendPrompt/openLink bridge uses postMessage and works without it.
 ```
 
 ### Resource: `skills://list`
