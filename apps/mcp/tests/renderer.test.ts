@@ -37,3 +37,82 @@ describe("assembleDocument", () => {
     expect(doc).toContain("ResizeObserver");
   });
 });
+
+describe("bridge link handling", () => {
+  // Run the bridge script against minimal stubs and return its click handler
+  // plus the messages it posts to the parent frame.
+  function loadBridge() {
+    const doc = assembleDocument("");
+    const script = doc.slice(
+      doc.lastIndexOf("<script>") + "<script>".length,
+      doc.lastIndexOf("</script>")
+    );
+    let onClick: ((e: unknown) => void) | undefined;
+    const posted: unknown[] = [];
+    const document = {
+      baseURI: "about:srcdoc",
+      documentElement: { scrollHeight: 0 },
+      body: {},
+      getElementById: () => null,
+      addEventListener: (type: string, fn: (e: unknown) => void) => {
+        if (type === "click") onClick = fn;
+      },
+    };
+    const window = {
+      parent: { postMessage: (msg: unknown) => posted.push(msg) },
+      addEventListener: () => {},
+    };
+    new Function(
+      "document",
+      "window",
+      "ResizeObserver",
+      "setInterval",
+      "setTimeout",
+      script
+    )(
+      document,
+      window,
+      class {
+        observe() {}
+      },
+      () => 0,
+      () => 0
+    );
+    return { click: onClick!, posted };
+  }
+
+  function clickOn(href: unknown) {
+    const event = {
+      target: { closest: () => ({ href }) },
+      defaultPrevented: false,
+    };
+    return Object.assign(event, {
+      preventDefault: () => {
+        event.defaultPrevented = true;
+      },
+    });
+  }
+
+  it("forwards html anchors to the parent", () => {
+    const { click, posted } = loadBridge();
+    const event = clickOn("https://example.com/a");
+    click(event);
+    expect(event.defaultPrevented).toBe(true);
+    expect(posted).toEqual([
+      { type: "open-link", url: "https://example.com/a" },
+    ]);
+  });
+
+  it("forwards svg anchors, whose href is an SVGAnimatedString", () => {
+    const { click, posted } = loadBridge();
+    const event = clickOn({
+      baseVal: "https://example.com/b",
+      animVal: "https://example.com/b",
+    });
+    click(event);
+    expect(event.defaultPrevented).toBe(true);
+    expect(posted).toEqual([
+      { type: "open-link", url: "https://example.com/b" },
+    ]);
+  });
+});
