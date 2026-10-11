@@ -25,6 +25,13 @@ export interface StandaloneActivityContent {
 
 const WEBSANDBOX_STUB = `window.Websandbox = { connection: { remote: { sendPrompt: async () => {}, openLink: async ({ url }) => { if (/^https:/.test(url)) window.open(url, "_blank", "noopener,noreferrer"); } } } };`;
 
+// The live sandbox runs jsFunctions and each jsExpression as separate scripts,
+// so generated code often omits trailing semicolons. Joined into one script,
+// automatic semicolon insertion would merge the pieces: "let n = 0" followed
+// by "(function () {...})()" parses as a call on 0. An explicit separator keeps
+// each piece a separate statement.
+const STATEMENT_SEPARATOR = "\n;\n";
+
 function escapeScriptClose(js: string): string {
   return js.replace(/<\/script/gi, "<\\/script");
 }
@@ -56,7 +63,7 @@ export function assembleStandaloneHtmlFromActivity(
     ...(expressions.length > 0
       ? [
           `(async () => {
-${expressions.map(escapeScriptClose).join("\n")}
+${expressions.map(escapeScriptClose).join(STATEMENT_SEPARATOR)}
 })();`,
         ]
       : []),
@@ -64,7 +71,7 @@ ${expressions.map(escapeScriptClose).join("\n")}
   const generatedScript =
     scriptParts.length > 0
       ? `<script>
-${scriptParts.join("\n")}
+${scriptParts.join(STATEMENT_SEPARATOR)}
   </script>`
       : "";
   return `<!DOCTYPE html>
