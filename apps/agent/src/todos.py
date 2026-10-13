@@ -20,6 +20,11 @@ def manage_todos(todos: list[Todo], runtime: ToolRuntime) -> Command:
     """
     Manage the current todos.
     """
+    # Validate supplied IDs before assigning any missing IDs or updating state.
+    supplied_ids = [todo["id"] for todo in todos if todo.get("id")]
+    if len(supplied_ids) != len(set(supplied_ids)):
+        raise ValueError("Todo IDs must be unique; give each item a distinct ID.")
+
     # Ensure all todos have IDs that are unique
     for todo in todos:
         if "id" not in todo or not todo["id"]:
