@@ -35,11 +35,13 @@ export function MeetingTimePicker({
   const [declined, setDeclined] = useState(false);
 
   const handleSelectSlot = (slot: TimeSlot) => {
+    if (!respond) return;
     setSelectedSlot(slot);
     respond?.(`Meeting scheduled for ${slot.date} at ${slot.time}${slot.duration ? ` (${slot.duration})` : ''}.`);
   };
 
   const handleDecline = () => {
+    if (!respond) return;
     setDeclined(true);
     respond?.("The user declined all proposed meeting times. Please suggest alternative times or ask for their availability.");
   };
@@ -91,6 +93,7 @@ export function MeetingTimePicker({
                 {slots.map((slot, index) => (
                   <button
                     key={index}
+                    disabled={!respond}
                     onClick={() => handleSelectSlot(slot)}
                     className="w-full px-6 py-4 rounded-xl font-medium
                       border-2 border-gray-200 dark:border-zinc-600 hover:border-blue-500 dark:hover:border-blue-400
@@ -114,6 +117,7 @@ export function MeetingTimePicker({
                 ))}
 
                 <button
+                  disabled={!respond}
                   onClick={handleDecline}
                   className="w-full px-6 py-3 rounded-xl font-medium
                     text-gray-600 dark:text-zinc-400 hover:text-gray-800 dark:hover:text-zinc-200
