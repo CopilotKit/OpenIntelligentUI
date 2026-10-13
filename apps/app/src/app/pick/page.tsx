@@ -87,6 +87,7 @@ function PickPage() {
   const sessionId = searchParams.get("session");
 
   const [picked, setPicked] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   const options = useMemo(() => pickRandom(ALL_PROMPTS, 3), []);
@@ -103,8 +104,9 @@ function PickPage() {
   }, [sessionId]);
 
   const handlePick = async (prompt: string) => {
-    if (!sessionId || picked) return;
-    setPicked(true);
+    if (!sessionId || picked || submitting) return;
+    setSubmitting(true);
+    setError("");
     try {
       const res = await fetch("/api/pick", {
         method: "POST",
@@ -112,9 +114,12 @@ function PickPage() {
         body: JSON.stringify({ sessionId, prompt }),
       });
       if (!res.ok) throw new Error("Failed to submit");
+      setPicked(true);
     } catch {
       setError("Something went wrong. Try again.");
       setPicked(false);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -148,6 +153,7 @@ function PickPage() {
           <button
             key={opt.title}
             onClick={() => handlePick(opt.prompt)}
+            disabled={submitting}
             style={styles.card}
           >
             <span style={styles.emoji}>{opt.emoji}</span>
@@ -156,6 +162,7 @@ function PickPage() {
         ))}
       </div>
 
+      {submitting && <p role="status">Sending...</p>}
       {error && <p style={styles.errorText}>{error}</p>}
     </div>
   );
