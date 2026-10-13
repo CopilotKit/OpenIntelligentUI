@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useRef, useEffect, type ReactNode } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect, useId, type ReactNode } from "react";
 import {
   chartToStandaloneHtml,
   triggerDownload,
@@ -24,9 +24,12 @@ export function ExportOverlay({
   ready = true,
   children,
 }: ExportOverlayProps) {
-  const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
   const [menuOpen, setMenuOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuId = useId();
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Close menu on outside click
@@ -65,6 +68,11 @@ export function ExportOverlay({
   const handleCopy = useCallback(() => {
     const textToCopy = exportHtml;
     if (!textToCopy) return;
+    setCopyState("idle");
+    if (!navigator.clipboard?.writeText) {
+      setCopyState("error");
+      return;
+    }
     navigator.clipboard.writeText(textToCopy).then(
       () => {
         setCopyState("copied");
@@ -72,20 +80,33 @@ export function ExportOverlay({
         setTimeout(() => setCopyState("idle"), 1800);
       },
       () => {
-        // Clipboard write failed (e.g. permission denied, iframe context)
-        setMenuOpen(false);
+        setCopyState("error");
       }
     );
   }, [exportHtml]);
 
   const exportable = ready && !!exportHtml;
-  const showTrigger = exportable && (hovered || menuOpen);
+  const showTrigger = exportable && (hovered || focused || menuOpen);
 
   return (
     <div
       className="relative"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onFocusCapture={() => setFocused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          setFocused(false);
+          setMenuOpen(false);
+        }
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && menuOpen) {
+          event.preventDefault();
+          setMenuOpen(false);
+          triggerRef.current?.focus();
+        }
+      }}
     >
       {exportable && (
       <div
@@ -97,6 +118,10 @@ export function ExportOverlay({
       >
         <div ref={menuRef} className="relative">
           <button
+            ref={triggerRef}
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls={menuId}
             onClick={() => setMenuOpen((v) => !v)}
             className="flex items-center justify-center rounded-lg p-1.5 shadow-md transition-all duration-150 hover:scale-105"
             style={{
@@ -115,6 +140,7 @@ export function ExportOverlay({
 
           {menuOpen && (
             <div
+              id={menuId}
               className="absolute top-full right-0 mt-1 rounded-lg py-1 shadow-lg min-w-[180px]"
               style={{
                 background: "var(--surface-primary, #fff)",
@@ -123,6 +149,7 @@ export function ExportOverlay({
               }}
             >
               <button
+                type="button"
                 onClick={handleCopy}
                 className="flex items-center gap-2.5 w-full px-3 py-2 text-xs text-left transition-colors duration-100"
                 style={{ color: copyState === "copied" ? "var(--color-text-success, #3B6D11)" : "var(--text-primary, #1a1a1a)" }}
@@ -141,7 +168,13 @@ export function ExportOverlay({
                 )}
                 {copyState === "copied" ? "Copied!" : "Copy to clipboard"}
               </button>
+              {copyState === "error" && (
+                <p role="status" className="px-3 py-2 text-xs">
+                  Copy failed. Download the HTML file instead.
+                </p>
+              )}
               <button
+                type="button"
                 onClick={handleDownload}
                 className="flex items-center gap-2.5 w-full px-3 py-2 text-xs text-left transition-colors duration-100"
                 style={{ color: "var(--text-primary, #1a1a1a)" }}
