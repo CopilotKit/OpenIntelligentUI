@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     if (response.ok && data?.ok === true) return reply({ ok: true }, 200);
     // Never relay arbitrary provider bodies: they can contain sensitive data.
     const error = typeof data?.code === "string" ? errors[data.code] : undefined;
-    return reply({ error: error ?? "The agent could not validate your keys. Please try again." }, 400);
+    return reply({ error: error ?? "The agent could not validate your keys. Please try again." }, data?.code === "provider_unavailable" ? 503 : 400);
   } catch {
     return reply({ error: "Could not reach the agent to validate your keys. Please try again." }, 502);
   }
