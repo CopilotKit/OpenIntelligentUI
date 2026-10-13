@@ -182,6 +182,16 @@ const OpenGenUIActivityRendererInner = React.memo(
     const sandboxReadyRef = useRef(false);
     const executedIndexRef = useRef(0);
     const pendingQueueRef = useRef<string[]>([]);
+    const executionChainRef = useRef<Promise<unknown>>(Promise.resolve());
+    const enqueueCode = useCallback((sandbox: SandboxInstance, code: string) => {
+      executionChainRef.current = executionChainRef.current
+        .then(() => {
+          if (sandboxRef.current === sandbox) return sandbox.run(code);
+        })
+        .catch((error: unknown) => {
+          console.error("[OpenGenUI] Sandbox script failed:", error);
+        });
+    }, []);
     const jsFunctionsInjectedRef = useRef(false);
 
     // Effect 0 — Preview sandbox creation
@@ -261,6 +271,7 @@ const OpenGenUIActivityRendererInner = React.memo(
       jsFunctionsInjectedRef.current = false;
       sandboxReadyRef.current = false;
       pendingQueueRef.current = [];
+      executionChainRef.current = Promise.resolve();
 
       // Continuous autosize: track every resize report from this sandbox.
       const onMessage = (e: MessageEvent) => {
@@ -296,11 +307,7 @@ const OpenGenUIActivityRendererInner = React.memo(
 
             const queue = pendingQueueRef.current;
             pendingQueueRef.current = [];
-            (async () => {
-              for (const code of queue) {
-                await sandbox.run(code);
-              }
-            })();
+            for (const code of queue) enqueueCode(sandbox, code);
           });
         })
         .catch((err: unknown) => {
@@ -322,7 +329,7 @@ const OpenGenUIActivityRendererInner = React.memo(
         sandboxReadyRef.current = false;
         setAutoHeight(null);
       };
-    }, [fullHtml, css, localApi]);
+    }, [fullHtml, css, localApi, enqueueCode]);
 
     // Effect 2 — jsFunctions injection (once per final sandbox)
     useEffect(() => {
@@ -331,11 +338,11 @@ const OpenGenUIActivityRendererInner = React.memo(
 
       const sandbox = sandboxRef.current;
       if (sandboxReadyRef.current && sandbox) {
-        sandbox.run(content.jsFunctions);
+        enqueueCode(sandbox, content.jsFunctions);
       } else {
         pendingQueueRef.current.push(content.jsFunctions);
       }
-    }, [content.jsFunctions]);
+    }, [content.jsFunctions, enqueueCode]);
 
     // Effect 3 — jsExpressions execution (arrival order, sequential await)
     useEffect(() => {
@@ -350,15 +357,11 @@ const OpenGenUIActivityRendererInner = React.memo(
 
       const sandbox = sandboxRef.current;
       if (sandboxReadyRef.current && sandbox) {
-        (async () => {
-          for (const expr of newExprs) {
-            await sandbox.run(expr);
-          }
-        })();
+        for (const expr of newExprs) enqueueCode(sandbox, expr);
       } else {
         pendingQueueRef.current.push(...newExprs);
       }
-    }, [content.jsExpressions?.length]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [content.jsExpressions?.length, enqueueCode]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Effect 4 — destroy any remaining sandbox on unmount
     useEffect(() => {

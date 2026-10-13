@@ -647,4 +647,22 @@ describe("OpenGenUIActivityRenderer", () => {
     });
     expect(parsed.success).toBe(true);
   });
+
+  it("keeps later streamed expressions behind an unresolved earlier batch", async () => {
+    let release!: () => void;
+    const pending = new Promise<void>((resolve) => { release = resolve; });
+    mockRun.mockImplementation((code) => code === "first()" ? pending : Promise.resolve());
+    const base = { html: ["<body>Ready</body>"], htmlComplete: true, generating: false };
+    try {
+      const { rerender } = renderRenderer({ ...base, jsExpressions: ["first()", "second()"] });
+      await flushImport(); await resolveSandboxReady();
+      rerender(rendererElement({ ...base, jsExpressions: ["first()", "second()", "third()"] }));
+      await flushImport();
+      const calls = () => mockRun.mock.calls.map((call) => call[0]).filter((code) => ["first()", "second()", "third()"].includes(code));
+      expect(calls()).toEqual(["first()"]);
+      release(); await flushImport();
+      expect(calls()).toEqual(["first()", "second()", "third()"]);
+    } finally { release(); mockRun.mockResolvedValue(undefined); }
+  });
+
 });
