@@ -149,6 +149,62 @@ If you're rendering inside a system that supports CSS variables, prefer:
 <text x="506" y="134" font-size="12" fill="currentColor" opacity="0.7">Annotation text</text>
 ```
 
+### Progressive Labels for Dense Diagrams
+
+Keep each part's short name visible. Reveal longer explanations on hover and keyboard focus, in space reserved for the callout so text does not cover other parts. Give focusable parts an accessible name that includes the explanation. Add a compact `<details>` list after the SVG so touch users can tap to read the same information; do not rely on hover or SVG focus alone. On narrow screens, scroll the 680px diagram instead of shrinking its text below a readable size. Use the `css` parameter for the reveal rules, not a `<style>` block in `html`.
+
+For example, the `html` parameter can contain:
+
+```html
+<figure class="diagram-scroll">
+<figcaption class="diagram-scroll-hint">Swipe horizontally to explore the diagram.</figcaption>
+<svg width="100%" viewBox="0 0 680 220" xmlns="http://www.w3.org/2000/svg"
+     role="group" aria-labelledby="axle-title">
+  <title id="axle-title">Axle diagram</title>
+  <line class="axle-line" x1="160" y1="100" x2="520" y2="100" stroke="#0F6E56" stroke-width="8"/>
+  <circle class="wheel" cx="160" cy="100" r="24" fill="#F1EFE8" stroke="#5F5E5A"/>
+  <circle class="wheel" cx="520" cy="100" r="24" fill="#F1EFE8" stroke="#5F5E5A"/>
+  <g class="diagram-part" tabindex="0" role="group"
+     aria-label="Axle shaft: transfers torque to the wheels">
+    <rect class="part-shape" x="270" y="78" width="140" height="44" rx="8"
+          fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+    <text class="part-label" x="340" y="100" text-anchor="middle" dominant-baseline="central"
+          font-size="14" font-weight="500" fill="#085041">Axle shaft</text>
+    <text class="part-detail" x="340" y="160" text-anchor="middle"
+          font-size="12" fill="#085041" aria-hidden="true">Transfers torque to the wheels</text>
+  </g>
+</svg>
+</figure>
+<details class="diagram-details"><summary>Diagram descriptions</summary>
+  <p>Axle shaft: transfers torque to the wheels.</p>
+</details>
+```
+
+And the `css` parameter should contain:
+
+```css
+.diagram-scroll { margin: 0; overflow-x: auto; }
+.diagram-scroll svg { min-width: 680px; }
+.diagram-scroll-hint { display: none; font: 12px system-ui, sans-serif; }
+@media (hover: none) { .diagram-scroll-hint { display: block; } }
+.diagram-part .part-detail { opacity: 0; }
+.diagram-part:hover .part-detail,
+.diagram-part:focus .part-detail { opacity: 1; }
+.diagram-part:focus { outline: none; }
+.diagram-part:focus .part-shape { stroke: #185FA5; stroke-width: 3; }
+.diagram-details { margin-top: 8px; font: 14px system-ui, sans-serif; }
+.diagram-details summary { cursor: pointer; }
+@media (prefers-color-scheme: dark) {
+  .diagram-scroll .axle-line { stroke: #5DCAA5; }
+  .diagram-scroll .wheel { fill: #444441; stroke: #B4B2A9; }
+  .diagram-scroll .part-shape { fill: #085041; stroke: #5DCAA5; }
+  .diagram-scroll .part-label, .diagram-scroll .part-detail { fill: #9FE1CB; }
+  .diagram-part:focus .part-shape { stroke: #85B7EB; }
+}
+```
+
+For multiple parts, reserve a separate callout area or use one shared description panel. Keep the short labels visible and provide every description in the touch disclosure.
+
 ### Large Container (for structural diagrams)
 
 ```svg
@@ -191,7 +247,7 @@ If you're rendering inside a system that supports CSS variables, prefer:
 - Shapes can be freeform (paths, ellipses, polygons), not just rects.
 - Color encodes intensity, not category (warm = active, cool = dormant).
 - Overlap shapes for depth, but never let strokes cross text.
-- Labels go in margins with leader lines pointing to the relevant part.
+- For sparse static diagrams, labels go in margins with leader lines. For dense diagrams, keep short labels on parts and reveal detail as described above.
 
 ---
 
@@ -271,7 +327,7 @@ For complex topics, use multiple smaller SVGs instead of one dense one:
 - **Less is more**: A clean 4-node diagram teaches better than a cramped 12-node one.
 - **Color = meaning**: Warm colors for active/hot/important, cool for passive/cold/secondary, gray for structural.
 - **Streaming effect**: Since SVGs render top-to-bottom as tokens arrive, structure your elements top-down for a natural build-up animation.
-- **Annotations on the side**: Put explanatory labels in the right margin (x > 560) with leader lines pointing to the relevant element.
+- **Annotations on the side**: In sparse static diagrams, put explanatory labels in the right margin (x > 560) with leader lines. In dense diagrams, use progressive labels.
 - **Consistent heights**: All boxes of the same type should be the same height.
 - **Whitespace is your friend**: Don't fill every pixel. Breathing room makes diagrams readable.
 
