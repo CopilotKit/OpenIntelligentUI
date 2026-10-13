@@ -44,6 +44,8 @@ export function DemoGallery({ open, onClose, onTryDemo }: DemoGalleryProps) {
 
       {/* Drawer: full-screen bottom sheet on mobile, right side panel on sm+ */}
       <div
+        inert={!open}
+        aria-hidden={!open}
         className={`demo-gallery-drawer fixed z-50 flex flex-col transition-transform duration-300 ease-in-out ${open ? "demo-gallery-drawer--open" : ""}`}
         style={{ background: "var(--surface-primary, #fff)" }}
       >
