@@ -1,3 +1,5 @@
+import hashlib
+
 import pytest
 from langchain_core.messages import HumanMessage, AIMessage
 from src.visualization_router import (
@@ -50,6 +52,7 @@ def test_continuation_reuses_decision_but_new_human_reroutes():
     state = {
         "messages": [HumanMessage(content="table", id="one")],
         "visualization_turn": "one",
+        "visualization_request_hash": hashlib.sha256(b"table").hexdigest(),
         "visualization_decision": decision_from_response(response("table")),
     }
     assert routing_input(state) is None
@@ -224,6 +227,7 @@ def test_idless_continuation_has_stable_turn_key():
     turn, _ = routing_input(state)
     state.update(
         visualization_turn=turn,
+        visualization_request_hash=hashlib.sha256(b"table").hexdigest(),
         visualization_decision=decision_from_response(response("table")),
     )
     state["messages"].append(AIMessage(content="done"))
