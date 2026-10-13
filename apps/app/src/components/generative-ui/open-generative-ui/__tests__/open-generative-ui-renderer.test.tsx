@@ -647,4 +647,17 @@ describe("OpenGenUIActivityRenderer", () => {
     });
     expect(parsed.success).toBe(true);
   });
+
+  it("uses the latest streamed preview when sandbox readiness is delayed", async () => {
+    const base = { cssComplete: true, htmlComplete: false, generating: true };
+    const { rerender } = renderRenderer({ ...base, css: "p{color:red}", html: ["<p>old</p>"] });
+    await flushImport();
+    rerender(rendererElement({ ...base, css: "p{color:blue}", html: ["<p>latest</p>"] }));
+    await act(async () => { await new Promise((r) => setTimeout(r, THROTTLE_MS + 50)); });
+    await resolveSandboxReady();
+    expect(runCallsContaining("Idiomorph.morph").at(-1)?.[0]).toContain("latest");
+    expect(runCallsContaining("document.head.innerHTML").at(-1)?.[0]).toContain("color:blue");
+    expect(mockCreate).toHaveBeenCalledTimes(1);
+  });
+
 });
