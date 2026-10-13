@@ -77,14 +77,18 @@ function pickRandom<T>(arr: T[], n: number): T[] {
 export default function PickPageWrapper() {
   return (
     <Suspense fallback={<div style={styles.container}><p style={{ color: "rgba(255,255,255,0.6)" }}>Loading...</p></div>}>
-      <PickPage />
+      <SessionPickPage />
     </Suspense>
   );
 }
 
-function PickPage() {
+function SessionPickPage() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session");
+  return <PickPage key={sessionId} sessionId={sessionId} />;
+}
+
+function PickPage({ sessionId }: { sessionId: string | null }) {
 
   const [picked, setPicked] = useState(false);
   const [error, setError] = useState("");
