@@ -647,4 +647,30 @@ describe("OpenGenUIActivityRenderer", () => {
     });
     expect(parsed.success).toBe(true);
   });
+
+  it("replays unchanged activity scripts into a recreated final sandbox", async () => {
+    const jsFunctions = "function greet() { return 'hi'; }";
+    const jsExpressions = ["greet();"];
+    const base = { htmlComplete: true, generating: false, jsFunctions, jsExpressions };
+    const { rerender } = renderRenderer({ ...base, html: ["<body>first</body>"] });
+    await flushImport(); await resolveSandboxReady();
+    resetMockPromise();
+    rerender(rendererElement({ ...base, html: ["<body>replacement</body>"] }));
+    await flushImport(); await resolveSandboxReady();
+    expect(mockCreate).toHaveBeenCalledTimes(2);
+    expect(mockRun.mock.calls.filter((call) => call[0] === jsFunctions)).toHaveLength(2);
+    expect(mockRun.mock.calls.filter((call) => call[0] === "greet();")).toHaveLength(2);
+  });
+
+  it("replays unchanged activity scripts after CSS changes replace the frame", async () => {
+    const base = { html: ["<body>same</body>"], htmlComplete: true, generating: false, cssComplete: true, jsFunctions: "function init() {}", jsExpressions: ["init();"] };
+    const { rerender } = renderRenderer({ ...base, css: "p{color:red}" });
+    await flushImport(); await resolveSandboxReady();
+    resetMockPromise();
+    rerender(rendererElement({ ...base, css: "p{color:blue}" }));
+    await flushImport(); await resolveSandboxReady();
+    expect(mockCreate).toHaveBeenCalledTimes(2);
+    expect(mockRun.mock.calls.filter((call) => call[0] === "init();")).toHaveLength(2);
+  });
+
 });
