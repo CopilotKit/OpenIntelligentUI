@@ -25,8 +25,10 @@ interface TemplateCardProps {
 function BarChartPreview({ data }: { data: { label: string; value: number }[] }) {
   if (!data?.length) return null;
   const max = Math.max(...data.map((d) => d.value));
-  const barWidth = Math.min(40, Math.floor(280 / data.length) - 8);
-  const chartWidth = data.length * (barWidth + 8);
+  const slotWidth = Math.min(48, 280 / data.length);
+  const gap = Math.min(8, slotWidth / 4);
+  const barWidth = slotWidth - gap;
+  const chartWidth = data.length * slotWidth;
   const chartHeight = 100;
 
   return (
@@ -42,7 +44,7 @@ function BarChartPreview({ data }: { data: { label: string; value: number }[] })
         return (
           <rect
             key={i}
-            x={i * (barWidth + 8)}
+            x={i * slotWidth}
             y={chartHeight - h - 10}
             width={barWidth}
             height={h}
