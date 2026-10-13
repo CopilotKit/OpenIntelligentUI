@@ -14,9 +14,16 @@ IMAGE_HOSTS = {"upload.wikimedia.org", "thumb.wikimedia.org"}
 def fetch_card(title: str, client: httpx.Client) -> dict:
     summary = client.get("https://en.wikipedia.org/api/rest_v1/page/summary/" + quote(title, safe=""))
     summary.raise_for_status()
-    data = summary.json()
-    image = data.get("thumbnail", {}).get("source", "")
-    original = data.get("originalimage", {}).get("source", "")
+    def mapping(value):
+        if not isinstance(value, dict):
+            raise ValueError("The photo source returned invalid metadata.")
+        return value
+
+    data = mapping(summary.json())
+    original = mapping(data.get("originalimage") or {}).get("source", "")
+    image = mapping(data.get("thumbnail") or {}).get("source") or original
+    if not isinstance(image, str) or not isinstance(original, str):
+        raise ValueError("The photo source returned invalid image URLs.")
     if any(urlsplit(url).scheme != "https" or urlsplit(url).hostname not in IMAGE_HOSTS
            for url in [image, original]):
         raise ValueError("No supported destination image was available.")
@@ -33,10 +40,17 @@ def fetch_card(title: str, client: httpx.Client) -> dict:
         "iiprop": "extmetadata", "titles": "File:" + filename,
     })
     metadata.raise_for_status()
-    pages = metadata.json().get("query", {}).get("pages", {})
-    info = next(iter(pages.values()), {}).get("imageinfo", [{}])[0].get("extmetadata", {})
+    pages = mapping(mapping(mapping(metadata.json()).get("query")).get("pages"))
+    page = mapping(next(iter(pages.values()), None))
+    image_info = page.get("imageinfo")
+    if not isinstance(image_info, list) or not image_info:
+        raise ValueError("The photo source returned invalid image metadata.")
+    info = mapping(mapping(image_info[0]).get("extmetadata"))
     def plain(key):
-        return unescape(re.sub(r"<[^>]*>", "", info.get(key, {}).get("value", ""))).strip()[:500]
+        value = mapping(info.get(key) or {}).get("value", "")
+        if not isinstance(value, str):
+            raise ValueError("The photo source returned invalid attribution.")
+        return unescape(re.sub(r"<[^>]*>", "", value)).strip()[:500]
     license_name = plain("LicenseShortName")
     artist = plain("Artist")
     if not artist or not license_name or not (license_name.startswith("CC") or license_name == "Public domain"):
