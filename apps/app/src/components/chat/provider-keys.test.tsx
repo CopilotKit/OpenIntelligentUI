@@ -97,4 +97,11 @@ describe("memory-only provider keys", () => {
     fireEvent.click(screen.getByText("Cancel"));
     expect(options?.signal?.aborted).toBe(true);
   });
+  it("treats server-held keys as configured when NEXT_PUBLIC_SERVER_KEYS is true", () => {
+    vi.stubEnv("NEXT_PUBLIC_SERVER_KEYS", "true");
+    render(<ProviderKeysProvider><Harness /></ProviderKeysProvider>);
+    // Gate passes, but no browser headers are sent: the agent uses its own .env keys.
+    expect(screen.getByTestId("active")).toBeEmptyDOMElement();
+    vi.unstubAllEnvs();
+  });
 });

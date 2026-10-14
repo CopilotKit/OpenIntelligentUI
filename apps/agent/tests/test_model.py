@@ -84,3 +84,32 @@ def test_missing_provider_key_has_actionable_error(monkeypatch, model, key, valu
         monkeypatch.setenv(key, value)
     with pytest.raises(ValueError, match=key):
         build_model()
+
+
+def test_credential_scoped_model_streams_each_chunk_once():
+    import asyncio
+    from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
+    from langchain_core.messages import AIMessage
+    from langchain_core.runnables import RunnableLambda
+    from src.model import CredentialScopedModel
+
+    class ToolFake(GenericFakeChatModel):
+        def bind_tools(self, tools, **kwargs):
+            return self.bind(tools=tools)
+
+    inner = ToolFake(messages=iter([AIMessage(content="a b c")]))
+    # Bound tools wrap the provider in a RunnableBinding, as in the real agent.
+    wrapped = CredentialScopedModel(fallback=inner).bind_tools([{"name": "t"}])
+
+    # Like a LangGraph node: the parent run's callbacks are inherited by calls inside it.
+    async def node(_):
+        return await wrapped.ainvoke("hi")
+
+    async def stream_events():
+        return [
+            e async for e in RunnableLambda(node).astream_events("x", version="v2")
+            if e["event"] == "on_chat_model_stream"
+        ]
+
+    tokens = [e["data"]["chunk"].content for e in asyncio.run(stream_events())]
+    assert "".join(tokens) == "a b c"

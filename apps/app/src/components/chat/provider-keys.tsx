@@ -27,7 +27,8 @@ export function ProviderKeysProvider({ children }: { children: ReactNode }) {
   return (
     <ProviderKeysContext.Provider value={{
       headers: keys ? { "x-openai-api-key": keys.openai, "x-jev-api-key": keys.jev } : undefined,
-      hasKeys: keys !== null,
+      // Self-hosted builds can rely on the agent's own .env keys instead.
+      hasKeys: keys !== null || process.env.NEXT_PUBLIC_SERVER_KEYS === "true",
       session,
       save: (value) => { setKeys(value); setKeysOpen(false); setSession((value) => value + 1); },
       clear: () => { setKeys(null); newChat(); },
