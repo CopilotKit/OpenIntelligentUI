@@ -92,6 +92,8 @@ export function TemplateLibrary({ open, onClose }: TemplateLibraryProps) {
 
       {/* Drawer panel */}
       <div
+        inert={!open}
+        aria-hidden={!open}
         className="fixed top-0 right-0 h-full z-50 flex flex-col transition-transform duration-300 ease-in-out"
         style={{
           width: 380,
