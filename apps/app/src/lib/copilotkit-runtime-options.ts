@@ -17,8 +17,9 @@ export interface RuntimeOptionsEnv {
 
 // Normalize Render's fromService hostport (bare host:port) into a full URL
 export function normalizeLanggraphUrl(raw?: string): string {
-  if (!raw) return "http://localhost:8123";
-  return raw.startsWith("http") ? raw : `http://${raw}`;
+  const value = raw?.trim();
+  if (!value) return "http://localhost:8123";
+  return /^https?:\/\//i.test(value) ? value : `http://${value}`;
 }
 
 export function buildRuntimeOptions(env: RuntimeOptionsEnv) {
