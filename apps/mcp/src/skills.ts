@@ -14,8 +14,11 @@ export function listSkills(): string[] {
 }
 
 export function loadSkill(name: string): string {
-  const resolved = resolve(SKILLS_DIR, `${name}.txt`);
-  if (!resolved.startsWith(resolve(SKILLS_DIR) + "/")) {
+  const root = resolve(SKILLS_DIR);
+  const resolved = resolve(root, `${name}.txt`);
+  // Compare directories rather than a "/" prefix so the check also holds
+  // for the backslash paths that resolve() returns on Windows.
+  if (dirname(resolved) !== root) {
     throw new Error(`Invalid skill name: ${name}`);
   }
   return readFileSync(resolved, "utf-8");
