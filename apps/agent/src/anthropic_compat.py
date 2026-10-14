@@ -7,7 +7,7 @@ graph state stays untouched.
    for OpenAI, rejected by langchain-anthropic.
 2. Streaming a zero-length thinking block accumulates {type, signature} with
    no "thinking" key; Anthropic 400s on replay in the tool loop unless the
-   empty text field is restored."""
+   empty text field is restored. A persisted null text value needs the same repair."""
 
 from langchain.agents.middleware import AgentMiddleware, ModelRequest
 from langchain_core.messages import AIMessage
@@ -19,13 +19,13 @@ def _repaired_message(message):
     if not isinstance(message, AIMessage) or not isinstance(message.content, list):
         return message
     if not any(
-        isinstance(b, dict) and b.get("type") == "thinking" and "thinking" not in b
+        isinstance(b, dict) and b.get("type") == "thinking" and b.get("thinking") is None
         for b in message.content
     ):
         return message
     content = [
         {**b, "thinking": ""}
-        if isinstance(b, dict) and b.get("type") == "thinking" and "thinking" not in b
+        if isinstance(b, dict) and b.get("type") == "thinking" and b.get("thinking") is None
         else b
         for b in message.content
     ]
