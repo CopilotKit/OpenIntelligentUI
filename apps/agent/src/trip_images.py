@@ -11,6 +11,31 @@ HEADERS = {"User-Agent": "OpenGenerativeUI/1.0 (https://github.com/CopilotKit/Op
 IMAGE_HOSTS = {"upload.wikimedia.org", "thumb.wikimedia.org"}
 
 
+# Exact published version/port combinations, not their Cartesian product.
+# https://commons.wikimedia.org/wiki/Commons:Creative_Commons_copyright_tags
+CC_ATTRIBUTION_PORTS = {
+    "1.0": frozenset({"", "FI", "IL", "NL"}),
+    "2.0": frozenset({"", *"AT AU BE BR CA CL DE ES FR HR IT JP KR NL PL TW UK ZA".split()}),
+    "2.1": frozenset("AU CA ES JP".split()),
+    "2.5": frozenset({"", *"AR AU BG BR CA CH CN CO DK ES HR HU IL IN IT MK MT MX MY NL PE PL PT SCOTLAND SE SI TW ZA".split()}),
+    "3.0": frozenset({"", *"AM AT AU AZ BR CA CH CL CN CR CZ DE EC EE EG ES FR GE GR GT HK HR IE IGO IT LU NL NO NZ PH PL PR PT RO RS SG TH TW UG US VE VN ZA".split()}),
+    "4.0": frozenset({""}),
+}
+CC_SHAREALIKE_PORTS = {"1.0": frozenset({"", "FI", "NL"}), "2.0": frozenset({"JP"})}
+
+
+def supported_license(name: str) -> bool:
+    normalized = " ".join(name.upper().split())
+    if normalized in {"PUBLIC DOMAIN", "CC0", "CC0 1.0"}:
+        return True
+    match = re.fullmatch(r"CC (BY(?:-SA)?|SA) (\d\.\d)(?: ([A-Z]+))?", normalized)
+    if not match:
+        return False
+    family, version, port = match.groups()
+    ports = CC_SHAREALIKE_PORTS if family == "SA" else CC_ATTRIBUTION_PORTS
+    return (port or "") in ports.get(version, ())
+
+
 def fetch_card(title: str, client: httpx.Client) -> dict:
     summary = client.get("https://en.wikipedia.org/api/rest_v1/page/summary/" + quote(title, safe=""))
     summary.raise_for_status()
@@ -39,7 +64,7 @@ def fetch_card(title: str, client: httpx.Client) -> dict:
         return unescape(re.sub(r"<[^>]*>", "", info.get(key, {}).get("value", ""))).strip()[:500]
     license_name = plain("LicenseShortName")
     artist = plain("Artist")
-    if not artist or not license_name or not (license_name.startswith("CC") or license_name == "Public domain"):
+    if not artist or not license_name or not supported_license(license_name):
         raise ValueError("Reusable image attribution was unavailable.")
     return {
         "status": "available", "place": title, "image_url": image,
