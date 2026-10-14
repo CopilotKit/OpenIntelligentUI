@@ -647,4 +647,25 @@ describe("OpenGenUIActivityRenderer", () => {
     });
     expect(parsed.success).toBe(true);
   });
+
+  it("waits for complete streamed function source before injection", async () => {
+    const base = { html: ["<body><button onclick='greet()'>Go</button></body>"], htmlComplete: true, generating: true };
+    const partial = "function greet() {";
+    const complete = "function greet() { return 'hi'; }";
+    const { rerender } = renderRenderer({ ...base, jsFunctions: partial, jsFunctionsComplete: false });
+    await flushImport();
+    await resolveSandboxReady();
+    expect(mockRun.mock.calls.some((call) => call[0] === partial)).toBe(false);
+    rerender(rendererElement({ ...base, jsFunctions: complete, jsFunctionsComplete: true }));
+    await flushImport();
+    expect(mockRun.mock.calls.filter((call) => call[0] === complete)).toHaveLength(1);
+  });
+
+  it("does not run incomplete function source when generation stops", async () => {
+    const partial = "function greet() {";
+    renderRenderer({ html: ["<body>Interrupted</body>"], htmlComplete: true, generating: false, jsFunctions: partial, jsFunctionsComplete: false });
+    await flushImport(); await resolveSandboxReady();
+    expect(mockRun.mock.calls.some((call) => call[0] === partial)).toBe(false);
+  });
+
 });

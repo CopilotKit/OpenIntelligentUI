@@ -326,7 +326,14 @@ const OpenGenUIActivityRendererInner = React.memo(
 
     // Effect 2 — jsFunctions injection (once per final sandbox)
     useEffect(() => {
-      if (!content.jsFunctions || jsFunctionsInjectedRef.current) return;
+      // Partial function source cannot run until the middleware completes it.
+      // Completed activities without the flag remain compatible.
+      if (
+        !content.jsFunctions ||
+        content.jsFunctionsComplete === false ||
+        (content.jsFunctionsComplete !== true && content.generating !== false) ||
+        jsFunctionsInjectedRef.current
+      ) return;
       jsFunctionsInjectedRef.current = true;
 
       const sandbox = sandboxRef.current;
@@ -335,7 +342,7 @@ const OpenGenUIActivityRendererInner = React.memo(
       } else {
         pendingQueueRef.current.push(content.jsFunctions);
       }
-    }, [content.jsFunctions]);
+    }, [content.jsFunctions, content.jsFunctionsComplete, content.generating]);
 
     // Effect 3 — jsExpressions execution (arrival order, sequential await)
     useEffect(() => {
