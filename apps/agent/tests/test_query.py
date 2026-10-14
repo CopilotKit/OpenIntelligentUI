@@ -15,3 +15,11 @@ def test_sample_query_returns_independent_rows():
     first['rows'][0]['injected'] = 'changed'
     second = query_data.invoke({'query': 'all'})
     assert 'injected' not in second['rows'][0]
+
+
+def test_sample_rows_parse_into_the_header_columns():
+    rows = query_data.invoke({'query': 'all'})['rows']
+    columns = ['date', 'category', 'subcategory', 'amount', 'type', 'notes']
+    # An unquoted comma in a field would shift values and add a None key.
+    assert all(list(row) == columns for row in rows)
+    assert rows[0]['notes'] == '3 new enterprise customers (Acme Corp, TechFlow, DataViz Inc)'
