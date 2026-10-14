@@ -173,6 +173,10 @@ const OpenGenUIActivityRendererInner = React.memo(
     const previewBody = partialHtml ? processPartialHtml(partialHtml) : undefined;
     const previewStyles = partialHtml ? extractCompleteStyles(partialHtml) : "";
     const hasPreview = cssReady && !!previewBody?.trim();
+    const latestPreviewRef = useRef({ css, previewStyles, previewBody });
+    useEffect(() => {
+      latestPreviewRef.current = { css, previewStyles, previewBody };
+    }, [css, previewStyles, previewBody]);
     const hasVisibleSandbox = !!fullHtml || hasPreview;
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -210,15 +214,16 @@ const OpenGenUIActivityRendererInner = React.memo(
           sandbox.promise.then(() => {
             if (cancelled) return;
             previewReadyRef.current = true;
+            const latest = latestPreviewRef.current;
 
             sandbox.run(IDIOMORPH_JS);
             sandbox.run(
               `document.head.innerHTML = ${JSON.stringify(
-                buildPreviewHeadContent(css, previewStyles)
+                buildPreviewHeadContent(latest.css, latest.previewStyles)
               )}`
             );
-            if (previewBody) {
-              sandbox.run(buildPreviewBodyMorph(previewBody));
+            if (latest.previewBody) {
+              sandbox.run(buildPreviewBodyMorph(latest.previewBody));
             }
           });
         })
