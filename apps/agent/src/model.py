@@ -21,11 +21,18 @@ MAX_TOKENS = 64000
 
 def build_model(*, allow_unconfigured: bool = False) -> BaseChatModel:
     model_name = os.environ.get("LLM_MODEL", DEFAULT_MODEL).strip()
-    is_openai = model_name == "chat-latest" or model_name.startswith("gpt-")
+    # vendor/model names (e.g. deepseek/deepseek-chat) target an OpenAI-compatible
+    # gateway such as OpenRouter; set OPENAI_BASE_URL and OPENAI_API_KEY for it.
+    is_openai = (
+        model_name == "chat-latest"
+        or model_name.startswith("gpt-")
+        or "/" in model_name
+    )
     if not is_openai and not model_name.startswith("claude-"):
         raise ValueError(
-            "LLM_MODEL must name a supported provider: claude-* (Anthropic) "
-            "or gpt-*/chat-latest (OpenAI). Unset LLM_MODEL to use the default."
+            "LLM_MODEL must name a supported provider: claude-* (Anthropic), "
+            "gpt-*/chat-latest (OpenAI), or vendor/model with OPENAI_BASE_URL. "
+            "Unset LLM_MODEL to use the default."
         )
     key_name = "OPENAI_API_KEY" if is_openai else "ANTHROPIC_API_KEY"
     if not os.environ.get(key_name, "").strip():
