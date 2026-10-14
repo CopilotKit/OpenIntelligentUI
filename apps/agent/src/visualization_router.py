@@ -81,9 +81,9 @@ def message_text(message) -> str:
         return content
     if isinstance(content, list):
         return "\n".join(
-            b.get("text", "")
+            b if isinstance(b, str) else b["text"]
             for b in content
-            if isinstance(b, dict) and isinstance(b.get("text"), str)
+            if isinstance(b, str) or (isinstance(b, dict) and isinstance(b.get("text"), str))
         )
     return ""
 
