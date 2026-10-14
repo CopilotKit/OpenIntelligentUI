@@ -10,7 +10,8 @@ BoundedMemorySaver caps the number of stored threads and evicts the oldest
 rather than sorting keys, so eviction order is correct even when thread IDs
 are UUIDs or other non-chronological strings.
 
-NOTE: This class relies on MemorySaver.storage (an internal attribute).
+NOTE: This class relies on MemorySaver.delete_thread and on how MemorySaver
+      stores threads internally.
       The langgraph version is pinned in pyproject.toml to guard against
       breaking changes.
 
@@ -43,13 +44,18 @@ class BoundedMemorySaver(MemorySaver):
 
         result = super().put(config, checkpoint, metadata, new_versions)
 
-        while len(self.storage) > self.max_threads and self._insertion_order:
+        # Count tracked threads rather than self.storage: reading an unknown
+        # thread (get_tuple/list) adds an empty entry to the storage defaultdict
+        # that put() never tracks, which would otherwise count toward the limit
+        # and force the thread just written to be evicted.
+        while len(self._insertion_order) > self.max_threads:
             oldest_thread, _ = self._insertion_order.popitem(last=False)
-            if oldest_thread in self.storage:
-                logger.info(
-                    "BoundedMemorySaver: evicting thread %s (%d threads stored)",
-                    oldest_thread,
-                    len(self.storage),
-                )
-                del self.storage[oldest_thread]
+            logger.info(
+                "BoundedMemorySaver: evicting thread %s (%d threads tracked)",
+                oldest_thread,
+                len(self._insertion_order),
+            )
+            # delete_thread also drops the thread's channel values (blobs) and
+            # pending writes, which hold the message data.
+            self.delete_thread(oldest_thread)
         return result
