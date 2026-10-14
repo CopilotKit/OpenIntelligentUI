@@ -47,6 +47,7 @@ class ChoiceAnswer(BaseModel):
 
 class RoutingState(AgentState):
     visualization_turn: NotRequired[str]
+    visualization_request_hash: NotRequired[str]
     visualization_decision: NotRequired[dict]
 
 
@@ -93,7 +94,7 @@ def routing_input(state):
     human = next((m for m in reversed(messages) if m.type == "human"), None)
     if human is None:
         return None
-    # Use the user-message ID, not the content: repeating a prompt is a new turn.
+    # IDs distinguish repeated prompts; content detects edits that retain the ID.
     human_index = max(i for i, m in enumerate(messages) if m.type == "human")
     turn = (
         human.id
@@ -103,7 +104,12 @@ def routing_input(state):
             ).encode()
         ).hexdigest()
     )
-    if state.get("visualization_turn") == turn and state.get("visualization_decision"):
+    request_hash = hashlib.sha256(message_text(human).encode()).hexdigest()
+    if (
+        state.get("visualization_turn") == turn
+        and state.get("visualization_request_hash") == request_hash
+        and state.get("visualization_decision")
+    ):
         return None
     context = [
         {"role": m.type, "content": message_text(m)[:6000]}
@@ -219,15 +225,22 @@ class JevVisualizationMiddleware(AgentMiddleware):
         if pending is None:
             return None
         turn, context = pending
-        return {"visualization_turn": turn, "visualization_decision": route(context)}
+        human = next(m for m in reversed(state["messages"]) if m.type == "human")
+        return {
+            "visualization_turn": turn,
+            "visualization_request_hash": hashlib.sha256(message_text(human).encode()).hexdigest(),
+            "visualization_decision": route(context),
+        }
 
     async def abefore_agent(self, state, runtime):
         pending = routing_input(state)
         if pending is None:
             return None
         turn, context = pending
+        human = next(m for m in reversed(state["messages"]) if m.type == "human")
         return {
             "visualization_turn": turn,
+            "visualization_request_hash": hashlib.sha256(message_text(human).encode()).hexdigest(),
             "visualization_decision": await aroute(context),
         }
 
