@@ -259,7 +259,8 @@ apps/mcp/
 ├── Dockerfile           # Container definition
 ├── skills/              # Skill instruction files (copied from source)
 └── src/
-    ├── index.ts         # HTTP server entry point (Hono)
+    ├── index.ts         # HTTP server entry point
+    ├── app.ts           # Hono app and /mcp route
     ├── stdio.ts         # stdio transport entry point (Claude Desktop)
     ├── server.ts        # MCP server construction (shared)
     ├── skills.ts        # Skill file loader
