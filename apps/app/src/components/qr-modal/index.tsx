@@ -47,6 +47,15 @@ export function QrModal({
 }) {
   const pickUrl = usePickUrl(sessionId);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
@@ -65,6 +74,9 @@ export function QrModal({
 
       {/* Modal */}
       <div
+        onClick={(event) => {
+          if (event.target === event.currentTarget) onClose();
+        }}
         style={{
           position: "fixed",
           inset: 0,
