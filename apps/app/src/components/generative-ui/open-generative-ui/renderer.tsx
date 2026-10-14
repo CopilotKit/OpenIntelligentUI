@@ -145,7 +145,7 @@ function styleIframe(iframe: HTMLIFrameElement) {
 
 const OpenGenUIActivityRendererInner = React.memo(
   function OpenGenUIActivityRendererInner({ content }: InnerProps) {
-    const initialHeight = content.initialHeight ?? 200;
+    const initialHeight = clampReportedHeight(content.initialHeight) ?? 200;
     const [autoHeight, setAutoHeight] = useState<number | null>(null);
     const sandboxFunctions = useSandboxFunctions();
 

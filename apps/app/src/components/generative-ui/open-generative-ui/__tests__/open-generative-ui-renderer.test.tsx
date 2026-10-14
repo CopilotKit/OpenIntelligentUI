@@ -647,4 +647,11 @@ describe("OpenGenUIActivityRenderer", () => {
     });
     expect(parsed.success).toBe(true);
   });
+
+  it.each([[-100, "50px"], [0, "50px"], [50000, "4000px"], [300.2, "301px"], [NaN, "200px"], [Infinity, "200px"]])("bounds invalid initial activity height %s", async (initialHeight, expected) => {
+    const { container } = renderRenderer({ initialHeight, generating: true });
+    await flushImport();
+    expect(container.querySelector<HTMLElement>("div[style]")!.style.height).toBe(expected);
+  });
+
 });
