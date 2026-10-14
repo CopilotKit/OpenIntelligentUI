@@ -188,12 +188,14 @@ def routed_request(request):
         "open_generative_ui": {"generateSandboxedUi"},
         "text": set(),
     }[renderer]
-    tools = [
-        t
-        for t in request.tools
-        if (t.get("name") if isinstance(t, dict) else t.name)
-        not in RENDER_TOOLS - allowed
-    ]
+    def tool_name(tool):
+        if not isinstance(tool, dict):
+            return tool.name
+        if tool.get("type") == "function" and isinstance(tool.get("function"), dict):
+            return tool["function"].get("name")
+        return tool.get("name")
+
+    tools = [t for t in request.tools if tool_name(t) not in RENDER_TOOLS - allowed]
     note = f"\n\nCRITICAL: Jev presentation decision for this user turn: renderer={renderer}; visualization={decision['visualization']}. Use this presentation when answering; do not substitute another rendering tool. If required data is unavailable, ask a concise clarification instead of fabricating it."
     if renderer == "a2ui":
         note += '\nUse the A2UI Table component from catalog copilotkit://open-generative-ui-tables. Its title, columns (string array), rows (array of string arrays, same width as columns), and source (honest data provenance) are required. When render_a2ui is available, call it with surfaceId (a unique string), catalogId="copilotkit://open-generative-ui-tables", and components as a flat array containing {"id":"root","component":"Table","title":...,"columns":[...],"rows":[[...]],"source":...}. The Table is the root for this custom catalog. Pass these structured arguments directly, not serialized operations or a2ui_json. If another A2UI tool is available instead, follow its advertised argument schema and use this same catalog and Table component. No HTML or scripts.'
