@@ -88,6 +88,33 @@ describe("assembleStandaloneHtmlFromActivity", () => {
     expect(doc).toContain('document.title = "<\\/script>";');
   });
 
+  it("keeps js pieces separate when they omit trailing semicolons", async () => {
+    const doc = assembleStandaloneHtmlFromActivity({
+      jsFunctions: "let count = 0",
+      jsExpressions: [
+        "window.exportFirst = count + 1",
+        "(function () { window.exportSecond = 2 })()",
+        "[3].forEach(function (n) { window.exportThird = n })",
+      ],
+    });
+    const script = doc.slice(
+      doc.lastIndexOf("<script>") + "<script>".length,
+      doc.lastIndexOf("</script>")
+    );
+    const globals = window as unknown as Record<string, unknown>;
+    try {
+      expect(() => new Function(script)()).not.toThrow();
+      await Promise.resolve();
+      expect(globals.exportFirst).toBe(1);
+      expect(globals.exportSecond).toBe(2);
+      expect(globals.exportThird).toBe(3);
+    } finally {
+      delete globals.exportFirst;
+      delete globals.exportSecond;
+      delete globals.exportThird;
+    }
+  });
+
   it("neutralizes closing style sequences embedded in generated css", () => {
     const doc = assembleStandaloneHtmlFromActivity(
       {
