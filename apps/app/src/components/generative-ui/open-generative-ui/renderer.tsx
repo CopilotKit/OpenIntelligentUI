@@ -335,7 +335,7 @@ const OpenGenUIActivityRendererInner = React.memo(
       } else {
         pendingQueueRef.current.push(content.jsFunctions);
       }
-    }, [content.jsFunctions]);
+    }, [content.jsFunctions, fullHtml, css, localApi]);
 
     // Effect 3 — jsExpressions execution (arrival order, sequential await)
     useEffect(() => {
@@ -358,7 +358,7 @@ const OpenGenUIActivityRendererInner = React.memo(
       } else {
         pendingQueueRef.current.push(...newExprs);
       }
-    }, [content.jsExpressions?.length]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [content.jsExpressions?.length, fullHtml, css, localApi]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Effect 4 — destroy any remaining sandbox on unmount
     useEffect(() => {
