@@ -120,6 +120,8 @@ Then start the HTTP server with `pnpm dev`.
 
 Wraps an HTML fragment with the complete OpenGenerativeUI design system.
 
+In [MCP Apps](https://github.com/modelcontextprotocol/ext-apps) hosts such as Claude Desktop, the tool is linked to the `ui://open-generative-ui/document.html` view, so the fragment renders inline in the conversation. The view applies the design system and the host's theme, runs the fragment's scripts in order, and maps `sendPrompt(text)` and `openLink(url)` to the host. The tool result is then a one-line confirmation, which keeps the document out of the model's context. Clients that do not advertise the `io.modelcontextprotocol/ui` extension receive the complete document as shown below.
+
 **Input:**
 ```typescript
 {

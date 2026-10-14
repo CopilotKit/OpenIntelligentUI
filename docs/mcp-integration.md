@@ -12,6 +12,7 @@ The MCP server lives in `apps/mcp/`.
 |-----|-------------|
 | `skills://list` | JSON array of available skill names |
 | `skills://{name}` | Full text of an individual skill document |
+| `ui://open-generative-ui/document.html` | MCP Apps view that renders `assemble_document` output inline (Claude Desktop and other MCP Apps hosts) |
 
 ### Prompts
 
