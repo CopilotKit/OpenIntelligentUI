@@ -20,6 +20,10 @@ function isRateLimited(ip: string): boolean {
   if (!RATE_LIMIT_ENABLED) return false;
   const now = Date.now();
   const timestamps = hits.get(ip)?.filter(t => t > now - RATE_LIMIT_WINDOW_MS) ?? [];
+  if (timestamps.length >= RATE_LIMIT_MAX) {
+    hits.set(ip, timestamps);
+    return true;
+  }
   timestamps.push(now);
   hits.set(ip, timestamps);
   return timestamps.length > RATE_LIMIT_MAX;
