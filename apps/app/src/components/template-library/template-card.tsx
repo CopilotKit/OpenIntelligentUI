@@ -67,6 +67,10 @@ function PieChartPreview({ data }: { data: { label: string; value: number }[] })
     return acc;
   }, []);
   const slices = data.map((d, i) => {
+    // A full SVG arc with coincident endpoints has no painted area.
+    if (d.value === total) {
+      return <circle key={i} cx={cx} cy={cy} r={r} fill={CHART_COLORS[i % CHART_COLORS.length]} />;
+    }
     const startAngle = ((cumulativeAngles[i] - d.value) / total) * 2 * Math.PI - Math.PI / 2;
     const endAngle = (cumulativeAngles[i] / total) * 2 * Math.PI - Math.PI / 2;
     const largeArc = d.value / total > 0.5 ? 1 : 0;
