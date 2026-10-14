@@ -3,6 +3,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 
 const DISMISSED_KEY = "desktop-tip-dismissed";
+let dismissedInMemory = false;
 
 let listeners: Array<() => void> = [];
 function emitChange() {
@@ -18,6 +19,7 @@ export function DesktopTipModal() {
       };
     },
     () => {
+      if (dismissedInMemory) return false;
       try { return !sessionStorage.getItem(DISMISSED_KEY); }
       catch { return false; }
     },
@@ -25,6 +27,7 @@ export function DesktopTipModal() {
   );
 
   const dismiss = () => {
+    dismissedInMemory = true;
     try { sessionStorage.setItem(DISMISSED_KEY, "1"); }
     catch { /* privacy-restricted context */ }
     emitChange();
