@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { assembleStandaloneHtmlFromActivity } from "../export-utils";
+import {
+  assembleStandaloneHtmlFromActivity,
+  chartToStandaloneHtml,
+} from "../export-utils";
 
 describe("assembleStandaloneHtmlFromActivity", () => {
   const content = {
@@ -122,4 +125,19 @@ it("includes the shared trip animator before generated itinerary code", () => {
   });
   expect(doc).toContain("window.createTripAnimator =");
   expect(doc.indexOf("window.createTripAnimator =")).toBeLessThan(doc.indexOf("window.createTripAnimator({"));
+});
+
+describe("chartToStandaloneHtml", () => {
+  it("keeps data labels from closing the inline script", () => {
+    const label = "</script><script>window.injected = true</script>";
+    const doc = chartToStandaloneHtml("bar", {
+      title: "Chart",
+      description: "Labels",
+      data: [{ label, value: 1 }],
+    });
+    // Only the Chart.js CDN tag and the inline config script close.
+    expect(doc.match(/<\/script>/g)).toHaveLength(2);
+    expect(doc).not.toContain(label);
+    expect(doc).toContain("\u003c/script>");
+  });
 });

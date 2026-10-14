@@ -29,6 +29,12 @@ function escapeScriptClose(js: string): string {
   return js.replace(/<\/script/gi, "<\\/script");
 }
 
+// JSON for an inline <script>: escaping "<" keeps a value such as
+// "</script>" from closing the tag, and the result is still the same JS value.
+function toScriptJson(value: unknown): string {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
+}
+
 function escapeStyleClose(css: string): string {
   return css.replace(/<\/style/gi, "<\\/style");
 }
@@ -96,9 +102,9 @@ export function chartToStandaloneHtml(
   type: "bar" | "pie",
   data: { title: string; description: string; data: Array<{ label: string; value: number }> }
 ): string {
-  const labels = JSON.stringify(data.data.map((d) => d.label));
-  const values = JSON.stringify(data.data.map((d) => d.value));
-  const colors = JSON.stringify(
+  const labels = toScriptJson(data.data.map((d) => d.label));
+  const values = toScriptJson(data.data.map((d) => d.value));
+  const colors = toScriptJson(
     data.data.map((_, i) => CHART_COLORS[i % CHART_COLORS.length])
   );
 
