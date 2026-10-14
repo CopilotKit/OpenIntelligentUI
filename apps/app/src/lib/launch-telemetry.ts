@@ -213,31 +213,42 @@ export async function observeRunResult(stream: ReadableStream<Uint8Array | strin
   let failed = false;
   let finished = false;
 
-  const inspect = (line: string) => {
-    if (!line.startsWith("data:")) return;
+  let dataLines: string[] = [];
+  const inspect = () => {
+    const data = dataLines.join("\n");
+    dataLines = [];
+    if (!data) return;
     let event: { type?: string; delta?: string };
-    try {
-      event = JSON.parse(line.slice(5));
-    } catch {
-      return;
-    }
+    try { event = JSON.parse(data); } catch { return; }
     if (event.type === "TEXT_MESSAGE_CONTENT" && typeof event.delta === "string" && event.delta.trim()) text = true;
     if (event.type === "RUN_ERROR") failed = true;
     if (event.type === "RUN_FINISHED") finished = true;
   };
-
+  const line = (value: string) => {
+    if (!value) inspect();
+    else if (value.startsWith("data:")) dataLines.push(value.slice(5).replace(/^ /, ""));
+  };
+  const consume = (final = false) => {
+    let match: RegExpExecArray | null;
+    while ((match = /\r\n|\r(?!$)|\n/.exec(carry))) {
+      line(carry.slice(0, match.index));
+      carry = carry.slice(match.index + match[0].length);
+    }
+    if (final) { line(carry.replace(/\r$/, "")); inspect(); carry = ""; }
+  };
   try {
     for (;;) {
       const { done, value } = await reader.read();
       if (done) break;
       carry += typeof value === "string" ? value : decoder.decode(value, { stream: true });
-      const lines = carry.split("\n");
-      carry = lines.pop() ?? "";
-      lines.forEach((line) => inspect(line.trim()));
+      consume();
     }
-    inspect(carry.trim());
+    carry += decoder.decode();
+    consume(true);
   } catch {
     return false;
+  } finally {
+    reader.releaseLock();
   }
   return finished && text && !failed;
 }
