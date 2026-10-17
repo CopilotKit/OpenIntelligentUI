@@ -29,7 +29,7 @@ Use the existing validated `Websandbox.connection.remote.sendPrompt({ text })` a
 
 ## Configuration and checks
 
-The local default model is `chat-latest` (ChatGPT Instant). `claude-*` requires `ANTHROPIC_API_KEY`; `chat-latest` and `gpt-*` require `OPENAI_API_KEY`. Jev routing requires `TYPESAFE_API_KEY`. Do not invent native model APIs or silently change pinned model IDs. See `render.yaml` for its separate explicit deployment model setting.
+The local default answer model is `beam:cloud` through Ollama's OpenAI-compatible API (`OLLAMA_BASE_URL`, default `http://localhost:11434/v1`); any tagged Ollama name works without a key. `claude-*` requires `ANTHROPIC_API_KEY`; `chat-latest` and `gpt-*` require `OPENAI_API_KEY`. Jev routing defaults to `clef-flash:latest` at Ollama's `/v1/systemone` (`JEV_URL`, `JEV_MODEL`); only hosted TypeSafe requires `TYPESAFE_API_KEY`. Visitor BYOK keys always use OpenAI `chat-latest` and hosted Jev, and the chat asks for them only when `GET /credentials/status` reports the server's own models unconfigured. Do not invent native model APIs or silently change pinned model IDs. See `render.yaml` for its separate explicit deployment model setting, which stays on OpenAI and hosted Jev.
 
 ```bash
 pnpm install

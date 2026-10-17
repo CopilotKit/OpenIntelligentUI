@@ -6,7 +6,7 @@ This guide walks through adopting the CopilotKit + LangGraph patterns from this 
 
 - A React frontend (Next.js recommended)
 - A Python backend (or willingness to add one)
-- An OpenAI API key (or another LLM provider)
+- An LLM: a local [Ollama](https://ollama.com) model, or an OpenAI or Anthropic API key
 
 ## Step 1: Install Frontend Packages
 

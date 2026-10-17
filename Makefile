@@ -8,8 +8,8 @@ install: ## Install all dependencies (Node + Python)
 
 setup: install ## Full setup: install deps and create .env from template
 	@if [ ! -f apps/agent/.env ]; then \
-		printf '%s\n' 'OPENAI_API_KEY=' 'TYPESAFE_API_KEY=' 'LLM_MODEL=chat-latest' 'JEV_MODEL=jev-latest' > apps/agent/.env; \
-		echo "Created apps/agent/.env — set OPENAI_API_KEY and TYPESAFE_API_KEY"; \
+		printf '%s\n' 'LLM_MODEL=beam:cloud' 'JEV_MODEL=clef-flash:latest' 'OPENAI_API_KEY=' 'TYPESAFE_API_KEY=' > apps/agent/.env; \
+		echo "Created apps/agent/.env for Ollama — run 'ollama signin' and 'ollama pull clef-flash'"; \
 	else \
 		echo "apps/agent/.env already exists, skipping"; \
 	fi

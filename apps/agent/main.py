@@ -20,6 +20,7 @@ from src.credentials import (
     CredentialsMiddleware,
     CredentialScopedAgent,
     current_credentials,
+    server_credentials_available,
     validate_credentials,
 )
 from src.visualization_router import JevVisualizationMiddleware
@@ -59,6 +60,12 @@ async def validate_provider_credentials():
     if credentials is None:
         return JSONResponse({"ok": False, "code": "invalid_keys"}, status_code=400)
     return await validate_credentials(credentials)
+
+
+@app.get("/credentials/status")
+def provider_credentials_status():
+    # Lets the chat skip the API-key prompt when the server's models are configured.
+    return {"required": not server_credentials_available()}
 
 
 @app.get("/health")

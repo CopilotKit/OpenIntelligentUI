@@ -89,10 +89,26 @@ def test_request_model_and_jev_override_without_environment_mutation(monkeypatch
 def test_startup_without_credentials_uses_explicit_unconfigured_model(monkeypatch):
     from src.model import build_model
     monkeypatch.delenv('OPENAI_API_KEY', raising=False)
-    monkeypatch.delenv('LLM_MODEL', raising=False)
+    monkeypatch.setenv('LLM_MODEL', 'chat-latest')
     model = build_model(allow_unconfigured=True)
     with pytest.raises(ValueError, match='credentials'):
         model.invoke('hello')
+
+
+@pytest.mark.parametrize(('env', 'available'), [
+    ({}, True),  # Ollama defaults: beam answers, clef-flash routes, no keys
+    ({'LLM_MODEL': 'chat-latest'}, False),
+    ({'LLM_MODEL': 'chat-latest', 'OPENAI_API_KEY': 'k'}, True),
+    ({'JEV_URL': 'https://api.typesafe.ai/v1/systemone'}, False),
+    ({'JEV_URL': 'https://api.typesafe.ai/v1/systemone', 'TYPESAFE_API_KEY': 'k'}, True),
+])
+def test_server_credentials_follow_the_configured_providers(monkeypatch, env, available):
+    from src.credentials import server_credentials_available
+    for name in ['LLM_MODEL', 'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'JEV_URL', 'TYPESAFE_API_KEY']:
+        monkeypatch.delenv(name, raising=False)
+    for name, value in env.items():
+        monkeypatch.setenv(name, value)
+    assert server_credentials_available() is available
 
 
 def test_thread_namespace_separates_credentials_and_fallback():
@@ -164,7 +180,19 @@ def test_main_starts_without_server_credentials(monkeypatch):
     import sys
     environment = {k: v for k, v in os.environ.items() if k not in {'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'TYPESAFE_API_KEY', 'LLM_MODEL'}}
     environment['PYTHON_DOTENV_DISABLED'] = '1'
+    # An OpenAI model without its key: the Ollama default needs no credentials.
+    environment['LLM_MODEL'] = 'chat-latest'
     result = subprocess.run([sys.executable, '-c', "from fastapi.testclient import TestClient; from main import app; c=TestClient(app); assert c.get('/health').status_code == 200; r=c.post('/', json={}); assert r.status_code == 401; assert r.json()['code'] == 'credentials_required'"], env=environment, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.parametrize(('model', 'required'), [('chat-latest', True), ('beam:cloud', False)])
+def test_credentials_status_tells_the_chat_whether_keys_are_needed(model, required):
+    import subprocess
+    import sys
+    environment = {k: v for k, v in os.environ.items() if k not in {'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'TYPESAFE_API_KEY', 'JEV_URL'}}
+    environment.update(PYTHON_DOTENV_DISABLED='1', LLM_MODEL=model)
+    result = subprocess.run([sys.executable, '-c', f"from fastapi.testclient import TestClient; from main import app; assert TestClient(app).get('/credentials/status').json() == {{'required': {required}}}"], env=environment, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
 
 

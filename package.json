@@ -12,13 +12,16 @@
     "clean": "turbo run clean"
   },
   "devDependencies": {
-    "turbo": "^2.5.4",
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "turbo": "^2.5.4"
   },
   "packageManager": "pnpm@9.0.0",
   "pnpm": {
     "overrides": {
       "esbuild": "^0.27.3"
+    },
+    "patchedDependencies": {
+      "@ag-ui/client@0.0.52": "patches/@ag-ui__client@0.0.52.patch"
     }
   }
 }

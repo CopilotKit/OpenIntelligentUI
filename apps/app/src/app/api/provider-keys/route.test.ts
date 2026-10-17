@@ -1,9 +1,27 @@
 // @vitest-environment node
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { POST } from "./route";
+import { GET, POST } from "./route";
 
 const headers = { "x-openai-api-key": "openai-test-secret", "x-jev-api-key": "jev-test-secret" };
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
+describe("provider key requirement", () => {
+  it("relays only an explicit 'not required' from the agent", async () => {
+    vi.stubEnv("LANGGRAPH_DEPLOYMENT_URL", "agent:8123");
+    const fetchMock = vi.fn().mockResolvedValue(Response.json({ required: false }));
+    vi.stubGlobal("fetch", fetchMock);
+    const response = await GET();
+    expect(fetchMock).toHaveBeenCalledWith("http://agent:8123/credentials/status", expect.objectContaining({ redirect: "error" }));
+    expect(await response.json()).toEqual({ required: false });
+  });
+  it.each([
+    ["an agent error", () => Promise.resolve(Response.json({ required: false }, { status: 500 }))],
+    ["an unreachable agent", () => Promise.reject(new Error("down"))],
+    ["a malformed reply", () => Promise.resolve(Response.json({ required: "no" }))],
+  ])("keeps keys required on %s", async (_, reply) => {
+    vi.stubGlobal("fetch", vi.fn().mockImplementation(reply));
+    expect(await (await GET()).json()).toEqual({ required: true });
+  });
+});
 describe("provider key validation proxy", () => {
   it("requires both keys before contacting the backend", async () => {
     const fetchMock = vi.fn(); vi.stubGlobal("fetch", fetchMock);

@@ -10,8 +10,16 @@ from langchain.agents import AgentState
 from langchain.agents.middleware import AgentMiddleware
 from langchain_core.messages import SystemMessage
 from pydantic import BaseModel, Field, ValidationError
+from urllib.parse import urlparse
 
+# Hosted Jev. Visitor BYOK keys are TypeSafe keys, so they always route here.
 JEV_URL = "https://api.typesafe.ai/v1/systemone"
+# Server default: clef-flash answers the same System One API in local Ollama.
+DEFAULT_ROUTER_URL = "http://localhost:11434/v1/systemone"
+DEFAULT_ROUTER_MODEL = "clef-flash:latest"
+HOSTED_TIMEOUT = 15
+# A local router loads its model on the first request, which takes 10-12s cold.
+LOCAL_TIMEOUT = 60
 VISUALIZATIONS = {
     "text": "Direct facts, prose, writing, code, conversation, or a clarification; no visual needed.",
     "table": "Basic table: exact values, records, simple side-by-side comparison; no custom interaction.",
@@ -113,19 +121,47 @@ def routing_input(state):
     return turn, context
 
 
+def server_router_url():
+    return os.environ.get("JEV_URL", "").strip() or DEFAULT_ROUTER_URL
+
+
+def router_key_required():
+    """Only hosted TypeSafe needs a key; a self-hosted System One server does not."""
+    host = urlparse(server_router_url()).hostname or ""
+    return host == "typesafe.ai" or host.endswith(".typesafe.ai")
+
+
+def request_url():
+    from src.credentials import current_credentials
+
+    return JEV_URL if current_credentials.get() else server_router_url()
+
+
+def request_timeout():
+    from src.credentials import current_credentials
+
+    if current_credentials.get() or router_key_required():
+        return HOSTED_TIMEOUT
+    return LOCAL_TIMEOUT
+
+
 def request_options(context):
     from src.credentials import current_credentials
 
     credentials = current_credentials.get()
     key = credentials.jev if credentials else os.environ.get("TYPESAFE_API_KEY", "").strip()
-    if not key:
+    if not key and router_key_required():
         raise ValueError(
             "TYPESAFE_API_KEY is required for Jev visualization routing. Configure it and restart the agent."
         )
+    if credentials:
+        model = "jev-latest"
+    else:
+        model = os.environ.get("JEV_MODEL", "").strip() or DEFAULT_ROUTER_MODEL
     return {
-        "headers": {"Authorization": f"Bearer {key}"},
+        "headers": {"Authorization": f"Bearer {key}"} if key else {},
         "json": {
-            "model": "jev-latest" if credentials else os.environ.get("JEV_MODEL", "jev-latest"),
+            "model": model,
             "state": {"conversation": context},
             "questions": {
                 "visualization": {
@@ -158,8 +194,8 @@ def provider_trust_env():
 
 def route(context):
     try:
-        with httpx.Client(timeout=15, trust_env=provider_trust_env()) as client:
-            return parse_response(client.post(JEV_URL, **request_options(context)))
+        with httpx.Client(timeout=request_timeout(), trust_env=provider_trust_env()) as client:
+            return parse_response(client.post(request_url(), **request_options(context)))
     except httpx.HTTPError:
         raise ValueError(
             "Jev visualization routing is unavailable or timed out. Please retry."
@@ -168,9 +204,9 @@ def route(context):
 
 async def aroute(context):
     try:
-        async with httpx.AsyncClient(timeout=15, trust_env=provider_trust_env()) as client:
+        async with httpx.AsyncClient(timeout=request_timeout(), trust_env=provider_trust_env()) as client:
             return parse_response(
-                await client.post(JEV_URL, **request_options(context))
+                await client.post(request_url(), **request_options(context))
             )
     except httpx.HTTPError:
         raise ValueError(

@@ -18,7 +18,7 @@ export default function HomePage() {
   useGenerativeUIExamples();
   useExampleSuggestions();
   const { agent } = useAgent();
-  const { newChat, hasKeys, keysOpen, setKeysOpen } = useProviderKeys();
+  const { newChat, hasKeys, canChat, keysOpen, setKeysOpen } = useProviderKeys();
   const { copilotkit } = useCopilotKit();
   const [error, setError] = useState<string | null>(null);
   const [retrying, setRetrying] = useState(false);
@@ -142,7 +142,7 @@ export default function HomePage() {
               welcomeMessageText: "What would you like to explore?",
               chatInputPlaceholder: "Ask anything…",
               chatDisclaimerText:
-                hasKeys ? "AI can make mistakes. Check important details." : "Add your OpenAI and Jev API keys to start. Keys clear when you refresh.",
+                canChat ? "AI can make mistakes. Check important details." : "Add your OpenAI and Jev API keys to start. Keys clear when you refresh.",
             }}
           />
         </div>

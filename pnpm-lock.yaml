@@ -7,6 +7,11 @@ settings:
 overrides:
   esbuild: ^0.27.3
 
+patchedDependencies:
+  '@ag-ui/client@0.0.52':
+    hash: dn7ifww43neslscynndgqgqway
+    path: patches/@ag-ui__client@0.0.52.patch
+
 importers:
 
   .:
@@ -22,10 +27,10 @@ importers:
     dependencies:
       '@ag-ui/a2ui-middleware':
         specifier: ^0.0.2
-        version: 0.0.2(@ag-ui/client@0.0.52)(rxjs@7.8.1)
+        version: 0.0.2(@ag-ui/client@0.0.52(patch_hash=dn7ifww43neslscynndgqgqway))(rxjs@7.8.1)
       '@ag-ui/mcp-apps-middleware':
         specifier: ^0.0.3
-        version: 0.0.3(@ag-ui/client@0.0.52)(@cfworker/json-schema@4.1.1)(hono@4.11.7)(zod@3.25.76)
+        version: 0.0.3(@ag-ui/client@0.0.52(patch_hash=dn7ifww43neslscynndgqgqway))(@cfworker/json-schema@4.1.1)(hono@4.11.7)(zod@3.25.76)
       '@copilotkit/a2ui-renderer':
         specifier: 1.55.2-next.1
         version: 1.55.2-next.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -5995,14 +6000,14 @@ snapshots:
 
   '@adobe/css-tools@4.5.0': {}
 
-  '@ag-ui/a2ui-middleware@0.0.2(@ag-ui/client@0.0.52)(rxjs@7.8.1)':
+  '@ag-ui/a2ui-middleware@0.0.2(@ag-ui/client@0.0.52(patch_hash=dn7ifww43neslscynndgqgqway))(rxjs@7.8.1)':
     dependencies:
-      '@ag-ui/client': 0.0.52
+      '@ag-ui/client': 0.0.52(patch_hash=dn7ifww43neslscynndgqgqway)
       rxjs: 7.8.1
 
-  '@ag-ui/a2ui-middleware@0.0.4(@ag-ui/client@0.0.52)(rxjs@7.8.1)':
+  '@ag-ui/a2ui-middleware@0.0.4(@ag-ui/client@0.0.52(patch_hash=dn7ifww43neslscynndgqgqway))(rxjs@7.8.1)':
     dependencies:
-      '@ag-ui/client': 0.0.52
+      '@ag-ui/client': 0.0.52(patch_hash=dn7ifww43neslscynndgqgqway)
       clarinet: 0.12.6
       rxjs: 7.8.1
 
@@ -6019,7 +6024,7 @@ snapshots:
       uuid: 11.1.0
       zod: 3.25.76
 
-  '@ag-ui/client@0.0.52':
+  '@ag-ui/client@0.0.52(patch_hash=dn7ifww43neslscynndgqgqway)':
     dependencies:
       '@ag-ui/core': 0.0.52
       '@ag-ui/encoder': 0.0.52
@@ -6051,9 +6056,9 @@ snapshots:
       '@ag-ui/core': 0.0.52
       '@ag-ui/proto': 0.0.52
 
-  '@ag-ui/langgraph@0.0.27(@ag-ui/client@0.0.52)(@ag-ui/core@0.0.52)(@opentelemetry/api@1.9.0)(openai@4.104.0(ws@8.19.0)(zod@3.25.76))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(ws@8.19.0)(zod-to-json-schema@3.25.1(zod@3.25.76))':
+  '@ag-ui/langgraph@0.0.27(@ag-ui/client@0.0.52(patch_hash=dn7ifww43neslscynndgqgqway))(@ag-ui/core@0.0.52)(@opentelemetry/api@1.9.0)(openai@4.104.0(ws@8.19.0)(zod@3.25.76))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(ws@8.19.0)(zod-to-json-schema@3.25.1(zod@3.25.76))':
     dependencies:
-      '@ag-ui/client': 0.0.52
+      '@ag-ui/client': 0.0.52(patch_hash=dn7ifww43neslscynndgqgqway)
       '@ag-ui/core': 0.0.52
       '@langchain/core': 0.3.80(@opentelemetry/api@1.9.0)(openai@4.104.0(ws@8.19.0)(zod@3.25.76))
       '@langchain/langgraph-sdk': 0.1.10(@langchain/core@0.3.80(@opentelemetry/api@1.9.0)(openai@4.104.0(ws@8.19.0)(zod@3.25.76)))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -6072,9 +6077,9 @@ snapshots:
       - ws
       - zod-to-json-schema
 
-  '@ag-ui/mcp-apps-middleware@0.0.3(@ag-ui/client@0.0.52)(@cfworker/json-schema@4.1.1)(hono@4.11.7)(zod@3.25.76)':
+  '@ag-ui/mcp-apps-middleware@0.0.3(@ag-ui/client@0.0.52(patch_hash=dn7ifww43neslscynndgqgqway))(@cfworker/json-schema@4.1.1)(hono@4.11.7)(zod@3.25.76)':
     dependencies:
-      '@ag-ui/client': 0.0.52
+      '@ag-ui/client': 0.0.52(patch_hash=dn7ifww43neslscynndgqgqway)
       '@modelcontextprotocol/sdk': 1.25.3(@cfworker/json-schema@4.1.1)(hono@4.11.7)(zod@3.25.76)
       rxjs: 7.8.1
     transitivePeerDependencies:
@@ -6346,7 +6351,7 @@ snapshots:
 
   '@copilotkit/core@1.55.2-next.1(@ag-ui/core@0.0.52)(zod@3.25.76)':
     dependencies:
-      '@ag-ui/client': 0.0.52
+      '@ag-ui/client': 0.0.52(patch_hash=dn7ifww43neslscynndgqgqway)
       '@copilotkit/shared': 1.55.2-next.1(@ag-ui/core@0.0.52)
       phoenix: 1.8.5
       rxjs: 7.8.1
@@ -6360,7 +6365,7 @@ snapshots:
 
   '@copilotkit/react-core@1.55.2-next.1(@types/mdast@4.0.4)(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(graphql@16.12.0)(micromark-util-types@2.0.2)(micromark@4.0.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@3.25.76)':
     dependencies:
-      '@ag-ui/client': 0.0.52
+      '@ag-ui/client': 0.0.52(patch_hash=dn7ifww43neslscynndgqgqway)
       '@ag-ui/core': 0.0.52
       '@copilotkit/a2ui-renderer': 1.55.2-next.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@copilotkit/core': 1.55.2-next.1(@ag-ui/core@0.0.52)(zod@3.25.76)
@@ -6438,12 +6443,12 @@ snapshots:
 
   '@copilotkit/runtime@1.55.2-next.1(@cfworker/json-schema@4.1.1)(@langchain/core@0.3.80(@opentelemetry/api@1.9.0)(openai@4.104.0(ws@8.19.0)(zod@3.25.76)))(@langchain/langgraph-sdk@1.9.20(@langchain/core@0.3.80(@opentelemetry/api@1.9.0)(openai@4.104.0(ws@8.19.0)(zod@3.25.76)))(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@opentelemetry/api@1.9.0)(langchain@1.4.4(@langchain/core@0.3.80(@opentelemetry/api@1.9.0)(openai@4.104.0(ws@8.19.0)(zod@3.25.76)))(@opentelemetry/api@1.9.0)(openai@4.104.0(ws@8.19.0)(zod@3.25.76))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(ws@8.19.0)(zod-to-json-schema@3.25.1(zod@3.25.76)))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod-to-json-schema@3.25.1(zod@3.25.76))':
     dependencies:
-      '@ag-ui/a2ui-middleware': 0.0.4(@ag-ui/client@0.0.52)(rxjs@7.8.1)
-      '@ag-ui/client': 0.0.52
+      '@ag-ui/a2ui-middleware': 0.0.4(@ag-ui/client@0.0.52(patch_hash=dn7ifww43neslscynndgqgqway))(rxjs@7.8.1)
+      '@ag-ui/client': 0.0.52(patch_hash=dn7ifww43neslscynndgqgqway)
       '@ag-ui/core': 0.0.52
       '@ag-ui/encoder': 0.0.52
-      '@ag-ui/langgraph': 0.0.27(@ag-ui/client@0.0.52)(@ag-ui/core@0.0.52)(@opentelemetry/api@1.9.0)(openai@4.104.0(ws@8.19.0)(zod@3.25.76))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(ws@8.19.0)(zod-to-json-schema@3.25.1(zod@3.25.76))
-      '@ag-ui/mcp-apps-middleware': 0.0.3(@ag-ui/client@0.0.52)(@cfworker/json-schema@4.1.1)(hono@4.11.7)(zod@3.25.76)
+      '@ag-ui/langgraph': 0.0.27(@ag-ui/client@0.0.52(patch_hash=dn7ifww43neslscynndgqgqway))(@ag-ui/core@0.0.52)(@opentelemetry/api@1.9.0)(openai@4.104.0(ws@8.19.0)(zod@3.25.76))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(ws@8.19.0)(zod-to-json-schema@3.25.1(zod@3.25.76))
+      '@ag-ui/mcp-apps-middleware': 0.0.3(@ag-ui/client@0.0.52(patch_hash=dn7ifww43neslscynndgqgqway))(@cfworker/json-schema@4.1.1)(hono@4.11.7)(zod@3.25.76)
       '@ai-sdk/anthropic': 3.0.58(zod@3.25.76)
       '@ai-sdk/google': 3.0.43(zod@3.25.76)
       '@ai-sdk/google-vertex': 3.0.141(zod@3.25.76)
@@ -6499,7 +6504,7 @@ snapshots:
 
   '@copilotkit/shared@1.55.2-next.1(@ag-ui/core@0.0.52)':
     dependencies:
-      '@ag-ui/client': 0.0.52
+      '@ag-ui/client': 0.0.52(patch_hash=dn7ifww43neslscynndgqgqway)
       '@ag-ui/core': 0.0.52
       '@copilotkit/license-verifier': 0.0.1-a1
       '@segment/analytics-node': 2.3.0
@@ -6515,7 +6520,7 @@ snapshots:
 
   '@copilotkit/web-inspector@1.55.2-next.1(@ag-ui/core@0.0.52)(zod@3.25.76)':
     dependencies:
-      '@ag-ui/client': 0.0.52
+      '@ag-ui/client': 0.0.52(patch_hash=dn7ifww43neslscynndgqgqway)
       '@copilotkit/core': 1.55.2-next.1(@ag-ui/core@0.0.52)(zod@3.25.76)
       lit: 3.3.2
       lucide: 0.525.0

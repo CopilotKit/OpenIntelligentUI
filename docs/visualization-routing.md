@@ -1,8 +1,8 @@
 # Visualization routing
 
-The answer model defaults to `chat-latest`, the documented API alias for the latest ChatGPT Instant model. This is a moving alias, not a pinned `gpt-6-instant` snapshot. Its available model ID was verified using the configured OpenAI account. See [OpenAI's model documentation](https://developers.openai.com/api/docs/models/chat-latest).
+The answer model defaults to `beam:cloud` through local Ollama. Visitor BYOK keys use `chat-latest`, OpenAI's moving alias for the latest ChatGPT Instant model (not a pinned `gpt-6-instant` snapshot); see [OpenAI's model documentation](https://developers.openai.com/api/docs/models/chat-latest).
 
-Jev (`jev-latest`) makes one typed presentation decision for each new user message through [TypeSafe's System One API](https://docs.typesafe.ai/introduction/quickstart). It receives up to four recent user/assistant text messages, capped at 6,000 characters each. It does not receive API keys, system instructions, raw tool outputs, or generated tool code.
+The router makes one typed presentation decision for each new user message through [TypeSafe's System One API](https://docs.typesafe.ai/introduction/quickstart). By default it is `clef-flash:latest`, which answers that API at Ollama's `/v1/systemone`; hosted Jev (`jev-latest`) is used for visitor keys or when `JEV_URL` points at TypeSafe. It receives up to four recent user/assistant text messages, capped at 6,000 characters each. It does not receive API keys, system instructions, raw tool outputs, or generated tool code.
 
 | Selected visualization | Renderer |
 | --- | --- |
@@ -17,7 +17,7 @@ The renderer is derived from Jev's validated choice, preventing contradictory re
 
 The A2UI catalog supplies a semantic HTML table with column headers, a caption, keyboard-focusable horizontal scrolling, and a required provenance label. It accepts at most 12 columns and 200 rows and rejects mismatched row widths. React renders values as text. Charts and diagrams continue to use the existing isolated sandbox.
 
-Set `OPENAI_API_KEY`, `TYPESAFE_API_KEY`, `LLM_MODEL=chat-latest`, and optionally `JEV_MODEL=jev-latest` on the agent server. Provider secrets never belong in browser variables. Existing `claude-*` and `gpt-*` overrides remain available. Jev authentication failures, invalid choices, and timeouts fail the turn with a retryable error; there is no silent fallback claiming that Jev made a decision. Successful health checks confirm the server is running, not provider access.
+The local defaults need no keys. For hosted providers, set `OPENAI_API_KEY` and `LLM_MODEL=chat-latest`, and `JEV_URL=https://api.typesafe.ai/v1/systemone`, `TYPESAFE_API_KEY` and `JEV_MODEL=jev-latest`, on the agent server. Requests time out after 60 seconds against a local router (its first request loads the model) and 15 seconds against hosted Jev. Provider secrets never belong in browser variables. Existing `claude-*` and `gpt-*` overrides remain available. Jev authentication failures, invalid choices, and timeouts fail the turn with a retryable error; there is no silent fallback claiming that Jev made a decision. Successful health checks confirm the server is running, not provider access.
 
 Routing is a model judgment, not a guarantee of the objectively best visualization. Missing source data still requires clarification or explicit illustrative assumptions. Live provider checks and browser checks complement the deterministic routing, error-path, continuation, and A2UI rendering tests.
 

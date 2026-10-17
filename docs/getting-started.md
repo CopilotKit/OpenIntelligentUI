@@ -1,6 +1,6 @@
 # Getting started
 
-Run Open Intelligent UI by CopilotKit locally with Node.js 22+, pnpm 9+, Python 3.12+, and [uv](https://docs.astral.sh/uv/).
+Run Open Intelligent UI by CopilotKit locally with Node.js 22+, pnpm 9+, Python 3.12+, [uv](https://docs.astral.sh/uv/), and [Ollama](https://ollama.com).
 
 ## Install
 
@@ -14,20 +14,29 @@ make setup
 
 ## Configure the agent
 
-You can start the agent without shared provider keys and use **API keys** in the chat header to test and save your own OpenAI and Jev keys for the current browser session. Refreshing clears the keys.
+By default the agent needs no API keys. It sends answers to `beam:cloud` and visualization routing to `clef-flash:latest`, both through the Ollama daemon at `http://localhost:11434`. Before starting the app:
 
-The chat interface asks for visitor keys before sending a message and preserves the draft during setup. To also provide shared credentials for direct API clients, edit `apps/agent/.env`:
-
-```dotenv
-OPENAI_API_KEY=your-provider-key
-LLM_MODEL=chat-latest
-TYPESAFE_API_KEY=your-typesafe-key
-JEV_MODEL=jev-latest
+```bash
+ollama signin                  # required for :cloud models
+ollama pull clef-flash:latest  # local router
 ```
 
-The model factory accepts `claude-*` names through Anthropic and `chat-latest` or `gpt-*` names through OpenAI. To override the default, set a model available to your account in `LLM_MODEL` and supply its provider key. Shared mode requires the selected answer provider’s key and the Jev key; BYOK requests supply their own pair. Unset `LLM_MODEL` uses the local default; an empty value or unsupported prefix fails with a configuration error.
+`make setup` writes these defaults to `apps/agent/.env`; `.env.example` lists the optional settings:
 
-Check model availability and access with a real request. This repository does not guarantee that every model name works or implement a separate native GPT-6 API. Never put shared provider keys in public frontend environment variables. See [BYOK behavior](../README.md#use-your-own-api-keys).
+```dotenv
+LLM_MODEL=beam:cloud
+# OLLAMA_BASE_URL=http://localhost:11434/v1
+JEV_MODEL=clef-flash:latest
+# JEV_URL=http://localhost:11434/v1/systemone
+```
+
+Any Ollama model name with a tag (such as `gemma4:31b-cloud`) works as `LLM_MODEL` without a key; a `:cloud` model must be available on your Ollama plan. The model factory also accepts `claude-*` names through Anthropic (`ANTHROPIC_API_KEY`) and `chat-latest` or `gpt-*` names through OpenAI (`OPENAI_API_KEY`). For hosted Jev, set `JEV_URL=https://api.typesafe.ai/v1/systemone`, `JEV_MODEL=jev-latest` and `TYPESAFE_API_KEY`. Unset `LLM_MODEL` uses the default; an empty value or unsupported name fails with a configuration error.
+
+The router allows 60 seconds per request against a local server, since Ollama loads the model on the first request, and 15 seconds against hosted Jev.
+
+When the server's own models are configured, the chat sends without asking for keys. Otherwise visitors use **API keys** in the chat header to test and save their own OpenAI and Jev keys for the current browser session; those always use `chat-latest` and `jev-latest`. Refreshing clears the keys.
+
+Check model availability and access with a real request. This repository does not guarantee that every model name works or implement a separate native GPT-6 API. Ollama cloud models can be retired or require paid credits, and smaller models may answer in text instead of building a requested chart; retrying usually helps. Never put shared provider keys in public frontend environment variables. See [BYOK behavior](../README.md#use-your-own-api-keys).
 
 ## Configure the frontend
 

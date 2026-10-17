@@ -11,6 +11,24 @@ const reply = (body: object, status: number) => Response.json(body, {
   status, headers: { "Cache-Control": "no-store" },
 });
 
+const agentUrl = (path: string) =>
+  `${normalizeLanggraphUrl(process.env.LANGGRAPH_DEPLOYMENT_URL).replace(/\/$/, "")}${path}`;
+
+/** Whether visitors must bring keys. Fails closed: any doubt keeps the key prompt. */
+export async function GET() {
+  try {
+    const response = await fetch(agentUrl("/credentials/status"), {
+      cache: "no-store",
+      redirect: "error",
+      signal: AbortSignal.timeout(10_000),
+    });
+    const data = await response.json();
+    return reply({ required: !(response.ok && data?.required === false) }, 200);
+  } catch {
+    return reply({ required: true }, 200);
+  }
+}
+
 export async function POST(request: Request) {
   let credentials;
   try {
@@ -20,9 +38,7 @@ export async function POST(request: Request) {
     return reply({ error: PROVIDER_KEY_INPUT_ERROR }, 400);
   }
   try {
-    const base = normalizeLanggraphUrl(process.env.LANGGRAPH_DEPLOYMENT_URL);
-    const url = `${base.replace(/\/$/, "")}/credentials/validate`;
-    const response = await fetch(url, {
+    const response = await fetch(agentUrl("/credentials/validate"), {
       method: "POST",
       headers: credentials,
       cache: "no-store",

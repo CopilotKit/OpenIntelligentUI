@@ -23,12 +23,15 @@ services:
         sync: false
       - key: LANGSMITH_API_KEY
         sync: false
-      # chat-latest and gpt-* route via OpenAI, Claude names via Anthropic
-      # (see apps/agent/src/model.py)
+      # chat-latest and gpt-* route via OpenAI, Claude names via Anthropic.
+      # The local default is an Ollama model, which Render cannot reach, so the
+      # hosted demo pins OpenAI and hosted Jev (see apps/agent/src/model.py).
       - key: LLM_MODEL
         value: chat-latest
       - key: TYPESAFE_API_KEY
         sync: false
+      - key: JEV_URL
+        value: https://api.typesafe.ai/v1/systemone
       - key: JEV_MODEL
         value: jev-latest
     buildFilter:

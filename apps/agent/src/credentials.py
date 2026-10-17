@@ -46,9 +46,12 @@ def parse_credentials(headers):
 
 
 def server_credentials_available():
-    model = os.environ.get('LLM_MODEL', 'chat-latest').strip()
-    key = 'ANTHROPIC_API_KEY' if model.startswith('claude-') else 'OPENAI_API_KEY'
-    return bool(os.environ.get(key, '').strip() and os.environ.get('TYPESAFE_API_KEY', '').strip())
+    """Whether the server's own models can answer without visitor keys."""
+    from src.model import DEFAULT_MODEL, provider_key_name
+    from src.visualization_router import router_key_required
+    model_key = provider_key_name(os.environ.get('LLM_MODEL', DEFAULT_MODEL).strip())
+    router_key = 'TYPESAFE_API_KEY' if router_key_required() else None
+    return all(os.environ.get(key, '').strip() for key in (model_key, router_key) if key)
 
 
 class CredentialsMiddleware:

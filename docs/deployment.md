@@ -11,11 +11,11 @@ The repository's `render.yaml` defines two services:
 | `open-generative-ui-agent` | Python 3.12.6, `apps/agent` | `pip install uv && uv sync`                                                                            | `uv run uvicorn main:app --host 0.0.0.0 --port $PORT`, `/health` |
 | `open-generative-ui-app`   | Node 22, repository root    | `corepack enable && pnpm install --no-frozen-lockfile && pnpm exec turbo run build --filter=@repo/app` | `pnpm --filter @repo/app start`, `/api/health`                   |
 
-For shared credentials, the blueprint and Python factory default to `LLM_MODEL=chat-latest`, using `OPENAI_API_KEY`. Jev visualization routing uses `TYPESAFE_API_KEY`; `JEV_MODEL` defaults to `jev-latest`. Verify access to the selected model before launch; a configured model name does not prove availability.
+The Python factory defaults to `beam:cloud` through a local Ollama daemon, which a Render service does not have. The blueprint therefore sets `LLM_MODEL=chat-latest` with `OPENAI_API_KEY`, and hosted Jev with `JEV_URL`, `JEV_MODEL=jev-latest` and `TYPESAFE_API_KEY`. Verify access to the selected model before launch; a configured model name does not prove availability.
 
 | Variable                                  | Service       | Purpose                                                                             |
 | ----------------------------------------- | ------------- | ----------------------------------------------------------------------------------- |
-| `LLM_MODEL`                               | Agent         | `claude-*` routes to Anthropic; `gpt-*` routes to OpenAI                            |
+| `LLM_MODEL`                               | Agent         | `claude-*` routes to Anthropic; `gpt-*` routes to OpenAI; tagged names to Ollama    |
 | `ANTHROPIC_API_KEY`                       | Agent         | Required when selecting Anthropic                                                   |
 | `OPENAI_API_KEY`                          | Agent         | Required when selecting OpenAI                                                      |
 | `LANGSMITH_API_KEY`                       | As configured | Optional tracing configuration                                                      |

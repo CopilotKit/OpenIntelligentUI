@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import type { ComponentProps } from "react";
 import type { CopilotChatView } from "@copilotkit/react-core/v2";
@@ -56,4 +56,20 @@ it("gates example prompts and clears the preserved draft when starting a new cha
   expect(screen.getByLabelText("Message")).toHaveValue("");
   fireEvent.click(screen.getByText("Example"));
   expect(select).toHaveBeenCalledOnce();
+});
+
+it("sends without visitor keys once the server reports its own models are configured", async () => {
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ json: async () => ({ required: false }) }));
+  try {
+    render(<ProviderKeysProvider><Harness /></ProviderKeysProvider>);
+    await waitFor(() => expect(fetch).toHaveBeenCalledWith("/api/provider-keys", { cache: "no-store" }));
+    // Let the status response settle before the visitor sends.
+    await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+    fireEvent.change(screen.getByLabelText("Message"), { target: { value: "Show a map" } });
+    fireEvent.click(screen.getByText("Send"));
+    expect(submit).toHaveBeenCalledExactlyOnceWith("Show a map");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  } finally {
+    vi.unstubAllGlobals();
+  }
 });

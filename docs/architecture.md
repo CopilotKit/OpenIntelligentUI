@@ -27,7 +27,7 @@ User prompt or chat starter suggestion
 
 The agent uses `create_deep_agent`, CopilotKit middleware, an Anthropic compatibility middleware, and `BoundedMemorySaver(max_threads=200)`. The checkpoint store is process memory, not durable shared storage. Restarting or scaling the agent can lose or split conversation state.
 
-`src/model.py` chooses ChatAnthropic for `claude-*` and ChatOpenAI for `gpt-*`. It checks the selected provider's key before constructing the client. The local default is unchanged; deployed configuration can override it.
+`src/model.py` chooses ChatAnthropic for `claude-*`, ChatOpenAI for `chat-latest`/`gpt-*`, and ChatOpenAI pointed at Ollama for any tagged model name (default `beam:cloud`). It checks the selected provider's key before constructing a hosted client. Ollama returns each tool call whole, so the model wrapper splits it into a name chunk and an arguments chunk, and puts `generateSandboxedUi` arguments in the streaming order below with a default `initialHeight`. Deployed configuration can override the model.
 
 `src/prompt.py` and the three agent skills guide response selection. Plain text is appropriate for direct answers. Native components handle supported structured tasks; custom UI serves useful diagrams, comparisons, calculators, and simulations. Planning is optional. See [Product and agent behavior](interactive-answers.md).
 

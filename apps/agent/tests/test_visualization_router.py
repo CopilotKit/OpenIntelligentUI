@@ -107,12 +107,36 @@ def test_route_filters_renderers_preserving_data_tools(choice, allowed):
         assert "coverage limits" in result.system_message.content
 
 
-def test_missing_key_is_actionable(monkeypatch):
+def test_missing_key_is_actionable_for_hosted_jev(monkeypatch):
     from src.visualization_router import request_options
 
+    monkeypatch.setenv("JEV_URL", "https://api.typesafe.ai/v1/systemone")
     monkeypatch.delenv("TYPESAFE_API_KEY", raising=False)
     with pytest.raises(ValueError, match="TYPESAFE_API_KEY"):
         request_options([])
+
+
+def test_default_routes_through_clef_flash_in_local_ollama(monkeypatch):
+    from src.visualization_router import request_options, request_url
+
+    for name in ("JEV_URL", "JEV_MODEL", "TYPESAFE_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
+    options = request_options([])
+    assert request_url() == "http://localhost:11434/v1/systemone"
+    assert options["json"]["model"] == "clef-flash:latest"
+    assert options["headers"] == {}
+
+
+def test_visitor_jev_keys_always_use_hosted_jev(monkeypatch):
+    from src.credentials import Credentials, current_credentials
+    from src.visualization_router import JEV_URL, request_url
+
+    monkeypatch.delenv("JEV_URL", raising=False)
+    token = current_credentials.set(Credentials("visitor-openai", "visitor-jev"))
+    try:
+        assert request_url() == JEV_URL
+    finally:
+        current_credentials.reset(token)
 
 
 def test_provider_errors_do_not_expose_response_body():
@@ -137,6 +161,17 @@ def test_timeout_is_actionable_without_secret_headers(monkeypatch):
     with pytest.raises(ValueError, match="timed out") as error:
         router.route([])
     assert "private-test-value" not in str(error.value)
+
+
+@pytest.mark.parametrize(
+    "jev_url, expected",
+    [("", 60), ("http://localhost:11434/v1/systemone", 60), ("https://api.typesafe.ai/v1/systemone", 15)],
+)
+def test_local_router_gets_time_to_load_its_model(monkeypatch, jev_url, expected):
+    import src.visualization_router as router
+
+    monkeypatch.setenv("JEV_URL", jev_url)
+    assert router.request_timeout() == expected
 
 
 def test_context_excludes_system_and_tool_content_and_is_bounded():

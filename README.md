@@ -140,28 +140,27 @@ These starters run the agent; they are not prerecorded responses. Jev chooses th
 
 ## Get started
 
-Prerequisites: Node.js 22+, pnpm 9+, Python 3.12+, and [uv](https://docs.astral.sh/uv/).
+Prerequisites: Node.js 22+, pnpm 9+, Python 3.12+, [uv](https://docs.astral.sh/uv/), and [Ollama](https://ollama.com) signed in with `ollama signin` (needed for `:cloud` models).
 
 ```bash
 git clone https://github.com/CopilotKit/OpenIntelligentUI.git
 cd OpenIntelligentUI
 make setup
-# Optional: set shared OPENAI_API_KEY and TYPESAFE_API_KEY in apps/agent/.env
-# Or use API keys in the chat header after starting the app
+ollama pull clef-flash:latest   # local visualization router
 make dev
 ```
 
 Open the [app](http://localhost:3000). The [agent health endpoint](http://localhost:8123/health) confirms the agent service is running. See [Getting started](docs/getting-started.md) for configuration and verification.
 
-The default model is `chat-latest`, OpenAI’s documented alias for the latest ChatGPT Instant model, requiring `OPENAI_API_KEY`. Jev (`jev-latest`, requiring `TYPESAFE_API_KEY`) selects the renderer and visualization for each user turn. Basic tables use A2UI; charts, diagrams, calculators, and maps use Open Generative UI. Provider failures are surfaced instead of silently substituting another router or model. See [Visualization routing](docs/visualization-routing.md).
+The default answer model is `beam:cloud`, served through your local Ollama daemon's OpenAI-compatible API. The visualization router defaults to `clef-flash:latest`, which answers Jev's System One API in the same daemon. Neither needs an API key. To use hosted providers instead, see [Getting started](docs/getting-started.md#configure-the-agent). The router selects the renderer and visualization for each user turn. Basic tables use A2UI; charts, diagrams, calculators, and maps use Open Generative UI. Provider failures are surfaced instead of silently substituting another router or model. See [Visualization routing](docs/visualization-routing.md).
 
 ## Use your own API keys
 
-The chat asks for both keys before sending your first message or example prompt and keeps your draft while you set them up. Open **API keys** in the chat header, enter an OpenAI key and a Jev key, then choose **Test connection** and **Save keys**. The connection test makes a small request to each provider. Your keys use `chat-latest` for answers and `jev-latest` for visualization routing, with usage billed to your provider accounts.
+With the default local models the chat never asks for keys. If the server's own models are not configured, the chat asks for both keys before sending your first message or example prompt and keeps your draft while you set them up. Open **API keys** in the chat header, enter an OpenAI key and a Jev key, then choose **Test connection** and **Save keys**. The connection test makes a small request to each provider. Your keys use `chat-latest` for answers and `jev-latest` for visualization routing, with usage billed to your provider accounts.
 
 Keys stay in browser memory until refresh or **Clear keys**; the app does not save them in browser storage. Requests send them through the application server to their respective providers. They are kept out of chat state and checkpoints, and hosted LangSmith tracing is disabled for requests using your keys. Only use this feature on a deployment whose operator you trust. Saving or clearing keys starts a new chat; **New chat** keeps your keys for the current session.
 
-The agent can run without shared provider keys. Visitors must then supply both keys before chatting. Configured server credentials remain available to direct API clients that omit visitor keys; the chat interface requires visitors to add their own keys.
+The chat checks `GET /credentials/status` on the agent. It asks visitors for keys only when the server's own answer model or router is unconfigured, for example a hosted `LLM_MODEL` without its key. Visitor keys always use OpenAI `chat-latest` and hosted Jev, never the server's Ollama models.
 
 ## How it works
 
