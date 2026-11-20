@@ -6,6 +6,11 @@
 
 **An open-source chat interface that turns questions into explanations, comparisons, and working tools.**
 
+**From the team behind [OpenBot](https://open.bot)**, CopilotKit's open-source, self-hostable workspace for AI coworkers. OpenBot's Bots can answer with interactive interfaces too, using the same CopilotKit [Open Generative UI](https://docs.copilotkit.ai/generative-ui/open-generative-ui) support that streams this project's answers.
+
+[![Try OpenBot at open.bot](https://img.shields.io/badge/Try_OpenBot-open.bot_%E2%86%92-6E6AE0?style=for-the-badge&labelColor=3A3466)](https://open.bot)
+[![OpenBot on GitHub](https://img.shields.io/github/stars/CopilotKit/OpenBot?style=for-the-badge&logo=github&label=OpenBot%20on%20GitHub&labelColor=3A3466&color=6E6AE0)](https://github.com/CopilotKit/OpenBot)
+
 Built with [CopilotKit](https://github.com/CopilotKit/CopilotKit) and [AG-UI](https://docs.ag-ui.com/introduction). · [Get started](#get-started) · [Overview](#overview) · [Demos](#demo-scenes) · [Architecture](#how-it-works) · [Contributing](CONTRIBUTING.md)
 
 [![CI](https://github.com/CopilotKit/OpenIntelligentUI/actions/workflows/ci.yml/badge.svg)](https://github.com/CopilotKit/OpenIntelligentUI/actions/workflows/ci.yml)
