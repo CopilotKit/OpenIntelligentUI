@@ -1,4 +1,4 @@
-# Contributing to Open Generative UI
+# Contributing to Open Intelligent UI
 
 ⭐ Thank you for your interest in contributing!!
 
@@ -23,7 +23,7 @@ If you find a bug in the source code, you can help us by [submitting an issue](h
 
 ## Missing a feature?
 
-So, you've got an awesome feature in mind? Throw it over to us by [creating an issue](https://github.com/CopilotKit/open-generative-ui/issues/new) on our GitHub Repo.
+So, you've got an awesome feature in mind? Throw it over to us by [creating an issue](https://github.com/CopilotKit/OpenIntelligentUI/issues/new) on our GitHub Repo.
 
 # How do I make a code contribution?
 
@@ -34,7 +34,8 @@ Fork the [OpenIntelligentUI](https://github.com/CopilotKit/OpenIntelligentUI) re
 ## Step 2: Clone the repository to your local machine
 
 ```bash
-git clone https://github.com/<your-GitHub-username>/OpenGenerativeUI
+git clone https://github.com/YOUR-GITHUB-USERNAME/OpenIntelligentUI.git
+cd OpenIntelligentUI
 ```
 
 ## Step 3: Prepare the development environment
@@ -43,9 +44,10 @@ This is a **Turborepo monorepo** with a Next.js frontend and a LangGraph Python 
 
 ### 1) Install Prerequisites
 
-- Node.js 20.x or later
-- pnpm v9.x installed globally (`npm i -g pnpm@^9`)
-- Python 3.11+ (for the agent)
+- Node.js 22+
+- pnpm 9.x (`npm i -g pnpm@^9`)
+- Python 3.12+ (for the agent)
+- [uv](https://docs.astral.sh/uv/)
 
 > **Windows users:** Enable **Developer Mode** (Settings > System > For developers > Developer Mode → On) to allow symlink creation. This is required for Next.js standalone builds and pnpm to work correctly.
 
@@ -54,17 +56,19 @@ This is a **Turborepo monorepo** with a Next.js frontend and a LangGraph Python 
 The quickest way to get started is with the Makefile:
 
 ```bash
-make setup    # Installs deps + creates .env template
+make setup    # Installs dependencies and creates apps/agent/.env if needed
 ```
 
 Or manually:
 
 ```bash
 pnpm install
-echo 'ANTHROPIC_API_KEY=your-key-here' > apps/agent/.env
 ```
 
-Then add your real Anthropic API key to `apps/agent/.env`.
+For optional shared provider credentials, use [`.env.example`](.env.example) as a
+reference and set `OPENAI_API_KEY` and `TYPESAFE_API_KEY` in `apps/agent/.env`.
+You can also enter both keys in the chat after starting the app. See
+[Getting started](README.md#get-started) for the supported configuration.
 
 ### 3) Run the Project
 
