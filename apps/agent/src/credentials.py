@@ -18,10 +18,11 @@ from starlette.responses import JSONResponse
 class Credentials:
     openai: str = field(repr=False)
     jev: str = field(repr=False)
+    jev_provider: str = 'typesafe'
 
 
 current_credentials: ContextVar[Credentials | None] = ContextVar('provider_credentials', default=None)
-SENSITIVE_HEADERS = {b'x-openai-api-key', b'x-jev-api-key'}
+SENSITIVE_HEADERS = {b'x-openai-api-key', b'x-jev-api-key', b'x-jev-provider'}
 
 
 def parse_credentials(headers):
@@ -40,15 +41,21 @@ def parse_credentials(headers):
             values[name] = value.decode('ascii')
     if not values:
         return None
-    if len(values) != 2:
+    if b'x-openai-api-key' not in values or b'x-jev-api-key' not in values:
         raise ValueError('invalid_keys')
-    return Credentials(values[b'x-openai-api-key'], values[b'x-jev-api-key'])
+    provider = values.get(b'x-jev-provider', 'typesafe')
+    if provider not in {'typesafe', 'openrouter'}:
+        raise ValueError('invalid_keys')
+    return Credentials(values[b'x-openai-api-key'], values[b'x-jev-api-key'], provider)
 
 
 def server_credentials_available():
     model = os.environ.get('LLM_MODEL', 'chat-latest').strip()
     key = 'ANTHROPIC_API_KEY' if model.startswith('claude-') else 'OPENAI_API_KEY'
-    return bool(os.environ.get(key, '').strip() and os.environ.get('TYPESAFE_API_KEY', '').strip())
+    from src.visualization_router import JEV_PROVIDERS, jev_provider
+
+    jev_key = JEV_PROVIDERS[jev_provider()][0]
+    return bool(os.environ.get(key, '').strip() and os.environ.get(jev_key, '').strip())
 
 
 class CredentialsMiddleware:
@@ -77,7 +84,7 @@ class CredentialsMiddleware:
 def private_thread_id(thread_id):
     credentials = current_credentials.get()
     if credentials:
-        key = hashlib.sha256(json.dumps([credentials.openai, credentials.jev]).encode()).digest()
+        key = hashlib.sha256(json.dumps([credentials.openai, credentials.jev, credentials.jev_provider]).encode()).digest()
         namespace = 'byok'
     else:
         key = b'open-intelligent-ui-server-threads-v1'
@@ -98,7 +105,7 @@ class CredentialScopedAgent(LangGraphAGUIAgent):
 
 async def validate_credentials(credentials):
     """Exercise both APIs; never forward their response bodies or exceptions."""
-    from src.visualization_router import JEV_URL, request_options
+    from src.visualization_router import jev_url, request_options
 
     async def check(provider, url, options):
         try:
@@ -119,7 +126,7 @@ async def validate_credentials(credentials):
                 'headers': {'Authorization': f'Bearer {credentials.openai}'},
                 'json': {'model': 'chat-latest', 'messages': [{'role': 'user', 'content': 'Reply OK.'}], 'max_completion_tokens': 8},
             }),
-            check('jev', JEV_URL, request_options([{'role': 'human', 'content': 'Hello'}])),
+            check('jev', jev_url(), request_options([{'role': 'human', 'content': 'Hello'}])),
         )
     finally:
         current_credentials.reset(token)

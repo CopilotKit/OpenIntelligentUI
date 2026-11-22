@@ -18,6 +18,8 @@ For shared credentials, the blueprint and Python factory default to `LLM_MODEL=c
 | `LLM_MODEL`                               | Agent         | `claude-*` routes to Anthropic; `gpt-*` routes to OpenAI                            |
 | `ANTHROPIC_API_KEY`                       | Agent         | Required when selecting Anthropic                                                   |
 | `OPENAI_API_KEY`                          | Agent         | Required when selecting OpenAI                                                      |
+| `JEV_PROVIDER`                            | Agent         | `typesafe` (default) or `openrouter`; selects the shared-server Jev provider        |
+| `OPENROUTER_API_KEY`                      | Agent         | Jev key when `JEV_PROVIDER=openrouter`                                              |
 | `LANGSMITH_API_KEY`                       | As configured | Optional tracing configuration                                                      |
 | `LANGGRAPH_DEPLOYMENT_URL`                | Frontend      | Blueprint obtains agent host:port via `fromService`; runtime normalizes it to a URL |
 | `RATE_LIMIT_ENABLED`                      | Frontend      | Defaults to `false` in blueprint                                                    |
@@ -32,9 +34,9 @@ Both services declare scaling from one to three instances. Agent checkpoints cur
 
 ## Visitor API keys
 
-Visitors can supply OpenAI and Jev keys through **API keys** in the chat header. The Next.js runtime forwards only `x-openai-api-key` and `x-jev-api-key` to the configured agent, creating a separate runtime instance per request. The Python ASGI middleware strips these headers before the inner application and scopes credentials to the entire streaming request without changing process environment variables. BYOK conversations have credential-specific checkpoint IDs, separate from shared-mode conversations. Both keys are required; partial pairs never fall back to server secrets.
+Visitors can supply OpenAI and Jev keys through **API keys** in the chat header, choosing TypeSafe or OpenRouter as the Jev provider. The Next.js runtime forwards only `x-openai-api-key`, `x-jev-api-key` and the optional `x-jev-provider` to the configured agent, creating a separate runtime instance per request. The Python ASGI middleware strips these headers before the inner application and scopes credentials to the entire streaming request without changing process environment variables. BYOK conversations have credential- and provider-specific checkpoint IDs, separate from shared-mode conversations. Both keys are required; partial pairs never fall back to server secrets.
 
-`POST /api/provider-keys` proxies connection validation to the agent’s `POST /credentials/validate`. It performs small real provider requests and returns only fixed error messages. BYOK always uses the standard OpenAI endpoint and `chat-latest`; Jev uses `jev-latest`. Hosted LangSmith tracing is disabled for BYOK. The application does not persist the keys, but its server necessarily receives them: use HTTPS externally and a trusted private or TLS connection between frontend and agent. Do not configure infrastructure to log credential headers.
+`POST /api/provider-keys` proxies connection validation to the agent’s `POST /credentials/validate`. It performs small real provider requests and returns only fixed error messages. BYOK always uses the standard OpenAI endpoint and `chat-latest`; Jev uses `jev-latest` on TypeSafe or `typesafe/jev-1.14` on OpenRouter. Hosted LangSmith tracing is disabled for BYOK. The application does not persist the keys, but its server necessarily receives them: use HTTPS externally and a trusted private or TLS connection between frontend and agent. Do not configure infrastructure to log credential headers.
 
 ## Other hosts
 

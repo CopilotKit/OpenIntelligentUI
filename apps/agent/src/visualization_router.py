@@ -12,6 +12,11 @@ from langchain_core.messages import SystemMessage
 from pydantic import BaseModel, Field, ValidationError
 
 JEV_URL = "https://api.typesafe.ai/v1/systemone"
+OPENROUTER_JEV_URL = "https://openrouter.ai/api/alpha/decisions"
+JEV_PROVIDERS = {
+    "typesafe": ("TYPESAFE_API_KEY", JEV_URL, "jev-latest"),
+    "openrouter": ("OPENROUTER_API_KEY", OPENROUTER_JEV_URL, "typesafe/jev-1.14"),
+}
 VISUALIZATIONS = {
     "text": "Direct facts, prose, writing, code, conversation, or a clarification; no visual needed.",
     "table": "Basic table: exact values, records, simple side-by-side comparison; no custom interaction.",
@@ -113,19 +118,36 @@ def routing_input(state):
     return turn, context
 
 
+def jev_provider():
+    from src.credentials import current_credentials
+
+    credentials = current_credentials.get()
+    if credentials:
+        return credentials.jev_provider
+    provider = os.environ.get("JEV_PROVIDER", "typesafe").strip()
+    if provider not in JEV_PROVIDERS:
+        raise ValueError("JEV_PROVIDER must be typesafe or openrouter.")
+    return provider
+
+
+def jev_url():
+    return JEV_PROVIDERS[jev_provider()][1]
+
+
 def request_options(context):
     from src.credentials import current_credentials
 
     credentials = current_credentials.get()
-    key = credentials.jev if credentials else os.environ.get("TYPESAFE_API_KEY", "").strip()
+    key_name, _, default_model = JEV_PROVIDERS[jev_provider()]
+    key = credentials.jev if credentials else os.environ.get(key_name, "").strip()
     if not key:
         raise ValueError(
-            "TYPESAFE_API_KEY is required for Jev visualization routing. Configure it and restart the agent."
+            f"{key_name} is required for Jev visualization routing. Configure it and restart the agent."
         )
     return {
         "headers": {"Authorization": f"Bearer {key}"},
         "json": {
-            "model": "jev-latest" if credentials else os.environ.get("JEV_MODEL", "jev-latest"),
+            "model": default_model if credentials else os.environ.get("JEV_MODEL", default_model),
             "state": {"conversation": context},
             "questions": {
                 "visualization": {
@@ -159,7 +181,7 @@ def provider_trust_env():
 def route(context):
     try:
         with httpx.Client(timeout=15, trust_env=provider_trust_env()) as client:
-            return parse_response(client.post(JEV_URL, **request_options(context)))
+            return parse_response(client.post(jev_url(), **request_options(context)))
     except httpx.HTTPError:
         raise ValueError(
             "Jev visualization routing is unavailable or timed out. Please retry."
@@ -170,7 +192,7 @@ async def aroute(context):
     try:
         async with httpx.AsyncClient(timeout=15, trust_env=provider_trust_env()) as client:
             return parse_response(
-                await client.post(JEV_URL, **request_options(context))
+                await client.post(jev_url(), **request_options(context))
             )
     except httpx.HTTPError:
         raise ValueError(

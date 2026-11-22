@@ -10,6 +10,7 @@ export function ProviderKeysDialog({ onClose, disabled = false }: { onClose: () 
   const request = useRef<AbortController | null>(null);
   const [openai, setOpenai] = useState("");
   const [jev, setJev] = useState("");
+  const [provider, setProvider] = useState<"typesafe" | "openrouter">("typesafe");
   const [pending, setPending] = useState(false);
   const [validated, setValidated] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +39,7 @@ export function ProviderKeysDialog({ onClose, disabled = false }: { onClose: () 
     try {
       const response = await fetch("/api/provider-keys", {
         method: "POST",
-        headers: { "x-openai-api-key": openai.trim(), "x-jev-api-key": jev.trim() },
+        headers: { "x-openai-api-key": openai.trim(), "x-jev-api-key": jev.trim(), ...(provider === "openrouter" ? { "x-jev-provider": provider } : {}) },
         signal: controller.signal,
         cache: "no-store",
       });
@@ -66,7 +67,12 @@ export function ProviderKeysDialog({ onClose, disabled = false }: { onClose: () 
       <form onSubmit={(event) => { event.preventDefault(); void testConnection(); }}>
         <label htmlFor="provider-openai-key">OpenAI API key</label>
         <input id="provider-openai-key" type="password" maxLength={4096} autoComplete="off" spellCheck={false} autoCapitalize="none" value={openai} onChange={(event) => edit(setOpenai, event.target.value)} disabled={pending || disabled} />
-        <label htmlFor="provider-jev-key">Jev API key</label>
+        <label htmlFor="provider-jev-provider">Jev provider</label>
+        <select id="provider-jev-provider" value={provider} disabled={pending || disabled} onChange={(event) => { setProvider(event.target.value === "openrouter" ? "openrouter" : "typesafe"); setValidated(false); setError(null); }}>
+          <option value="typesafe">TypeSafe</option>
+          <option value="openrouter">OpenRouter</option>
+        </select>
+        <label htmlFor="provider-jev-key">{provider === "openrouter" ? "OpenRouter API key" : "Jev API key"}</label>
         <input id="provider-jev-key" type="password" maxLength={4096} autoComplete="off" spellCheck={false} autoCapitalize="none" value={jev} onChange={(event) => edit(setJev, event.target.value)} disabled={pending || disabled} />
         {error && <p role="alert">{error}</p>}
         <p role="status" aria-live="polite">{pending ? "Checking both providers…" : validated ? "Both keys work. Save to start a new chat." : hasKeys ? "Your own keys are active for this session." : "Both keys are required to start chatting."}</p>
@@ -74,7 +80,7 @@ export function ProviderKeysDialog({ onClose, disabled = false }: { onClose: () 
           {hasKeys && <button type="button" disabled={pending || disabled} onClick={() => { clear(); onClose(); }}>Clear keys</button>}
           <button type="button" onClick={onClose}>Cancel</button>
           <button type="submit" disabled={pending || disabled || !openai.trim() || !jev.trim()}>Test connection</button>
-          <button type="button" className="provider-keys-save" disabled={!validated || pending || disabled} onClick={() => { save({ openai: openai.trim(), jev: jev.trim() }); onClose(); }}>Save keys</button>
+          <button type="button" className="provider-keys-save" disabled={!validated || pending || disabled} onClick={() => { save({ openai: openai.trim(), jev: jev.trim(), ...(provider === "openrouter" ? { jevProvider: provider } : {}) }); onClose(); }}>Save keys</button>
         </div>
       </form>
     </dialog>

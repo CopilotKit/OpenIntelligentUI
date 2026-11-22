@@ -22,7 +22,7 @@ from src.credentials import (
     current_credentials,
     validate_credentials,
 )
-from src.visualization_router import JevVisualizationMiddleware
+from src.visualization_router import JevVisualizationMiddleware, jev_provider
 from src.skill_backend import SKILL_SOURCES, build_agent_backend
 from src.query import query_data
 from src.todos import AgentState, todo_tools
@@ -32,6 +32,7 @@ from src.plan import plan_visualization
 from src.prompt import SYSTEM_PROMPT
 
 load_dotenv()
+jev_provider()  # fail at startup on an unsupported JEV_PROVIDER, like LLM_MODEL
 
 agent = create_deep_agent(
     model=CredentialScopedModel(fallback=build_model(allow_unconfigured=True)),

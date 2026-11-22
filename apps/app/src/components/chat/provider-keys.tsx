@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, type ReactNode } from "react";
 
-export type ProviderKeys = { openai: string; jev: string };
+export type ProviderKeys = { openai: string; jev: string; jevProvider?: "typesafe" | "openrouter" };
 type ProviderKeysContextValue = {
   headers: Record<string, string> | undefined;
   hasKeys: boolean;
@@ -26,7 +26,7 @@ export function ProviderKeysProvider({ children }: { children: ReactNode }) {
   const newChat = () => { setDraft(""); setSession((value) => value + 1); };
   return (
     <ProviderKeysContext.Provider value={{
-      headers: keys ? { "x-openai-api-key": keys.openai, "x-jev-api-key": keys.jev } : undefined,
+      headers: keys ? { "x-openai-api-key": keys.openai, "x-jev-api-key": keys.jev, ...(keys.jevProvider ? { "x-jev-provider": keys.jevProvider } : {}) } : undefined,
       hasKeys: keys !== null,
       session,
       save: (value) => { setKeys(value); setKeysOpen(false); setSession((value) => value + 1); },
