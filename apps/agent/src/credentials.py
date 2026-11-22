@@ -48,7 +48,10 @@ def parse_credentials(headers):
 def server_credentials_available():
     model = os.environ.get('LLM_MODEL', 'chat-latest').strip()
     key = 'ANTHROPIC_API_KEY' if model.startswith('claude-') else 'OPENAI_API_KEY'
-    return bool(os.environ.get(key, '').strip() and os.environ.get('TYPESAFE_API_KEY', '').strip())
+    from src.visualization_router import JEV_PROVIDERS, jev_provider
+
+    jev_key = JEV_PROVIDERS[jev_provider()][0]
+    return bool(os.environ.get(key, '').strip() and os.environ.get(jev_key, '').strip())
 
 
 class CredentialsMiddleware:

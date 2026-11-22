@@ -18,6 +18,8 @@ For shared credentials, the blueprint and Python factory default to `LLM_MODEL=c
 | `LLM_MODEL`                               | Agent         | `claude-*` routes to Anthropic; `gpt-*` routes to OpenAI                            |
 | `ANTHROPIC_API_KEY`                       | Agent         | Required when selecting Anthropic                                                   |
 | `OPENAI_API_KEY`                          | Agent         | Required when selecting OpenAI                                                      |
+| `JEV_PROVIDER`                            | Agent         | `typesafe` (default) or `openrouter`; selects the shared-server Jev provider        |
+| `OPENROUTER_API_KEY`                      | Agent         | Jev key when `JEV_PROVIDER=openrouter`                                              |
 | `LANGSMITH_API_KEY`                       | As configured | Optional tracing configuration                                                      |
 | `LANGGRAPH_DEPLOYMENT_URL`                | Frontend      | Blueprint obtains agent host:port via `fromService`; runtime normalizes it to a URL |
 | `RATE_LIMIT_ENABLED`                      | Frontend      | Defaults to `false` in blueprint                                                    |
