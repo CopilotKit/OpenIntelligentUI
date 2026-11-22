@@ -153,11 +153,11 @@ make dev
 
 Open the [app](http://localhost:3000). The [agent health endpoint](http://localhost:8123/health) confirms the agent service is running. See [Getting started](docs/getting-started.md) for configuration and verification.
 
-The default model is `chat-latest`, OpenAI’s documented alias for the latest ChatGPT Instant model, requiring `OPENAI_API_KEY`. Jev (`jev-latest`, requiring `TYPESAFE_API_KEY`) selects the renderer and visualization for each user turn. Basic tables use A2UI; charts, diagrams, calculators, and maps use Open Generative UI. Provider failures are surfaced instead of silently substituting another router or model. See [Visualization routing](docs/visualization-routing.md).
+The default model is `chat-latest`, OpenAI’s documented alias for the latest ChatGPT Instant model, requiring `OPENAI_API_KEY`. Jev selects the renderer and visualization for each user turn via TypeSafe or OpenRouter. Basic tables use A2UI; charts, diagrams, calculators, and maps use Open Generative UI. Provider failures are surfaced instead of silently substituting another router or model. See [Visualization routing](docs/visualization-routing.md).
 
 ## Use your own API keys
 
-The chat asks for both keys before sending your first message or example prompt and keeps your draft while you set them up. Open **API keys** in the chat header, enter an OpenAI key and a Jev key, then choose **Test connection** and **Save keys**. The connection test makes a small request to each provider. Your keys use `chat-latest` for answers and `jev-latest` for visualization routing, with usage billed to your provider accounts.
+The chat asks for both keys before sending your first message or example prompt and keeps your draft while you set them up. Open **API keys** in the chat header, enter an OpenAI key, select TypeSafe or OpenRouter for Jev and enter its key, then choose **Test connection** and **Save keys**. The connection test makes a small request to each provider. Your keys use `chat-latest` for answers and the selected provider's Jev model for visualization routing, with usage billed to your provider accounts.
 
 Keys stay in browser memory until refresh or **Clear keys**; the app does not save them in browser storage. Requests send them through the application server to their respective providers. They are kept out of chat state and checkpoints, and hosted LangSmith tracing is disabled for requests using your keys. Only use this feature on a deployment whose operator you trust. Saving or clearing keys starts a new chat; **New chat** keeps your keys for the current session.
 

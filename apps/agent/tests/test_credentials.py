@@ -25,6 +25,40 @@ def test_headers_validate_without_disclosing_values():
         parse_credentials([(b'x-openai-api-key', b'only')])
 
 
+def test_openrouter_selection_is_explicit_and_namespaces_threads():
+    from src.credentials import parse_credentials, current_credentials, private_thread_id
+    headers = [(b'x-openai-api-key', b'o'), (b'x-jev-api-key', b'j')]
+    typesafe = parse_credentials(headers)
+    router = parse_credentials(headers + [(b'x-jev-provider', b'openrouter')])
+    assert typesafe.jev_provider == 'typesafe'
+    assert router.jev_provider == 'openrouter'
+    token = current_credentials.set(typesafe)
+    try:
+        first = private_thread_id('thread')
+    finally:
+        current_credentials.reset(token)
+    token = current_credentials.set(router)
+    try:
+        assert first != private_thread_id('thread')
+    finally:
+        current_credentials.reset(token)
+    with pytest.raises(ValueError):
+        parse_credentials(headers + [(b'x-jev-provider', b'unknown')])
+
+
+def test_openrouter_routes_to_its_own_endpoint(monkeypatch):
+    from src.credentials import Credentials, current_credentials
+    from src.visualization_router import jev_url, request_options
+    monkeypatch.setenv('JEV_MODEL', 'server-model')
+    token = current_credentials.set(Credentials('openai', 'router-secret', 'openrouter'))
+    try:
+        assert jev_url() == 'https://openrouter.ai/api/alpha/decisions'
+        assert request_options([])['json']['model'] == 'typesafe/jev-1.14'
+        assert request_options([])['headers']['Authorization'] == 'Bearer router-secret'
+    finally:
+        current_credentials.reset(token)
+
+
 def test_concurrent_streams_isolate_keys_and_reset_on_cancellation():
     from src.credentials import CredentialsMiddleware, current_credentials
     async def exercise():

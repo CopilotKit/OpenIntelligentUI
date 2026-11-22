@@ -121,9 +121,9 @@ def routing_input(state):
 def jev_provider():
     from src.credentials import current_credentials
 
-    # Visitor keys are TypeSafe keys; JEV_PROVIDER only selects shared-server routing.
-    if current_credentials.get():
-        return "typesafe"
+    credentials = current_credentials.get()
+    if credentials:
+        return credentials.jev_provider
     provider = os.environ.get("JEV_PROVIDER", "typesafe").strip()
     if provider not in JEV_PROVIDERS:
         raise ValueError("JEV_PROVIDER must be typesafe or openrouter.")

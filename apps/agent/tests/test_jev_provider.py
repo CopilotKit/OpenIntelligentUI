@@ -44,13 +44,19 @@ def test_unknown_provider_is_rejected_without_fallback(monkeypatch):
         jev_url()
 
 
-def test_visitor_keys_stay_on_typesafe_even_when_server_uses_openrouter(monkeypatch):
+def test_visitor_provider_choice_overrides_the_server_setting(monkeypatch):
     monkeypatch.setenv("JEV_PROVIDER", "openrouter")
     monkeypatch.setenv("JEV_MODEL", "server-model")
     token = current_credentials.set(Credentials("visitor-openai", "visitor-jev"))
     try:
         assert jev_url() == "https://api.typesafe.ai/v1/systemone"
         assert request_options([])["json"]["model"] == "jev-latest"
+    finally:
+        current_credentials.reset(token)
+    token = current_credentials.set(Credentials("visitor-openai", "visitor-jev", "openrouter"))
+    try:
+        assert jev_url() == "https://openrouter.ai/api/alpha/decisions"
+        assert request_options([])["json"]["model"] == "typesafe/jev-1.14"
     finally:
         current_credentials.reset(token)
 

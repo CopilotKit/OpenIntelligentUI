@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { readProviderHeaders } from "../provider-keys";
 
+it("accepts only explicitly supported Jev providers", () => {
+  const keys = { "x-openai-api-key": "openai", "x-jev-api-key": "jev" };
+  expect(readProviderHeaders(new Headers({ ...keys, "x-jev-provider": "openrouter" })))
+    .toEqual({ ...keys, "x-jev-provider": "openrouter" });
+  expect(() => readProviderHeaders(new Headers({ ...keys, "x-jev-provider": "other" }))).toThrow();
+});
+
 describe("request-scoped provider credentials", () => {
   it("leaves server mode unchanged when no keys are supplied", () => {
     expect(readProviderHeaders(new Headers())).toBeUndefined();
