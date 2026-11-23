@@ -96,6 +96,9 @@ export default function HomePage() {
           >
             GitHub ↗
           </a>
+          <a href="https://open.bot" target="_blank" rel="noopener noreferrer">
+            OpenBot ↗
+          </a>
           <a
             className="chat-brand"
             href="https://copilotkit.ai"
